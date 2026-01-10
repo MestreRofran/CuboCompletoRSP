@@ -11,7 +11,7 @@
     
     <title>Cubo Mágico - Rofran&Laís</title>
     <style>
-        /* --- ESTILOS GERAIS E PC (ORIGINAL PRESERVADO) --- */
+        /* --- ESTILOS GERAIS E PC (BASE ORIGINAL) --- */
         body { 
             background: #0a0a0a; color: #eee; margin: 0; 
             display: flex; align-items: center; justify-content: center; 
@@ -106,6 +106,7 @@
         .btn-act { width: 100%; padding: 12px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 5px; transition: 0.2s;}
         .btn-discreto { background: #1a1a1a !important; color: #888 !important; border: 1px solid #333 !important; font-size: 11px !important; }
 
+        /* Estilo dos botões de ação (Endireitar/90°) */
         .botoes-acao { display: flex; gap: 10px; z-index: 20; }
         
         #btn-fullscreen {
@@ -116,96 +117,89 @@
             font-size: 20px; cursor: pointer; backdrop-filter: blur(5px);
         }
 
-        /* --- MODO MOBILE AJUSTADO (Visual Iframe/LNCC) --- */
+        /* --- MODO MOBILE (VERTICAL/PORTRAIT) --- */
+        /* SIMULAÇÃO DE IFRAME / ZOOM OUT */
         @media (max-width: 768px) and (orientation: portrait) {
             body {
-                /* Permite rolagem apenas se necessário, mas tenta encaixar */
-                height: 100vh;
-                height: 100dvh; /* Altura real dinâmica do mobile */
+                /* Bloqueia rolagem para parecer APP nativo e igual ao LNCC */
                 overflow: hidden; 
-                align-items: flex-end; /* Alinha o conteúdo na parte de baixo para facilitar alcance */
-                padding-bottom: 20px;
-                box-sizing: border-box;
+                align-items: flex-start;
+                padding: 0;
+                background: #000; /* Fundo preto total para as bordas */
             }
 
             .container-principal {
                 flex-wrap: wrap; 
                 justify-content: center;
+                align-content: flex-end; /* Empurra tudo para baixo */
                 gap: 5px;
+                height: 100vh;
+                padding-bottom: 20px;
+                box-sizing: border-box;
+
+                /* O TRUQUE MÁGICO: Escala tudo para 80% do tamanho real */
+                /* Isso simula o efeito do site LNCC */
+                transform: scale(0.85); 
+                transform-origin: bottom center; /* Fixa no fundo */
                 width: 100%;
-                height: 100%; /* Força a ocupar a altura disponível */
-                align-content: flex-end; /* Empilha o conteúdo embaixo */
             }
             
-            /* 1. ÁREA DO CUBO */
+            /* 1. CUBO: Afastado do topo, empurrado pelo margin-bottom grande */
             .container-cubo {
                 order: 1;
                 width: 100%;
-                /* Flex grow para ocupar todo o espaço sobrando acima dos painéis */
+                /* Flex grow 1 faz ele ocupar todo o espaço vazio acima, empurrando-o para baixo */
                 flex-grow: 1; 
                 display: flex;
                 flex-direction: column;
-                justify-content: flex-end; /* Empurra o cubo para baixo, perto dos botões */
-                margin-bottom: 5px;
+                justify-content: center; /* Centraliza o cubo na área disponível */
+                margin-top: 50px; /* Afasta bem do topo */
+                margin-bottom: 20px; /* Espaço até os botões */
             }
             
-            /* Ajuste da Cena para afastar do topo e reduzir tamanho visual */
-            .area-cena { 
-                width: 100%; 
-                height: auto;
-                aspect-ratio: 1/1; /* Mantém quadrado */
-                margin-top: 60px; /* AFASTA DO TOPO CONFORME PEDIDO */
-                margin-bottom: auto; /* Centraliza verticalmente na área disponível */
-                transform: scale(0.65); /* Reduz visualmente para não estourar */
-            }
-            
-            .referencial-quadrado { width: 100%; height: 100%; border: none; }
-            .ref-label { opacity: 0.3; }
+            /* Removemos scale individual para usar o global */
+            .area-cena { width: 100%; height: 350px; }
+            .referencial-quadrado { width: 340px; height: 340px; border-color: rgba(255,255,255,0.05); }
 
-            /* 2. BOTÕES DE AÇÃO (Colados aos painéis) */
+            /* 2. BOTÕES DE AÇÃO (Endireitar/90) */
+            /* Movi eles para fora do container do cubo no HTML para colar nos painéis */
             .botoes-acao { 
-                width: 95%; 
+                order: 2;
+                width: 94%; 
                 justify-content: center; 
-                margin-top: 0;
-                margin-bottom: 0; /* Cola nos painéis abaixo */
+                margin-bottom: 5px; /* Colado nos painéis */
             }
             .botoes-acao .btn-act {
-                padding: 10px; 
-                font-size: 13px;
-                margin: 0; /* Remove margens extras */
+                padding: 12px;
+                font-size: 14px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             }
 
-            /* 3. PAINÉIS LADO A LADO E SUPER COMPACTOS */
+            /* 3. PAINÉIS DE CONTROLE */
             .painel-esquerdo { 
-                order: 2; 
-                width: 47%; 
-                padding: 5px 5px 10px 5px; 
-                gap: 4px; 
-                background: rgba(20,20,20,0.95); /* Fundo um pouco mais sólido */
+                order: 3; 
+                width: 46%; 
+                padding: 10px; 
+                gap: 5px; /* BEM compactado */
+                box-sizing: border-box; 
+                background: #111; /* Um pouco mais escuro */
             }
             .painel-direito { 
-                order: 3; 
-                width: 47%; 
-                padding: 5px 5px 10px 5px; 
-                gap: 4px;
-                background: #151515;
+                order: 4; 
+                width: 46%; 
+                padding: 10px; 
+                gap: 5px; /* BEM compactado */
+                box-sizing: border-box; 
+                background: #111;
             }
 
-            /* Redução agressiva dos elementos internos */
-            .mini-face { width: 26px; height: 26px; font-size: 7px; border-radius: 2px; }
+            /* Ajustes Finos para Compactação Extrema */
+            .mini-face { width: 26px; height: 26px; font-size: 7px; }
             .grid-mapa { grid-template-columns: repeat(3, 26px); grid-template-rows: repeat(4, 26px); gap: 2px; }
-            
-            .btn-dir { height: 35px; width: 100%; font-size: 16px; border-radius: 5px; }
-            .btn-act { padding: 8px; font-size: 11px; margin-top: 2px; border-radius: 4px; }
-            
-            /* Botões de toggle menores */
-            .btn-toggle-mini { padding: 4px; font-size: 8px; width: 100%; margin-top: 2px; }
-            
-            .stats-container { padding: 5px; margin-top: 2px; }
-            .stats-label { font-size: 8px; margin-bottom: 2px; }
-            .stats-value { font-size: 14px; }
-            
-            #msg-vitoria { font-size: 12px; margin-top: 5px; }
+            .btn-dir { height: 42px; font-size: 20px; background: #222; }
+            .btn-act { margin-top: 0; }
+            .stats-container { padding: 5px; margin-top: 5px; }
+            .btn-toggle-mini { padding: 8px; font-size: 9px; margin-top: 2px; }
         }
     </style>
 </head>
@@ -213,6 +207,7 @@
     <button id="btn-fullscreen" onclick="toggleFullScreen()">⛶</button>
 
     <div class="container-principal">
+        
         <div class="painel-esquerdo">
             <div style="font-size:10px; color:#555; letter-spacing: 2px;">ORIENTAÇÃO</div>
             <div class="grid-mapa">
@@ -248,14 +243,13 @@
                     <div class="cube-inner" id="cube"></div>
                 </div>
             </div>
-            
             <div id="msg-vitoria">FINALIZADO!<br>PARABÉNS! 🎉</div>
+        </div>
 
-            <div class="botoes-acao">
-                <button class="btn-act" onclick="smartWorldRotate90(-90)">⟲ 90°</button>
-                <button class="btn-act" style="background:#444" onclick="straighten()">ENDIREITAR</button>
-                <button class="btn-act" onclick="smartWorldRotate90(90)">90° ⟳</button>
-            </div>
+        <div class="botoes-acao">
+            <button class="btn-act" onclick="smartWorldRotate90(-90)">⟲ 90°</button>
+            <button class="btn-act" style="background:#444" onclick="straighten()">ENDIREITAR</button>
+            <button class="btn-act" onclick="smartWorldRotate90(90)">90° ⟳</button>
         </div>
 
         <div class="painel-direito">
