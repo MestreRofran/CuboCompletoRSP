@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <title>Cubo Mágico - Rofran&Laís</title>
+    <style>
+        /* --- ESTILOS GERAIS E PC (PADRÃO) --- */
+        body { 
+            background: #0a0a0a; color: #eee; margin: 0; 
+            display: flex; align-items: center; justify-content: center; 
+            height: 100vh; overflow: hidden;
+            font-family: 'Segoe UI', sans-serif; perspective: 1200px;
+            user-select: none; touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container-principal { 
+            display: flex; width: 100%; max-width: 1200px; 
+            align-items: center; justify-content: space-around; 
+            flex-wrap: nowrap;
+        }
+        
+        .painel-esquerdo { 
+            display: flex; flex-direction: column; align-items: center; gap: 15px; 
+            min-width: 160px; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 15px;
+        }
+
+        .container-cubo {
+            display: flex; flex-direction: column; align-items: center; gap: 20px; position: relative; z-index: 10;
+        }
+
+        .painel-direito {
+            width: 160px; display: flex; flex-direction: column; gap: 20px; 
+            background: #151515; padding: 20px; border-radius: 15px;
+        }
+
+        .grid-mapa { display: grid; grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(4, 40px); gap: 6px; }
+        .mini-face { width: 40px; height: 40px; background: #1a1a1a; border: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #666; cursor: pointer; border-radius: 4px; }
+        .mini-face.active { background: #444; color: #fff; border-color: #666; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
+        
+        .btn-toggle-mini { 
+            padding: 8px 12px; font-size: 10px; font-weight: bold; border-radius: 4px; 
+            border: 1px solid #333; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+            margin-top: 5px; width: 140px;
+        }
+        
+        .mode-ui { background: #1a1a1a; color: #3498db; border-color: #3498db; }
+        .mode-snd { background: #1a1a1a; color: #e67e22; border-color: #e67e22; }
+        .mode-msc { background: #1a1a1a; color: #2ecc71; border-color: #2ecc71; }
+
+        .stats-container { margin-top: 10px; text-align: center; font-family: monospace; background: #111; padding: 15px; border-radius: 8px; border: 1px solid #222; width: 130px; }
+        .stats-label { font-size: 10px; color: #555; margin-bottom: 4px; letter-spacing: 1px; }
+        .stats-value { font-size: 18px; color: #eee; font-weight: bold; }
+        
+        #msg-vitoria { 
+            color: #2ecc71; font-weight: bold; margin-top: 10px; display: none; 
+            text-align: center; font-size: 16px; line-height: 1.4; 
+            text-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        .area-cena { width: 350px; height: 350px; position: relative; cursor: grab; display: flex; align-items: center; justify-content: center; }
+        @media (min-width: 768px) { .area-cena { width: 550px; height: 550px; } }
+        
+        .referencial-quadrado {
+            position: absolute; width: 480px; height: 480px; border: 2px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none; display: flex; align-items: center; justify-content: center;
+            box-sizing: border-box; border-radius: 6px;
+        }
+        @media (min-width: 768px) { .referencial-quadrado { width: 650px; height: 650px; } }
+
+        .ref-label { position: absolute; font-size: 12px; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
+        .ref-topo { top: 20px; } .ref-baixo { bottom: 20px; }
+        .ref-sol { right: 20px; writing-mode: vertical-rl; } .ref-lua { left: 20px; writing-mode: vertical-rl; }
+
+        .scene { transform-style: preserve-3d; }
+        .cube-inner { position: relative; transform-style: preserve-3d; }
+        .pivot { position: absolute; transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .cubie { position: absolute; width: 100px; height: 100px; transform-style: preserve-3d; left: -50px; top: -50px; }
+        .face { position: absolute; width: 100px; height: 100px; background: #000; border: 1px solid #111; box-sizing: border-box; background-size: 300px 300px; backface-visibility: hidden; }
+        .cubie.selected .face { border: 2px solid #00d2ff; box-shadow: inset 0 0 15px #00d2ff; z-index: 10; }
+
+        .cubie.color-mode .f-top { background: #ffffff !important; background-image: none !important; }
+        .cubie.color-mode .f-bottom { background: #ffff00 !important; background-image: none !important; }
+        .cubie.color-mode .f-front { background: #00ff00 !important; background-image: none !important; }
+        .cubie.color-mode .f-back { background: #0000ff !important; background-image: none !important; }
+        .cubie.color-mode .f-right { background: #ff0000 !important; background-image: none !important; }
+        .cubie.color-mode .f-left { background: #ff8000 !important; background-image: none !important; }
+
+        .f-front  { transform: rotateY(0deg) translateZ(50px); }
+        .f-back   { transform: rotateY(180deg) translateZ(50px); }
+        .f-right  { transform: rotateY(90deg) translateZ(50px); }
+        .f-left   { transform: rotateY(-90deg) translateZ(50px); }
+        .f-top    { transform: rotateX(90deg) translateZ(50px); }
+        .f-bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+        .btn-dir { width: 45px; height: 45px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-size: 20px; }
+        .btn-act { width: 100%; padding: 12px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 5px; transition: 0.2s;}
+        .btn-discreto { background: #1a1a1a !important; color: #888 !important; border: 1px solid #333 !important; font-size: 11px !important; }
+
+        .botoes-acao { display: flex; gap: 10px; z-index: 20; }
+        
+        /* Botão Flutuante de Tela Cheia */
+        #btn-fullscreen {
+            position: fixed; top: 15px; right: 15px; z-index: 1000;
+            background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer; backdrop-filter: blur(5px);
+        }
+
+        /* --- MODO MOBILE (VERTICAL/PORTRAIT) --- */
+        /* A regra "orientation: portrait" garante que só aplica o mobile quando o celular está em pé */
+        @media (max-width: 768px) and (orientation: portrait) {
+            body {
+                height: auto; 
+                min-height: 100vh;
+                overflow-y: auto; 
+                overflow-x: hidden;
+                align-items: flex-start;
+                padding: 0;
+            }
+
+            .container-principal {
+                flex-wrap: wrap; 
+                justify-content: center;
+                gap: 10px;
+                padding-bottom: 20px;
+            }
+            
+            /* 1. ÁREA DO CUBO NO TOPO */
+            .container-cubo {
+                order: 1;
+                width: 100%;
+                height: 55vh; 
+                justify-content: space-between; 
+                margin-bottom: 10px;
+            }
+            
+            .area-cena { width: 100%; height: 100%; margin-top: 20px; }
+            .referencial-quadrado { width: 95%; height: 90%; border-color: rgba(255,255,255,0.05); }
+
+            /* 2. BOTÕES DE AÇÃO ABAIXO DO CUBO */
+            .botoes-acao { margin-bottom: 0; width: 90%; justify-content: center; }
+
+            /* 3. PAINÉIS LADO A LADO */
+            .painel-esquerdo { order: 2; width: 46%; padding: 10px; box-sizing: border-box; }
+            .painel-direito { order: 3; width: 46%; padding: 10px; box-sizing: border-box; }
+
+            .mini-face { width: 32px; height: 32px; font-size: 9px; }
+            .grid-mapa { grid-template-columns: repeat(3, 32px); grid-template-rows: repeat(4, 32px); }
+            .btn-dir { height: 45px; font-size: 20px; }
+            .btn-act { padding: 15px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <button id="btn-fullscreen" onclick="toggleFullScreen()">⛶</button>
+
+    <div class="container-principal">
+        <div class="painel-esquerdo">
+            <div style="font-size:10px; color:#555; letter-spacing: 2px;">ORIENTAÇÃO</div>
+            <div class="grid-mapa">
+                <div class="mini-face" style="grid-column:2; grid-row:1" id="m-top" onclick="snapTo('top')">Topo</div>
+                <div class="mini-face" style="grid-column:1; grid-row:2" id="m-left" onclick="snapTo('left')">Esq</div>
+                <div class="mini-face" style="grid-column:2; grid-row:2" id="m-front" onclick="snapTo('front')">Frente</div>
+                <div class="mini-face" style="grid-column:3; grid-row:2" id="m-right" onclick="snapTo('right')">Dir</div>
+                <div class="mini-face" style="grid-column:2; grid-row:3" id="m-bottom" onclick="snapTo('bottom')">Base</div>
+                <div class="mini-face" style="grid-column:2; grid-row:4" id="m-back" onclick="snapTo('back')">Verso</div>
+            </div>
+            
+            <button id="mode-toggle" class="btn-toggle-mini mode-ui" onclick="cycleMode()">🎨 Imagem: Original</button>
+            <button id="sound-toggle" class="btn-toggle-mini mode-snd" onclick="cycleSound()">🔊 Mov: Mudo</button>
+            <button id="music-toggle" class="btn-toggle-mini mode-msc" onclick="cycleMusic()">🎵 Som: Mudo</button>
+
+            <div class="stats-container">
+                <div class="stats-label">MOVIMENTOS</div>
+                <div id="count-mov" class="stats-value">0</div>
+                <div class="stats-label" style="margin-top:12px">TEMPO</div>
+                <div id="timer" class="stats-value">00:00</div>
+            </div>
+        </div>
+
+        <div class="container-cubo">
+            <div class="area-cena" id="area-cena">
+                <div class="referencial-quadrado">
+                    <span class="ref-label ref-topo">Cima</span>
+                    <span class="ref-label ref-baixo">Baixo</span>
+                    <span class="ref-label ref-sol">Sol</span>
+                    <span class="ref-label ref-lua">Lua</span>
+                </div>
+                <div class="scene" id="scene">
+                    <div class="cube-inner" id="cube"></div>
+                </div>
+            </div>
+            
+            <div id="msg-vitoria">FINALIZADO!<br>PARABÉNS! 🎉</div>
+
+            <div class="botoes-acao">
+                <button class="btn-act" onclick="smartWorldRotate90(-90)">⟲ 90°</button>
+                <button class="btn-act" style="background:#444" onclick="straighten()">ENDIREITAR</button>
+                <button class="btn-act" onclick="smartWorldRotate90(90)">90° ⟳</button>
+            </div>
+        </div>
+
+        <div class="painel-direito">
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px; justify-items:center">
+                <button class="btn-dir" style="grid-column:2" onclick="moveViewRelative('up')">↑</button>
+                <button class="btn-dir" style="grid-column:1; grid-row:2" onclick="moveViewRelative('left')">←</button>
+                <button class="btn-dir" style="grid-column:3; grid-row:2" onclick="moveViewRelative('right')">→</button>
+                <button class="btn-dir" style="grid-column:2; grid-row:3" onclick="moveViewRelative('down')">↓</button>
+            </div>
+            <div style="display:flex; justify-content:center; gap:10px; border-top:1px solid #333; padding-top:15px">
+                <button class="btn-dir" onclick="moveViewRelative('roll-ccw')">↻</button>
+                <button class="btn-dir" onclick="moveViewRelative('roll-cw')">↺</button>
+            </div>
+            <button class="btn-act btn-discreto" onclick="undoMove()">DESFAZER</button>
+            <button class="btn-act btn-discreto" onclick="scramble()">MISTURAR</button>
+            <button class="btn-act btn-discreto" onclick="solve()">RESOLVER</button>
+        </div>
+    </div>
+
+    <script>
+        // --- FUNÇÃO TELA CHEIA (FULLSCREEN) ---
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(e => console.log(e));
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        // --- MOTOR DE ÁUDIO ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let musicInterval = null, currentStep = 0, currentSound = 0, currentMusic = 0;
+        
+        const soundModes = ["Mudo", "Mecânico", "Sintético", "Agudo"];
+        const musicModes = ["Mudo", "Ritmo Zen", "Techno Soft", "Cyber Arp", "Bass Line", "Galaxy"];
+        const scales = [ [], [196, 220, 261, 293], [130, 164, 196, 246], [220, 261, 329, 392], [65, 82, 98, 110], [349, 440, 523, 659] ];
+
+        function playNote(freq, type = 'sine', duration = 0.5, vol = 0.05) {
+            const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            g.gain.setValueAtTime(vol, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(g); g.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playMoveSound() { 
+            if (currentSound > 0) playNote([0, 150, 400, 800][currentSound], ['sine','square','sine','triangle'][currentSound], 0.1, 0.1); 
+        }
+
+        function startMusic() {
+            if (musicInterval) clearInterval(musicInterval);
+            if (currentMusic === 0) return;
+            const t = [0, 600, 400, 250, 500, 800][currentMusic];
+            musicInterval = setInterval(() => {
+                const s = scales[currentMusic]; 
+                const wave = currentMusic === 3 ? 'sawtooth' : (currentMusic === 4 ? 'triangle' : 'sine');
+                playNote(s[currentStep % s.length], wave, t/1000*1.5, 0.04);
+                if (currentStep % 4 === 0) playNote(60, 'square', 0.05, 0.02);
+                currentStep++;
+            }, t);
+        }
+
+        function cycleSound() { 
+            currentSound = (currentSound + 1) % 4; 
+            document.getElementById('sound-toggle').innerText = `🔊 Mov: ${soundModes[currentSound]}`; 
+            if(audioCtx.state==='suspended') audioCtx.resume();
+        }
+
+        function cycleMusic() { 
+            currentMusic = (currentMusic + 1) % 6; 
+            document.getElementById('music-toggle').innerText = `🎵 Som: ${musicModes[currentMusic]}`; 
+            if(musicInterval) clearInterval(musicInterval); 
+            if(currentMusic>0) startMusic(); 
+            if(audioCtx.state==='suspended') audioCtx.resume();
+        }
+
+        // --- LÓGICA DO CUBO ---
+        const cube = document.getElementById('cube');
+        const scene = document.getElementById('scene');
+        let currentMode = 0, cubies = [], moveStack = [], isAnimating = false, selectedCubie = null;
+        let targetX = -25, targetY = -35, curX = -25, curY = -35;
+        let moveCount = 0, timerInterval = null, seconds = 0, gameActive = false, readyToStart = false; 
+
+        const originalImages = ['Imagem1.jpg', 'Imagem2.jpg', 'Imagem3.jpg', 'Imagem4.jpg', 'Imagem5.jpg', 'Imagem6.jpg'];
+        let darkImages = [], lightImages = [];
+
+        function createCube() {
+            const seed = Math.floor(Math.random() * 1000);
+            darkImages = Array.from({length: 6}, (_, i) => `https://picsum.photos/seed/${seed + i}/400/400?grayscale&blur=1`);
+            lightImages = Array.from({length: 6}, (_, i) => `https://picsum.photos/seed/${seed + i + 10}/400/400?random=${i}`);
+            
+            cube.innerHTML = ''; cubies = [];
+            for (let x = -1; x <= 1; x++) {
+                for (let y = -1; y <= 1; y++) {
+                    for (let z = -1; z <= 1; z++) {
+                        const cubie = document.createElement('div');
+                        cubie.className = 'cubie';
+                        cubie.dataset.x = x; cubie.dataset.y = y; cubie.dataset.z = z;
+                        cubie.dataset.origX = x; cubie.dataset.origY = y; cubie.dataset.origZ = z;
+                        cubie.matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+                        cubie.onclick = (e) => { e.stopPropagation(); cubies.forEach(c => c.classList.remove('selected')); cubie.classList.add('selected'); selectedCubie = cubie; };
+                        ['f-front','f-back','f-right','f-left','f-top','f-bottom'].forEach((f, i) => {
+                            const div = document.createElement('div'); div.className = `face ${f}`;
+                            let u = 0, v = 0;
+                            if(f==='f-front'){u=x;v=y} else if(f==='f-back'){u=-x;v=y} else if(f==='f-right'){u=-z;v=y} 
+                            else if(f==='f-left'){u=z;v=y} else if(f==='f-top'){u=x;v=z} else if(f==='f-bottom'){u=x;v=-z}
+                            div.style.backgroundPosition = `${(u+1)*50}% ${(v+1)*50}%`;
+                            cubie.appendChild(div);
+                        });
+                        updateCubiePos(cubie); cube.appendChild(cubie); cubies.push(cubie);
+                    }
+                }
+            }
+            updateModeVisuals();
+        }
+
+        function updateCubiePos(c) {
+            const x = Math.round(parseFloat(c.dataset.x)) * 100, y = Math.round(parseFloat(c.dataset.y)) * 100, z = Math.round(parseFloat(c.dataset.z)) * 100;
+            c.style.transform = `translate3d(${x}px, ${y}px, ${z}px) matrix3d(${c.matrix.join(',')})`;
+        }
+
+        async function rotateLayerGroup(axis, layers, angle, record = true, isAuto = false) {
+            if (isAnimating) return; isAnimating = true;
+            playMoveSound();
+            if (record) {
+                moveStack.push({axis, layers, angle});
+                if(readyToStart && !isAuto) { startTimer(); readyToStart = false; gameActive = true; }
+                if(gameActive && layers.length < 3) { moveCount++; document.getElementById('count-mov').innerText = moveCount; }
+            }
+            const pivot = document.createElement('div'); pivot.className = 'pivot'; cube.appendChild(pivot);
+            const activeCubies = cubies.filter(c => layers.includes(Math.round(parseFloat(c.dataset[axis]))));
+            activeCubies.forEach(c => pivot.appendChild(c));
+            pivot.offsetHeight; pivot.style.transform = `rotate${axis.toUpperCase()}(${angle}deg)`;
+            await new Promise(r => setTimeout(r, 410));
+            const rad = angle * Math.PI / 180, cos = Math.round(Math.cos(rad)), sin = Math.round(Math.sin(rad));
+            const rotM = (axis==='x')?[1,0,0,0, 0,cos,sin,0, 0,-sin,cos,0, 0,0,0,1]:(axis==='y')?[cos,0,-sin,0, 0,1,0,0, sin,0,cos,0, 0,0,0,1]:[cos,sin,0,0, -sin,cos,0,0, 0,0,1,0, 0,0,0,1];
+            activeCubies.forEach(c => {
+                let x = parseFloat(c.dataset.x), y = parseFloat(c.dataset.y), z = parseFloat(c.dataset.z);
+                if(axis==='y'){ c.dataset.x = x*cos+z*sin; c.dataset.z = -x*sin+z*cos; }
+                else if(axis==='x'){ c.dataset.y = y*cos-z*sin; c.dataset.z = y*sin+z*cos; }
+                else if(axis==='z'){ c.dataset.x = x*cos-y*sin; c.dataset.y = x*sin+y*cos; }
+                const res = new Array(16).fill(0);
+                for(let i=0;i<4;i++)for(let j=0;j<4;j++)for(let k=0;k<4;k++) res[i*4+j]+=c.matrix[i*4+k]*rotM[k*4+j];
+                c.matrix = res.map(v => Math.abs(v)<0.1?0:(v>0.9?1:(v<-0.9?-1:v)));
+                updateCubiePos(c); cube.appendChild(c);
+            });
+            pivot.remove(); isAnimating = false; checkWin();
+        }
+
+        function checkWin() {
+            if(!gameActive || moveCount === 0) return;
+            const faceConfigs = [
+                { axis: 'x', val: 1 }, { axis: 'x', val: -1 },
+                { axis: 'y', val: 1 }, { axis: 'y', val: -1 },
+                { axis: 'z', val: 1 }, { axis: 'z', val: -1 }
+            ];
+            const allFacesSolved = faceConfigs.every(face => {
+                const cubiesInFace = cubies.filter(c => Math.round(parseFloat(c.dataset[face.axis])) === face.val);
+                const otherAxes = ['x','y','z'].filter(a => a !== face.axis);
+                const centerCubie = cubiesInFace.find(c => 
+                    Math.round(parseFloat(c.dataset[otherAxes[0]])) === 0 && 
+                    Math.round(parseFloat(c.dataset[otherAxes[1]])) === 0
+                );
+                if(!centerCubie) return false;
+                return cubiesInFace.every(c => 
+                    c.matrix.every((val, i) => Math.abs(val - centerCubie.matrix[i]) < 0.1)
+                );
+            });
+            if(allFacesSolved) {
+                gameActive = false; clearInterval(timerInterval);
+                document.getElementById('msg-vitoria').style.display = 'block';
+                playNote(523.25, 'sine', 1, 0.1);
+            }
+        }
+
+        function getBestAxis(screenVec) {
+            const rx = targetX*Math.PI/180, ry = targetY*Math.PI/180;
+            const cx = { x: Math.cos(ry), y: Math.sin(rx)*Math.sin(ry), z: -Math.cos(rx)*Math.sin(ry) };
+            const cy = { x: 0, y: Math.cos(rx), z: Math.sin(rx) };
+            const cz = { x: Math.sin(ry), y: -Math.sin(rx)*Math.cos(ry), z: Math.cos(rx)*Math.cos(ry) };
+            const dots = [
+                {a:'x', v: cx.x*screenVec.x + cx.y*screenVec.y + cx.z*screenVec.z},
+                {a:'y', v: cy.x*screenVec.x + cy.y*screenVec.y + cy.z*screenVec.z},
+                {a:'z', v: cz.x*screenVec.x + cz.y*screenVec.y + cz.z*screenVec.z}
+            ];
+            const best = dots.reduce((a, b) => Math.abs(a.v) > Math.abs(b.v) ? a : b);
+            return { axis: best.a, sign: Math.sign(best.v) };
+        }
+
+        function moveViewRelative(dir) {
+            if(!selectedCubie || isAnimating) return;
+            let info, ang = 90;
+            if(dir==='up'||dir==='down') { info = getBestAxis({x:1,y:0,z:0}); ang = (dir==='up'?90:-90)*info.sign; }
+            else if(dir==='left'||dir==='right') { info = getBestAxis({x:0,y:1,z:0}); ang = (dir==='right'?90:-90)*info.sign; }
+            else { info = getBestAxis({x:0,y:0,z:1}); ang = (dir==='roll-cw'?-90:90)*info.sign; }
+            rotateLayerGroup(info.axis, [Math.round(parseFloat(selectedCubie.dataset[info.axis]))], ang);
+        }
+
+        function smartWorldRotate90(angle) {
+            if(isAnimating) return;
+            const info = getBestAxis({x:0,y:0,z:1});
+            rotateLayerGroup(info.axis, [-1,0,1], angle * info.sign, true, true);
+        }
+
+        function cycleMode() { currentMode = (currentMode + 1) % 4; updateModeVisuals(); }
+        function updateModeVisuals() {
+            const btn = document.getElementById('mode-toggle'); btn.innerText = `🎨 Imagem: ${["Original", "Escuro", "Claro", "Cores"][currentMode]}`;
+            cubies.forEach(c => {
+                if(currentMode===3) c.classList.add('color-mode'); else c.classList.remove('color-mode');
+                c.querySelectorAll('.face').forEach((face, i) => {
+                    let url = 'none';
+                    if(currentMode===0) url = `url(${originalImages[i]})`;
+                    else if(currentMode===1) url = `url(${darkImages[i]})`;
+                    else if(currentMode===2) url = `url(${lightImages[i]})`;
+                    face.style.backgroundImage = url;
+                });
+            });
+        }
+
+        function resetStats() { moveCount = 0; seconds = 0; gameActive = false; readyToStart = true; document.getElementById('count-mov').innerText = "0"; document.getElementById('timer').innerText = "00:00"; document.getElementById('msg-vitoria').style.display = 'none'; clearInterval(timerInterval); }
+        function startTimer() { clearInterval(timerInterval); timerInterval = setInterval(() => { seconds++; const m = Math.floor(seconds/60).toString().padStart(2,'0'), s = (seconds%60).toString().padStart(2,'0'); document.getElementById('timer').innerText = `${m}:${s}`; }, 1000); }
+        async function undoMove() { if(isAnimating||moveStack.length===0) return; const m = moveStack.pop(); if(gameActive) { moveCount++; document.getElementById('count-mov').innerText = moveCount; } await rotateLayerGroup(m.axis, m.layers, -m.angle, false); }
+        async function scramble() { if(isAnimating) return; resetStats(); for(let i=0; i<10; i++) await rotateLayerGroup(['x','y','z'][Math.floor(Math.random()*3)], [Math.floor(Math.random()*3)-1], 90, true, true); }
+        async function solve() { if(isAnimating) return; while(moveStack.length > 0) { const m = moveStack.pop(); await rotateLayerGroup(m.axis, m.layers, -m.angle, false); } }
+
+        let isDrag = false, lastX, lastY;
+        document.addEventListener('mousedown', e => { 
+            if(e.target.closest('#area-cena')) { 
+                isDrag = true; lastX = e.clientX; lastY = e.clientY; 
+                if(audioCtx.state === 'suspended') audioCtx.resume(); 
+            } 
+        });
+        document.addEventListener('mousemove', e => { 
+            if(!isDrag) return; 
+            let dx = (e.clientX-lastX)*0.5, dy = (e.clientY-lastY)*0.5; 
+            targetY+=dx; targetX-=dy; lastX = e.clientX; lastY = e.clientY; 
+        });
+        document.addEventListener('mouseup', () => isDrag = false);
+
+        document.addEventListener('touchstart', e => {
+            if(e.target.closest('#area-cena')) {
+                isDrag = true;
+                lastX = e.touches[0].clientX;
+                lastY = e.touches[0].clientY;
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+            }
+        }, {passive: false});
+
+        document.addEventListener('touchmove', e => {
+            if(!isDrag) return;
+            e.preventDefault(); 
+            let clientX = e.touches[0].clientX;
+            let clientY = e.touches[0].clientY;
+            let dx = (clientX - lastX) * 0.8;
+            let dy = (clientY - lastY) * 0.8;
+            targetY += dx;
+            targetX -= dy;
+            lastX = clientX;
+            lastY = clientY;
+        }, {passive: false});
+
+        document.addEventListener('touchend', () => isDrag = false);
+
+        function loop() { curX += (targetX - curX)*0.15; curY += (targetY - curY)*0.15; scene.style.transform = `rotateX(${curX}deg) rotateY(${curY}deg)`; updateMap(); requestAnimationFrame(loop); }
+        function straighten() { targetX = Math.round(targetX/90)*90; targetY = Math.round(targetY/90)*90; }
+        function snapTo(f) { targetX = 0; let base = Math.round(targetY/360)*360; if(f==='front') targetY = base; if(f==='right') targetY = base-90; if(f==='back') targetY = base-180; if(f==='left') targetY = base-270; if(f==='top') targetX = -90; if(f==='bottom') targetX = 90; }
+        function updateMap() {
+            let tx = (Math.round(targetX)%360+360)%360, ty = (Math.round(targetY)%360+360)%360, id = 'm-front';
+            if(tx > 45 && tx < 135) id = 'm-bottom'; else if(tx > 225 && tx < 315) id = 'm-top';
+            else { if(ty >= 315 || ty < 45) id = 'm-front'; else if(ty >= 45 && ty < 135) id = 'm-left'; else if(ty >= 135 && ty < 225) id = 'm-back'; else id = 'm-right'; }
+            document.querySelectorAll('.mini-face').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+        createCube(); loop();
+    </script>
+</body>
+</html>
