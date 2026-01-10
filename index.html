@@ -11,7 +11,7 @@
     
     <title>Cubo Mágico - Rofran&Laís</title>
     <style>
-        /* --- ESTILOS GERAIS E PC (PADRÃO) --- */
+        /* --- ESTILOS GERAIS E PC (MANTIDOS ORIGINAIS) --- */
         body { 
             background: #0a0a0a; color: #eee; margin: 0; 
             display: flex; align-items: center; justify-content: center; 
@@ -116,55 +116,78 @@
             font-size: 20px; cursor: pointer; backdrop-filter: blur(5px);
         }
 
-        /* --- MODO MOBILE CORRIGIDO --- */
-        /* Forçamos o ajuste visual para ficar idêntico à foto "boa" */
+        /* --- MODO MOBILE (VERTICAL/PORTRAIT) --- */
         @media (max-width: 768px) and (orientation: portrait) {
             body {
                 height: auto; 
                 min-height: 100vh;
-                overflow-y: auto; overflow-x: hidden;
+                overflow-y: auto; 
+                overflow-x: hidden;
                 align-items: flex-start;
                 padding: 0;
             }
 
             .container-principal {
-                flex-wrap: wrap; justify-content: center; gap: 10px; padding-bottom: 20px;
+                flex-wrap: wrap; 
+                justify-content: center;
+                gap: 5px; /* Gap reduzido para aproximar tudo */
+                padding-bottom: 20px;
             }
             
-            /* Área do cubo: Define altura fixa e força o cubo a reduzir (zoom out) */
+            /* 1. ÁREA DO CUBO AJUSTADA */
             .container-cubo {
-                order: 1; width: 100%;
-                height: 450px; /* Altura segura */
+                order: 1;
+                width: 100%;
+                /* Altura reservada menor para aproximar os botões */
+                height: 380px; 
+                justify-content: space-between; 
+                margin-bottom: 5px;
+                /* SCALE IMPORTANTE: Reduz o cubo visualmente para caber na tela do celular igual ao teste */
+                transform: scale(0.75); 
+                /* Corrige o espaço deixado pelo scale */
+                margin-top: -20px; 
+            }
+            
+            .area-cena { width: 100%; height: 100%; margin-top: 10px; }
+            .referencial-quadrado { width: 95%; height: 90%; border-color: rgba(255,255,255,0.05); }
+
+            /* 2. BOTÕES DE AÇÃO MAIS COMPACTOS */
+            .botoes-acao { 
+                margin-bottom: 0; 
+                width: 90%; 
                 justify-content: center; 
-                margin-top: 10px; /* Margem superior para não colar no topo */
-                margin-bottom: 0px;
             }
-            
-            /* AQUI ESTÁ O SEGREDO: scale(0.65) força o cubo a ficar menor, igual na foto boa */
-            .scene {
-                transform: scale(0.65);
-            }
-            
-            .area-cena { width: 100%; height: 100%; }
-            
-            /* Assegura que o quadrado de referência apareça */
-            .referencial-quadrado { 
-                width: 90%; height: 90%; 
-                border-color: rgba(255,255,255,0.05); 
-                max-width: 360px; /* Limita largura no mobile */
+            .botoes-acao .btn-act {
+                padding: 8px; /* Botões mais finos */
+                font-size: 12px;
             }
 
-            /* Botões de ação */
-            .botoes-acao { margin-bottom: 10px; width: 90%; justify-content: center; }
+            /* 3. PAINÉIS LADO A LADO E COMPACTADOS */
+            .painel-esquerdo { 
+                order: 2; 
+                width: 46%; 
+                padding: 8px; /* Menos padding */
+                gap: 8px; /* Menos espaço entre itens */
+                box-sizing: border-box; 
+            }
+            .painel-direito { 
+                order: 3; 
+                width: 46%; 
+                padding: 8px; /* Menos padding */
+                gap: 8px; /* Menos espaço entre itens */
+                box-sizing: border-box; 
+            }
 
-            /* Painéis lado a lado */
-            .painel-esquerdo { order: 2; width: 46%; padding: 10px; box-sizing: border-box; }
-            .painel-direito { order: 3; width: 46%; padding: 10px; box-sizing: border-box; }
-
-            .mini-face { width: 32px; height: 32px; font-size: 9px; }
-            .grid-mapa { grid-template-columns: repeat(3, 32px); grid-template-rows: repeat(4, 32px); }
-            .btn-dir { height: 45px; font-size: 20px; }
-            .btn-act { padding: 15px; font-size: 14px; }
+            /* Itens internos menores para economizar espaço */
+            .mini-face { width: 28px; height: 28px; font-size: 8px; }
+            .grid-mapa { grid-template-columns: repeat(3, 28px); grid-template-rows: repeat(4, 28px); gap: 3px; }
+            .btn-dir { height: 40px; font-size: 18px; }
+            .btn-act { padding: 10px; font-size: 12px; margin-top: 2px; }
+            .stats-container { padding: 8px; }
+            .btn-toggle-mini { padding: 6px; font-size: 9px; margin-top: 2px; }
+            
+            /* Ajuste fino nas margens internas */
+            .painel-esquerdo > div, .painel-direito > div { margin: 0; }
         }
     </style>
 </head>
@@ -235,6 +258,7 @@
     </div>
 
     <script>
+        // --- FUNÇÃO TELA CHEIA (FULLSCREEN) ---
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(e => console.log(e));
@@ -243,6 +267,7 @@
             }
         }
 
+        // --- MOTOR DE ÁUDIO ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let musicInterval = null, currentStep = 0, currentSound = 0, currentMusic = 0;
         
@@ -288,6 +313,7 @@
             if(audioCtx.state==='suspended') audioCtx.resume();
         }
 
+        // --- LÓGICA DO CUBO ---
         const cube = document.getElementById('cube');
         const scene = document.getElementById('scene');
         let currentMode = 0, cubies = [], moveStack = [], isAnimating = false, selectedCubie = null;
