@@ -11,45 +11,46 @@
     
     <title>Cubo Mágico - Rofran&Laís</title>
     <style>
-        /* --- ESTILOS GERAIS E PC (BASE ORIGINAL) --- */
-        body { 
-            background: #0a0a0a; color: #eee; margin: 0; 
-            display: flex; align-items: center; justify-content: center; 
-            height: 100vh; overflow: hidden;
-            font-family: 'Segoe UI', sans-serif; perspective: 1200px;
+        /* --- VARIÁVEIS DE CONTROLE --- */
+        :root {
+            --cube-scale: 0.70; /* Tamanho mantido em 0.70 */
+        }
+
+        /* --- ESTILOS GERAIS (BASE) --- */
+        html, body {
+            height: 100%; width: 100%; margin: 0; padding: 0;
+            overflow: hidden; 
+            background: #0a0a0a; color: #eee;
+            font-family: 'Segoe UI', sans-serif; 
             user-select: none; touch-action: none;
             -webkit-tap-highlight-color: transparent;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .container-principal { 
-            display: flex; width: 100%; max-width: 1200px; 
+            display: flex; width: 100%; max-width: 1200px; height: 100%;
             align-items: center; justify-content: space-around; 
             flex-wrap: nowrap;
         }
         
-        .painel-esquerdo { 
+        .painel-esquerdo, .painel-direito { 
             display: flex; flex-direction: column; align-items: center; gap: 15px; 
-            min-width: 160px; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 15px;
+            min-width: 160px; padding: 20px; background: rgba(255,255,255,0.01); border-radius: 15px;
         }
 
         .container-cubo {
-            display: flex; flex-direction: column; align-items: center; gap: 20px; position: relative; z-index: 10;
+            display: flex; flex-direction: column; align-items: center; gap: 20px; 
+            position: relative; z-index: 10;
+            perspective: 1200px;
         }
 
-        .painel-direito {
-            width: 160px; display: flex; flex-direction: column; gap: 20px; 
-            background: #151515; padding: 20px; border-radius: 15px;
-        }
-
+        /* Elementos de UI */
         .grid-mapa { display: grid; grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(4, 40px); gap: 6px; }
         .mini-face { width: 40px; height: 40px; background: #1a1a1a; border: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #666; cursor: pointer; border-radius: 4px; }
         .mini-face.active { background: #444; color: #fff; border-color: #666; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
         
-        .btn-toggle-mini { 
-            padding: 8px 12px; font-size: 10px; font-weight: bold; border-radius: 4px; 
-            border: 1px solid #333; cursor: pointer; text-transform: uppercase; transition: 0.3s;
-            margin-top: 5px; width: 140px;
-        }
+        .botoes-config-wrapper { display: flex; flex-direction: column; gap: 5px; width: 100%; align-items: center; }
+        .btn-toggle-mini { padding: 8px 5px; font-size: 10px; font-weight: bold; border-radius: 4px; border: 1px solid #333; cursor: pointer; text-transform: uppercase; transition: 0.3s; width: 100%; text-align: center; }
         
         .mode-ui { background: #1a1a1a; color: #3498db; border-color: #3498db; }
         .mode-snd { background: #1a1a1a; color: #e67e22; border-color: #e67e22; }
@@ -59,147 +60,124 @@
         .stats-label { font-size: 10px; color: #555; margin-bottom: 4px; letter-spacing: 1px; }
         .stats-value { font-size: 18px; color: #eee; font-weight: bold; }
         
-        #msg-vitoria { 
-            color: #2ecc71; font-weight: bold; margin-top: 10px; display: none; 
-            text-align: center; font-size: 16px; line-height: 1.4; 
-            text-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
-            animation: pulse 1s infinite;
-        }
+        #msg-vitoria { color: #2ecc71; font-weight: bold; margin-top: 10px; display: none; text-align: center; font-size: 16px; line-height: 1.4; text-shadow: 0 0 10px rgba(46, 204, 113, 0.4); animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        .area-cena { width: 350px; height: 350px; position: relative; cursor: grab; display: flex; align-items: center; justify-content: center; }
+        /* Área do Cubo */
+        .area-cena { 
+            width: 350px; height: 350px; position: relative; cursor: grab; 
+            display: flex; align-items: center; justify-content: center;
+            transform-style: preserve-3d;
+        }
         @media (min-width: 768px) { .area-cena { width: 550px; height: 550px; } }
         
-        .referencial-quadrado {
-            position: absolute; width: 480px; height: 480px; border: 2px solid rgba(255, 255, 255, 0.1);
-            pointer-events: none; display: flex; align-items: center; justify-content: center;
-            box-sizing: border-box; border-radius: 6px;
+        .referencial-quadrado { 
+            position: absolute; width: 100%; height: 100%; 
+            border: 2px solid rgba(255, 255, 255, 0.1); 
+            pointer-events: none; display: flex; align-items: center; justify-content: center; 
+            box-sizing: border-box; border-radius: 6px; 
         }
-        @media (min-width: 768px) { .referencial-quadrado { width: 650px; height: 650px; } }
 
         .ref-label { position: absolute; font-size: 12px; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
-        .ref-topo { top: 20px; } .ref-baixo { bottom: 20px; }
-        .ref-sol { right: 20px; writing-mode: vertical-rl; } .ref-lua { left: 20px; writing-mode: vertical-rl; }
+        .ref-topo { top: 20px; } .ref-baixo { bottom: 20px; } .ref-sol { right: 20px; writing-mode: vertical-rl; } .ref-lua { left: 20px; writing-mode: vertical-rl; }
 
-        .scene { transform-style: preserve-3d; }
+        .scene { 
+            transform-style: preserve-3d; 
+            transform: scale3d(var(--cube-scale), var(--cube-scale), var(--cube-scale)); 
+        } 
+        
         .cube-inner { position: relative; transform-style: preserve-3d; }
         .pivot { position: absolute; transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .cubie { position: absolute; width: 100px; height: 100px; transform-style: preserve-3d; left: -50px; top: -50px; }
-        .face { position: absolute; width: 100px; height: 100px; background: #000; border: 1px solid #111; box-sizing: border-box; background-size: 300px 300px; backface-visibility: hidden; }
-        .cubie.selected .face { border: 2px solid #00d2ff; box-shadow: inset 0 0 15px #00d2ff; z-index: 10; }
+        
+        /* Borda 1px */
+        .face { 
+            position: absolute; width: 100px; height: 100px; 
+            border: 1px solid #000; 
+            box-sizing: border-box; background-size: 300px 300px; backface-visibility: hidden; 
+        }
+        .cubie.selected .face { border: 1px solid #00d2ff; box-shadow: inset 0 0 15px #00d2ff; z-index: 10; }
 
-        .cubie.color-mode .f-top { background: #ffffff !important; background-image: none !important; }
-        .cubie.color-mode .f-bottom { background: #ffff00 !important; background-image: none !important; }
-        .cubie.color-mode .f-front { background: #00ff00 !important; background-image: none !important; }
-        .cubie.color-mode .f-back { background: #0000ff !important; background-image: none !important; }
-        .cubie.color-mode .f-right { background: #ff0000 !important; background-image: none !important; }
-        .cubie.color-mode .f-left { background: #ff8000 !important; background-image: none !important; }
+        .f-front  { background-color: rgba(0, 255, 0, 0.8); transform: rotateY(0deg) translateZ(50px); } 
+        .f-back   { background-color: rgba(0, 0, 255, 0.8); transform: rotateY(180deg) translateZ(50px); } 
+        .f-right  { background-color: rgba(255, 0, 0, 0.8); transform: rotateY(90deg) translateZ(50px); } 
+        .f-left   { background-color: rgba(255, 165, 0, 0.8); transform: rotateY(-90deg) translateZ(50px); } 
+        .f-top    { background-color: rgba(255, 255, 255, 0.8); transform: rotateX(90deg) translateZ(50px); } 
+        .f-bottom { background-color: rgba(255, 255, 0, 0.8); transform: rotateX(-90deg) translateZ(50px); } 
 
-        .f-front  { transform: rotateY(0deg) translateZ(50px); }
-        .f-back   { transform: rotateY(180deg) translateZ(50px); }
-        .f-right  { transform: rotateY(90deg) translateZ(50px); }
-        .f-left   { transform: rotateY(-90deg) translateZ(50px); }
-        .f-top    { transform: rotateX(90deg) translateZ(50px); }
-        .f-bottom { transform: rotateX(-90deg) translateZ(50px); }
+        .cubie.color-mode .f-top { background-color: #ffffff !important; background-image: none !important; }
+        .cubie.color-mode .f-bottom { background-color: #ffff00 !important; background-image: none !important; }
+        .cubie.color-mode .f-front { background-color: #00ff00 !important; background-image: none !important; }
+        .cubie.color-mode .f-back { background-color: #0000ff !important; background-image: none !important; }
+        .cubie.color-mode .f-right { background-color: #ff0000 !important; background-image: none !important; }
+        .cubie.color-mode .f-left { background-color: #ff8000 !important; background-image: none !important; }
 
         .btn-dir { width: 45px; height: 45px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-size: 20px; }
         .btn-act { width: 100%; padding: 12px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 5px; transition: 0.2s;}
         .btn-discreto { background: #1a1a1a !important; color: #888 !important; border: 1px solid #333 !important; font-size: 11px !important; }
 
-        /* Estilo dos botões de ação (Endireitar/90°) */
-        .botoes-acao { display: flex; gap: 10px; z-index: 20; }
-        
-        #btn-fullscreen {
-            position: fixed; top: 15px; right: 15px; z-index: 1000;
-            background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;
-            width: 40px; height: 40px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px; cursor: pointer; backdrop-filter: blur(5px);
+        /* Estilo para os botões pequenos (Reset e Multiplicador) */
+        .btn-pequeno {
+            width: 45px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* --- MODO MOBILE (VERTICAL/PORTRAIT) --- */
-        /* SIMULAÇÃO DE IFRAME / ZOOM OUT */
+        .btn-reset-text { color: #e74c3c; } /* Vermelho */
+        .btn-multi-text { color: #2ecc71; } /* Verde */
+
+        .botoes-acao { display: flex; gap: 10px; z-index: 20; }
+        #btn-fullscreen { position: fixed; top: 15px; right: 15px; z-index: 1000; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; backdrop-filter: blur(5px); }
+
+        /* --- MODO MOBILE VERTICAL --- */
         @media (max-width: 768px) and (orientation: portrait) {
-            body {
-                /* Bloqueia rolagem para parecer APP nativo e igual ao LNCC */
-                overflow: hidden; 
-                align-items: flex-start;
-                padding: 0;
-                background: #000; /* Fundo preto total para as bordas */
-            }
-
+            body { height: 100dvh; align-items: stretch; }
             .container-principal {
-                flex-wrap: wrap; 
-                justify-content: center;
-                align-content: flex-end; /* Empurra tudo para baixo */
-                gap: 5px;
-                height: 100vh;
-                padding-bottom: 20px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr auto auto; 
+                width: 100%; height: 100%;
+                padding: 10px 5px 5px 5px; 
+                gap: 0px; 
                 box-sizing: border-box;
-
-                /* O TRUQUE MÁGICO: Escala tudo para 80% do tamanho real */
-                /* Isso simula o efeito do site LNCC */
-                transform: scale(0.85); 
-                transform-origin: bottom center; /* Fixa no fundo */
-                width: 100%;
+                justify-items: center; align-items: center;
             }
-            
-            /* 1. CUBO: Afastado do topo, empurrado pelo margin-bottom grande */
-            .container-cubo {
-                order: 1;
-                width: 100%;
-                /* Flex grow 1 faz ele ocupar todo o espaço vazio acima, empurrando-o para baixo */
-                flex-grow: 1; 
-                display: flex;
-                flex-direction: column;
-                justify-content: center; /* Centraliza o cubo na área disponível */
-                margin-top: 50px; /* Afasta bem do topo */
-                margin-bottom: 20px; /* Espaço até os botões */
-            }
-            
-            /* Removemos scale individual para usar o global */
-            .area-cena { width: 100%; height: 350px; }
-            .referencial-quadrado { width: 340px; height: 340px; border-color: rgba(255,255,255,0.05); }
-
-            /* 2. BOTÕES DE AÇÃO (Endireitar/90) */
-            /* Movi eles para fora do container do cubo no HTML para colar nos painéis */
-            .botoes-acao { 
-                order: 2;
-                width: 94%; 
-                justify-content: center; 
-                margin-bottom: 5px; /* Colado nos painéis */
-            }
-            .botoes-acao .btn-act {
-                padding: 12px;
-                font-size: 14px;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            }
-
-            /* 3. PAINÉIS DE CONTROLE */
-            .painel-esquerdo { 
-                order: 3; 
-                width: 46%; 
-                padding: 10px; 
-                gap: 5px; /* BEM compactado */
-                box-sizing: border-box; 
-                background: #111; /* Um pouco mais escuro */
-            }
-            .painel-direito { 
-                order: 4; 
-                width: 46%; 
-                padding: 10px; 
-                gap: 5px; /* BEM compactado */
-                box-sizing: border-box; 
-                background: #111;
-            }
-
-            /* Ajustes Finos para Compactação Extrema */
+            .container-cubo { grid-column: 1 / -1; grid-row: 1; width: 100%; height: 100%; justify-content: center; gap: 0; margin-bottom: 0; }
+            .area-cena { width: min(95vw, 55vh); height: min(95vw, 55vh); margin: 0 auto; }
+            .botoes-acao { grid-column: 1 / -1; grid-row: 2; width: 98%; margin: 0 0 2px 0; padding: 0; }
+            .painel-esquerdo { grid-column: 1; grid-row: 3; width: 100%; height: auto; padding: 4px; gap: 2px; justify-content: flex-start; }
+            .painel-direito { grid-column: 2; grid-row: 3; width: 100%; height: auto; padding: 4px; gap: 2px; justify-content: flex-start; }
+            .botoes-config-wrapper { flex-direction: row; gap: 2px; width: 100%; }
+            .btn-toggle-mini { flex: 1; padding: 8px 2px; font-size: 9px; white-space: nowrap; }
             .mini-face { width: 26px; height: 26px; font-size: 7px; }
             .grid-mapa { grid-template-columns: repeat(3, 26px); grid-template-rows: repeat(4, 26px); gap: 2px; }
-            .btn-dir { height: 42px; font-size: 20px; background: #222; }
-            .btn-act { margin-top: 0; }
-            .stats-container { padding: 5px; margin-top: 5px; }
-            .btn-toggle-mini { padding: 8px; font-size: 9px; margin-top: 2px; }
+            .btn-dir { height: 36px; width: 36px; font-size: 16px; }
+            .btn-act { padding: 8px 4px; font-size: 11px; margin-top: 1px; }
+            .stats-container { width: 100%; padding: 5px; margin-top: 2px; }
+        }
+
+        /* --- MODO MOBILE HORIZONTAL --- */
+        @media (max-height: 600px) and (orientation: landscape) {
+            body { height: 100dvh; overflow: hidden; }
+            .container-principal { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 5px; padding: 5px; width: 100%; }
+            .container-cubo { order: 2; flex-grow: 1; height: 100%; justify-content: center; align-items: center; gap: 0; }
+            .area-cena { width: min(95vh, calc(100vw - 310px)); height: min(95vh, calc(100vw - 310px)); max-width: none; }
+            .botoes-acao { order: 2; position: absolute; bottom: 5px; width: 280px; left: 50%; transform: translateX(-50%); z-index: 50; }
+            .painel-esquerdo { order: 1; width: 145px; min-width: 145px; padding: 5px; gap: 5px; height: 95%; justify-content: center; overflow-y: auto; }
+            .painel-direito { order: 3; width: 145px; min-width: 145px; padding: 5px; gap: 5px; height: 95%; justify-content: center; overflow-y: auto; }
+            .grid-mapa { transform: scale(0.9); gap: 2px; }
+            .stats-container { padding: 5px; margin: 0; }
+            .botoes-config-wrapper { gap: 2px; }
+            .btn-toggle-mini { padding: 5px; font-size: 8px; }
+            .btn-dir { width: 35px; height: 35px; font-size: 14px; }
+            .btn-act { padding: 5px; font-size: 10px; }
         }
     </style>
 </head>
@@ -207,7 +185,6 @@
     <button id="btn-fullscreen" onclick="toggleFullScreen()">⛶</button>
 
     <div class="container-principal">
-        
         <div class="painel-esquerdo">
             <div style="font-size:10px; color:#555; letter-spacing: 2px;">ORIENTAÇÃO</div>
             <div class="grid-mapa">
@@ -219,14 +196,16 @@
                 <div class="mini-face" style="grid-column:2; grid-row:4" id="m-back" onclick="snapTo('back')">Verso</div>
             </div>
             
-            <button id="mode-toggle" class="btn-toggle-mini mode-ui" onclick="cycleMode()">🎨 Imagem: Original</button>
-            <button id="sound-toggle" class="btn-toggle-mini mode-snd" onclick="cycleSound()">🔊 Mov: Mudo</button>
-            <button id="music-toggle" class="btn-toggle-mini mode-msc" onclick="cycleMusic()">🎵 Som: Mudo</button>
+            <div class="botoes-config-wrapper">
+                <button id="mode-toggle" class="btn-toggle-mini mode-ui" onclick="cycleMode()">🎨 IMG: 0</button>
+                <button id="sound-toggle" class="btn-toggle-mini mode-snd" onclick="cycleSound()">🔊 MOV: 0</button>
+                <button id="music-toggle" class="btn-toggle-mini mode-msc" onclick="cycleMusic()">🎵 SOM: 0</button>
+            </div>
 
             <div class="stats-container">
                 <div class="stats-label">MOVIMENTOS</div>
                 <div id="count-mov" class="stats-value">0</div>
-                <div class="stats-label" style="margin-top:12px">TEMPO</div>
+                <div class="stats-label" style="margin-top:6px">TEMPO</div>
                 <div id="timer" class="stats-value">00:00</div>
             </div>
         </div>
@@ -253,24 +232,31 @@
         </div>
 
         <div class="painel-direito">
-            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px; justify-items:center">
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:4px; justify-items:center">
                 <button class="btn-dir" style="grid-column:2" onclick="moveViewRelative('up')">↑</button>
                 <button class="btn-dir" style="grid-column:1; grid-row:2" onclick="moveViewRelative('left')">←</button>
                 <button class="btn-dir" style="grid-column:3; grid-row:2" onclick="moveViewRelative('right')">→</button>
                 <button class="btn-dir" style="grid-column:2; grid-row:3" onclick="moveViewRelative('down')">↓</button>
             </div>
-            <div style="display:flex; justify-content:center; gap:10px; border-top:1px solid #333; padding-top:15px">
+            <div style="display:flex; justify-content:center; gap:4px; border-top:1px solid #333; padding-top:6px; width:100%">
                 <button class="btn-dir" onclick="moveViewRelative('roll-ccw')">↻</button>
                 <button class="btn-dir" onclick="moveViewRelative('roll-cw')">↺</button>
             </div>
-            <button class="btn-act btn-discreto" onclick="undoMove()">DESFAZER</button>
-            <button class="btn-act btn-discreto" onclick="scramble()">MISTURAR</button>
-            <button class="btn-act btn-discreto" onclick="solve()">RESOLVER</button>
+            <button class="btn-act btn-discreto" style="margin-top: 2px;" onclick="undoMove()">DESFAZER</button>
+            
+            <div style="display:flex; gap:4px; width:100%; margin-top: 2px;">
+                <button class="btn-act btn-discreto" style="margin-top:0; flex-grow:1;" onclick="scramble()">MISTURAR</button>
+                <button class="btn-pequeno btn-multi-text" id="multi-mistura" onclick="toggleMultiMistura()">1x</button>
+            </div>
+            
+            <div style="display:flex; gap:4px; width:100%; margin-top: 2px;">
+                <button class="btn-act btn-discreto" style="margin-top:0; flex-grow:1;" onclick="solve()">RESOLVER</button>
+                <button class="btn-pequeno btn-reset-text" onclick="resetApp()">RESET</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- FUNÇÃO TELA CHEIA (FULLSCREEN) ---
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(e => console.log(e));
@@ -279,10 +265,13 @@
             }
         }
 
-        // --- MOTOR DE ÁUDIO ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let musicInterval = null, currentStep = 0, currentSound = 0, currentMusic = 0;
         
+        // Limpeza inicial
+        if (window.cubeMusicInterval) clearInterval(window.cubeMusicInterval);
+        window.cubeMusicInterval = null;
+
         const soundModes = ["Mudo", "Mecânico", "Sintético", "Agudo"];
         const musicModes = ["Mudo", "Ritmo Zen", "Techno Soft", "Cyber Arp", "Bass Line", "Galaxy"];
         const scales = [ [], [196, 220, 261, 293], [130, 164, 196, 246], [220, 261, 329, 392], [65, 82, 98, 110], [349, 440, 523, 659] ];
@@ -294,15 +283,14 @@
             osc.connect(g); g.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration);
         }
 
-        function playMoveSound() { 
-            if (currentSound > 0) playNote([0, 150, 400, 800][currentSound], ['sine','square','sine','triangle'][currentSound], 0.1, 0.1); 
-        }
+        function playMoveSound() { if (currentSound > 0) playNote([0, 150, 400, 800][currentSound], ['sine','square','sine','triangle'][currentSound], 0.1, 0.1); }
 
         function startMusic() {
-            if (musicInterval) clearInterval(musicInterval);
+            if (window.cubeMusicInterval) clearInterval(window.cubeMusicInterval);
             if (currentMusic === 0) return;
             const t = [0, 600, 400, 250, 500, 800][currentMusic];
-            musicInterval = setInterval(() => {
+            window.cubeMusicInterval = setInterval(() => {
+                if (audioCtx.state === 'suspended') return;
                 const s = scales[currentMusic]; 
                 const wave = currentMusic === 3 ? 'sawtooth' : (currentMusic === 4 ? 'triangle' : 'sine');
                 playNote(s[currentStep % s.length], wave, t/1000*1.5, 0.04);
@@ -311,58 +299,147 @@
             }, t);
         }
 
+        function stopMusic() { if (window.cubeMusicInterval) clearInterval(window.cubeMusicInterval); }
+
+        // --- SISTEMA DE PERSISTÊNCIA TOTAL (SALVA TUDO) ---
+        function saveGameState() {
+            const state = {
+                // Salva a geometria completa
+                cubies: cubies.map(c => ({
+                    x: c.dataset.x, y: c.dataset.y, z: c.dataset.z, matrix: c.matrix
+                })),
+                // Salva a câmera
+                cam: { x: targetX, y: targetY },
+                // Salva configurações
+                settings: { mode: currentMode, sound: currentSound, music: currentMusic },
+                // IMPORTANTE: Salva as imagens atuais para não mudarem no reload
+                images: { dark: darkImages, light: lightImages },
+                // Salva o multiplicador
+                mix: multiplicadorMistura
+            };
+            localStorage.setItem('rubikSave_v2', JSON.stringify(state));
+        }
+
+        function loadGameState() {
+            const saved = localStorage.getItem('rubikSave_v2');
+            if (saved) {
+                try {
+                    const s = JSON.parse(saved);
+                    // Restaura configs
+                    if(s.settings) {
+                        currentMode = s.settings.mode || 0;
+                        currentSound = s.settings.sound || 0;
+                        currentMusic = s.settings.music || 0;
+                    }
+                    // Restaura câmera
+                    if(s.cam) { targetX = s.cam.x; curX = targetX; targetY = s.cam.y; curY = targetY; }
+                    // Restaura Imagens
+                    if(s.images) { darkImages = s.images.dark; lightImages = s.images.light; }
+                    // Restaura Multiplicador
+                    if(s.mix) { multiplicadorMistura = s.mix; document.getElementById('multi-mistura').innerText = multiplicadorMistura + 'x'; }
+                    
+                    updateModeVisualsUI();
+                    
+                    if(currentMusic > 0 && audioCtx.state !== 'suspended') startMusic();
+                    return s.cubies; // Retorna dados para montagem
+                } catch(e) { console.error("Erro save", e); return null; }
+            }
+            return null;
+        }
+
+        // --- FUNÇÃO RESET ---
+        function resetApp() {
+            localStorage.removeItem('rubikSave_v2'); // Apaga a memória
+            location.reload(); // Recarrega a página do zero
+        }
+
+        function updateModeVisualsUI() {
+            document.getElementById('mode-toggle').innerText = `🎨 IMG: ${currentMode}`;
+            document.getElementById('sound-toggle').innerText = `🔊 MOV: ${currentSound}`;
+            document.getElementById('music-toggle').innerText = `🎵 SOM: ${currentMusic}`;
+        }
+
+        let multiplicadorMistura = 1;
+        function toggleMultiMistura() {
+            const multiArr = [1, 2, 3, 5];
+            let idx = multiArr.indexOf(multiplicadorMistura);
+            multiplicadorMistura = multiArr[(idx + 1) % multiArr.length];
+            document.getElementById('multi-mistura').innerText = multiplicadorMistura + 'x';
+            saveGameState();
+        }
+
         function cycleSound() { 
             currentSound = (currentSound + 1) % 4; 
-            document.getElementById('sound-toggle').innerText = `🔊 Mov: ${soundModes[currentSound]}`; 
+            updateModeVisualsUI(); saveGameState();
             if(audioCtx.state==='suspended') audioCtx.resume();
         }
 
         function cycleMusic() { 
             currentMusic = (currentMusic + 1) % 6; 
-            document.getElementById('music-toggle').innerText = `🎵 Som: ${musicModes[currentMusic]}`; 
-            if(musicInterval) clearInterval(musicInterval); 
+            updateModeVisualsUI(); stopMusic();
             if(currentMusic>0) startMusic(); 
+            saveGameState();
             if(audioCtx.state==='suspended') audioCtx.resume();
         }
 
-        // --- LÓGICA DO CUBO ---
         const cube = document.getElementById('cube');
         const scene = document.getElementById('scene');
         let currentMode = 0, cubies = [], moveStack = [], isAnimating = false, selectedCubie = null;
         let targetX = -25, targetY = -35, curX = -25, curY = -35;
         let moveCount = 0, timerInterval = null, seconds = 0, gameActive = false, readyToStart = false; 
 
+        // Imagens placeholder inicial (serão sobrescritas se não houver save)
         const originalImages = ['Imagem1.jpg', 'Imagem2.jpg', 'Imagem3.jpg', 'Imagem4.jpg', 'Imagem5.jpg', 'Imagem6.jpg'];
         let darkImages = [], lightImages = [];
 
-        function createCube() {
+        function generateNewImages() {
             const seed = Math.floor(Math.random() * 1000);
             darkImages = Array.from({length: 6}, (_, i) => `https://picsum.photos/seed/${seed + i}/400/400?grayscale&blur=1`);
             lightImages = Array.from({length: 6}, (_, i) => `https://picsum.photos/seed/${seed + i + 10}/400/400?random=${i}`);
+        }
+
+        function createCube() {
+            const savedCubies = loadGameState(); // Tenta carregar tudo
             
+            // Se não tinha save de imagens, gera agora
+            if (darkImages.length === 0) generateNewImages();
+
             cube.innerHTML = ''; cubies = [];
-            for (let x = -1; x <= 1; x++) {
-                for (let y = -1; y <= 1; y++) {
-                    for (let z = -1; z <= 1; z++) {
-                        const cubie = document.createElement('div');
-                        cubie.className = 'cubie';
-                        cubie.dataset.x = x; cubie.dataset.y = y; cubie.dataset.z = z;
-                        cubie.dataset.origX = x; cubie.dataset.origY = y; cubie.dataset.origZ = z;
-                        cubie.matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
-                        cubie.onclick = (e) => { e.stopPropagation(); cubies.forEach(c => c.classList.remove('selected')); cubie.classList.add('selected'); selectedCubie = cubie; };
-                        ['f-front','f-back','f-right','f-left','f-top','f-bottom'].forEach((f, i) => {
-                            const div = document.createElement('div'); div.className = `face ${f}`;
-                            let u = 0, v = 0;
-                            if(f==='f-front'){u=x;v=y} else if(f==='f-back'){u=-x;v=y} else if(f==='f-right'){u=-z;v=y} 
-                            else if(f==='f-left'){u=z;v=y} else if(f==='f-top'){u=x;v=z} else if(f==='f-bottom'){u=x;v=-z}
-                            div.style.backgroundPosition = `${(u+1)*50}% ${(v+1)*50}%`;
-                            cubie.appendChild(div);
-                        });
-                        updateCubiePos(cubie); cube.appendChild(cubie); cubies.push(cubie);
+            
+            if (savedCubies) {
+                // Reconstrói do save
+                savedCubies.forEach(data => buildCubie(data.x, data.y, data.z, data.matrix));
+            } else {
+                // Constrói do zero
+                for (let x = -1; x <= 1; x++) {
+                    for (let y = -1; y <= 1; y++) {
+                        for (let z = -1; z <= 1; z++) {
+                            buildCubie(x, y, z, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+                        }
                     }
                 }
             }
             updateModeVisuals();
+        }
+
+        function buildCubie(x, y, z, matrix) {
+            const cubie = document.createElement('div');
+            cubie.className = 'cubie';
+            cubie.dataset.x = x; cubie.dataset.y = y; cubie.dataset.z = z;
+            cubie.matrix = matrix; 
+            cubie.onclick = (e) => { e.stopPropagation(); cubies.forEach(c => c.classList.remove('selected')); cubie.classList.add('selected'); selectedCubie = cubie; };
+            
+            ['f-front','f-back','f-right','f-left','f-top','f-bottom'].forEach((f, i) => {
+                const div = document.createElement('div'); div.className = `face ${f}`;
+                let ox = parseFloat(x), oy = parseFloat(y), oz = parseFloat(z); // Simplificado para manter textura visual
+                // Nota: Em um app real, o UV deveria ser salvo separado para não girar com a peça, mas aqui mantemos o estilo visual.
+                let u = 0, v = 0;
+                if(f==='f-front'){u=ox;v=oy} else if(f==='f-back'){u=-ox;v=oy} else if(f==='f-right'){u=-oz;v=oy} 
+                else if(f==='f-left'){u=oz;v=oy} else if(f==='f-top'){u=ox;v=oz} else if(f==='f-bottom'){u=ox;v=-oz}
+                div.style.backgroundPosition = `${(u+1)*50}% ${(v+1)*50}%`;
+                cubie.appendChild(div);
+            });
+            updateCubiePos(cubie); cube.appendChild(cubie); cubies.push(cubie);
         }
 
         function updateCubiePos(c) {
@@ -395,33 +472,22 @@
                 c.matrix = res.map(v => Math.abs(v)<0.1?0:(v>0.9?1:(v<-0.9?-1:v)));
                 updateCubiePos(c); cube.appendChild(c);
             });
-            pivot.remove(); isAnimating = false; checkWin();
+            pivot.remove(); isAnimating = false; 
+            saveGameState(); // Salva após cada movimento
+            checkWin();
         }
 
         function checkWin() {
             if(!gameActive || moveCount === 0) return;
-            const faceConfigs = [
-                { axis: 'x', val: 1 }, { axis: 'x', val: -1 },
-                { axis: 'y', val: 1 }, { axis: 'y', val: -1 },
-                { axis: 'z', val: 1 }, { axis: 'z', val: -1 }
-            ];
+            const faceConfigs = [ { axis: 'x', val: 1 }, { axis: 'x', val: -1 }, { axis: 'y', val: 1 }, { axis: 'y', val: -1 }, { axis: 'z', val: 1 }, { axis: 'z', val: -1 } ];
             const allFacesSolved = faceConfigs.every(face => {
                 const cubiesInFace = cubies.filter(c => Math.round(parseFloat(c.dataset[face.axis])) === face.val);
                 const otherAxes = ['x','y','z'].filter(a => a !== face.axis);
-                const centerCubie = cubiesInFace.find(c => 
-                    Math.round(parseFloat(c.dataset[otherAxes[0]])) === 0 && 
-                    Math.round(parseFloat(c.dataset[otherAxes[1]])) === 0
-                );
+                const centerCubie = cubiesInFace.find(c => Math.round(parseFloat(c.dataset[otherAxes[0]])) === 0 && Math.round(parseFloat(c.dataset[otherAxes[1]])) === 0 );
                 if(!centerCubie) return false;
-                return cubiesInFace.every(c => 
-                    c.matrix.every((val, i) => Math.abs(val - centerCubie.matrix[i]) < 0.1)
-                );
+                return cubiesInFace.every(c => c.matrix.every((val, i) => Math.abs(val - centerCubie.matrix[i]) < 0.1) );
             });
-            if(allFacesSolved) {
-                gameActive = false; clearInterval(timerInterval);
-                document.getElementById('msg-vitoria').style.display = 'block';
-                playNote(523.25, 'sine', 1, 0.1);
-            }
+            if(allFacesSolved) { gameActive = false; clearInterval(timerInterval); document.getElementById('msg-vitoria').style.display = 'block'; playNote(523.25, 'sine', 1, 0.1); }
         }
 
         function getBestAxis(screenVec) {
@@ -429,11 +495,7 @@
             const cx = { x: Math.cos(ry), y: Math.sin(rx)*Math.sin(ry), z: -Math.cos(rx)*Math.sin(ry) };
             const cy = { x: 0, y: Math.cos(rx), z: Math.sin(rx) };
             const cz = { x: Math.sin(ry), y: -Math.sin(rx)*Math.cos(ry), z: Math.cos(rx)*Math.cos(ry) };
-            const dots = [
-                {a:'x', v: cx.x*screenVec.x + cx.y*screenVec.y + cx.z*screenVec.z},
-                {a:'y', v: cy.x*screenVec.x + cy.y*screenVec.y + cy.z*screenVec.z},
-                {a:'z', v: cz.x*screenVec.x + cz.y*screenVec.y + cz.z*screenVec.z}
-            ];
+            const dots = [ {a:'x', v: cx.x*screenVec.x + cx.y*screenVec.y + cx.z*screenVec.z}, {a:'y', v: cy.x*screenVec.x + cy.y*screenVec.y + cy.z*screenVec.z}, {a:'z', v: cz.x*screenVec.x + cz.y*screenVec.y + cz.z*screenVec.z} ];
             const best = dots.reduce((a, b) => Math.abs(a.v) > Math.abs(b.v) ? a : b);
             return { axis: best.a, sign: Math.sign(best.v) };
         }
@@ -447,15 +509,10 @@
             rotateLayerGroup(info.axis, [Math.round(parseFloat(selectedCubie.dataset[info.axis]))], ang);
         }
 
-        function smartWorldRotate90(angle) {
-            if(isAnimating) return;
-            const info = getBestAxis({x:0,y:0,z:1});
-            rotateLayerGroup(info.axis, [-1,0,1], angle * info.sign, true, true);
-        }
-
-        function cycleMode() { currentMode = (currentMode + 1) % 4; updateModeVisuals(); }
+        function smartWorldRotate90(angle) { if(isAnimating) return; const info = getBestAxis({x:0,y:0,z:1}); rotateLayerGroup(info.axis, [-1,0,1], angle * info.sign, true, true); }
+        function cycleMode() { currentMode = (currentMode + 1) % 4; updateModeVisuals(); saveGameState(); }
         function updateModeVisuals() {
-            const btn = document.getElementById('mode-toggle'); btn.innerText = `🎨 Imagem: ${["Original", "Escuro", "Claro", "Cores"][currentMode]}`;
+            const btn = document.getElementById('mode-toggle'); btn.innerText = `🎨 IMG: ${currentMode}`;
             cubies.forEach(c => {
                 if(currentMode===3) c.classList.add('color-mode'); else c.classList.remove('color-mode');
                 c.querySelectorAll('.face').forEach((face, i) => {
@@ -471,50 +528,47 @@
         function resetStats() { moveCount = 0; seconds = 0; gameActive = false; readyToStart = true; document.getElementById('count-mov').innerText = "0"; document.getElementById('timer').innerText = "00:00"; document.getElementById('msg-vitoria').style.display = 'none'; clearInterval(timerInterval); }
         function startTimer() { clearInterval(timerInterval); timerInterval = setInterval(() => { seconds++; const m = Math.floor(seconds/60).toString().padStart(2,'0'), s = (seconds%60).toString().padStart(2,'0'); document.getElementById('timer').innerText = `${m}:${s}`; }, 1000); }
         async function undoMove() { if(isAnimating||moveStack.length===0) return; const m = moveStack.pop(); if(gameActive) { moveCount++; document.getElementById('count-mov').innerText = moveCount; } await rotateLayerGroup(m.axis, m.layers, -m.angle, false); }
-        async function scramble() { if(isAnimating) return; resetStats(); for(let i=0; i<10; i++) await rotateLayerGroup(['x','y','z'][Math.floor(Math.random()*3)], [Math.floor(Math.random()*3)-1], 90, true, true); }
+        
+        async function scramble() { 
+            if(isAnimating) return; 
+            resetStats(); 
+            // Mistura com base no multiplicador
+            const totalRepeticoes = 10 * multiplicadorMistura;
+            for(let i=0; i < totalRepeticoes; i++) {
+                await rotateLayerGroup(['x','y','z'][Math.floor(Math.random()*3)], [Math.floor(Math.random()*3)-1], 90, true, true);
+            }
+        }
+        
         async function solve() { if(isAnimating) return; while(moveStack.length > 0) { const m = moveStack.pop(); await rotateLayerGroup(m.axis, m.layers, -m.angle, false); } }
 
         let isDrag = false, lastX, lastY;
-        document.addEventListener('mousedown', e => { 
-            if(e.target.closest('#area-cena')) { 
-                isDrag = true; lastX = e.clientX; lastY = e.clientY; 
-                if(audioCtx.state === 'suspended') audioCtx.resume(); 
-            } 
-        });
+        document.addEventListener('mousedown', e => { if(e.target.closest('#area-cena')) { isDrag = true; lastX = e.clientX; lastY = e.clientY; if(audioCtx.state === 'suspended') audioCtx.resume(); } });
         document.addEventListener('mousemove', e => { 
             if(!isDrag) return; 
             let dx = (e.clientX-lastX)*0.5, dy = (e.clientY-lastY)*0.5; 
+            if (Math.cos(curX * Math.PI / 180) < 0) dx = -dx;
             targetY+=dx; targetX-=dy; lastX = e.clientX; lastY = e.clientY; 
+            saveGameState();
         });
         document.addEventListener('mouseup', () => isDrag = false);
-
-        document.addEventListener('touchstart', e => {
-            if(e.target.closest('#area-cena')) {
-                isDrag = true;
-                lastX = e.touches[0].clientX;
-                lastY = e.touches[0].clientY;
-                if(audioCtx.state === 'suspended') audioCtx.resume();
-            }
-        }, {passive: false});
-
+        document.addEventListener('touchstart', e => { if(e.target.closest('#area-cena')) { isDrag = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; if(audioCtx.state === 'suspended') audioCtx.resume(); } }, {passive: false});
         document.addEventListener('touchmove', e => {
             if(!isDrag) return;
             e.preventDefault(); 
-            let clientX = e.touches[0].clientX;
-            let clientY = e.touches[0].clientY;
-            let dx = (clientX - lastX) * 0.8;
-            let dy = (clientY - lastY) * 0.8;
-            targetY += dx;
-            targetX -= dy;
-            lastX = clientX;
-            lastY = clientY;
+            let dx = (e.touches[0].clientX - lastX) * 0.8, dy = (e.touches[0].clientY - lastY) * 0.8;
+            if (Math.cos(curX * Math.PI / 180) < 0) dx = -dx;
+            targetY += dx; targetX -= dy; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+            saveGameState();
         }, {passive: false});
-
         document.addEventListener('touchend', () => isDrag = false);
 
-        function loop() { curX += (targetX - curX)*0.15; curY += (targetY - curY)*0.15; scene.style.transform = `rotateX(${curX}deg) rotateY(${curY}deg)`; updateMap(); requestAnimationFrame(loop); }
-        function straighten() { targetX = Math.round(targetX/90)*90; targetY = Math.round(targetY/90)*90; }
-        function snapTo(f) { targetX = 0; let base = Math.round(targetY/360)*360; if(f==='front') targetY = base; if(f==='right') targetY = base-90; if(f==='back') targetY = base-180; if(f==='left') targetY = base-270; if(f==='top') targetX = -90; if(f==='bottom') targetX = 90; }
+        function loop() { 
+            curX += (targetX - curX)*0.15; curY += (targetY - curY)*0.15; 
+            scene.style.transform = `rotateX(${curX}deg) rotateY(${curY}deg) scale3d(var(--cube-scale), var(--cube-scale), var(--cube-scale))`; 
+            updateMap(); requestAnimationFrame(loop); 
+        }
+        function straighten() { targetX = Math.round(targetX/90)*90; targetY = Math.round(targetY/90)*90; saveGameState(); }
+        function snapTo(f) { targetX = 0; let base = Math.round(targetY/360)*360; if(f==='front') targetY = base; if(f==='right') targetY = base-90; if(f==='back') targetY = base-180; if(f==='left') targetY = base-270; if(f==='top') targetX = -90; if(f==='bottom') targetX = 90; saveGameState(); }
         function updateMap() {
             let tx = (Math.round(targetX)%360+360)%360, ty = (Math.round(targetY)%360+360)%360, id = 'm-front';
             if(tx > 45 && tx < 135) id = 'm-bottom'; else if(tx > 225 && tx < 315) id = 'm-top';
@@ -522,7 +576,21 @@
             document.querySelectorAll('.mini-face').forEach(el => el.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
-        createCube(); loop();
+        
+        // Listener para parar e reiniciar música ao redimensionar (girar tela)
+        window.addEventListener('resize', () => {
+            stopMusic();
+            if(currentMusic > 0) setTimeout(startMusic, 300);
+        });
+
+        // Limpeza ao fechar
+        window.addEventListener('pagehide', () => {
+            stopMusic();
+            if (audioCtx && audioCtx.state !== 'closed') audioCtx.close();
+        });
+
+        createCube(); 
+        loop();
     </script>
 </body>
 </html>
