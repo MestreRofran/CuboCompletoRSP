@@ -276,12 +276,13 @@ body.focus-mode{background:#090e17}
 }
 @media(max-width:350px) and (orientation:portrait){.mobile-header-actions{gap:3px!important}.brand-mark{width:22px;height:22px}.titleblock h1{font-size:15px}}
 @media(max-width:400px){.quick-rank-actions{grid-template-columns:1fr}}
+.firebase-sdk-status{font-size:11px;color:#8daeb5;margin:10px 0 4px;line-height:1.4;overflow-wrap:anywhere}.firebase-sdk-status[data-state="error"]{color:#ffb59b}#firebase-sdk-retry{font-size:12px;padding:8px 12px;border:1px solid #b87642;background:#302016;color:#ffd9aa;border-radius:7px}#firebase-sdk-retry[hidden]{display:none}
 </style>
 </head>
 <body class="mode-manual">
 <main class="app">
 <header class="topbar">
-  <div class="titleblock"><h1><img src="./icons/icon-192.png" alt="" class="brand-mark"> GiraAI</h1><p>v3.0 · Cubo mágico interativo · Rofran &amp; Laís</p></div>
+  <div class="titleblock"><h1><img src="./icons/icon-192.png" alt="" class="brand-mark"> GiraAI</h1><p>v3.2 · Cubo mágico interativo · Rofran &amp; Laís</p></div>
   <div class="kpis" aria-live="polite"><div class="kpi"><span>Movimentos</span><strong id="count-mov">0</strong></div><div class="kpi"><span>Tempo</span><strong id="timer">00:00</strong></div></div>
   <div class="mobile-header-actions" aria-label="Ações rápidas">
     <button class="mobile-icon-btn rank-shortcut" id="mobile-rank-shortcut" aria-label="Abrir ranking e login" title="Ranking e login" onclick="openQuickRanking()">🏆</button>
@@ -385,7 +386,7 @@ body.focus-mode{background:#090e17}
   </div>
   <p id="mobile-status-text" class="mobile-status" role="status">Pronto para jogar.</p>
 </section>
-<footer class="footer">GiraAI v3.1 · Desenvolvido por Rofran · 2026 · Offline e nuvem opcional</footer>
+<footer class="footer">GiraAI v3.2 · Desenvolvido por Rofran · 2026 · Offline e nuvem opcional</footer>
 </main>
 <div class="overlay hidden" id="mobile-settings-overlay" role="dialog" aria-modal="true" aria-labelledby="mobile-settings-title">
  <section class="modal mobile-settings-modal">
@@ -487,12 +488,14 @@ body.focus-mode{background:#090e17}
   </form>
   <button class="text-button" onclick="sendResetEmail()">Esqueci minha senha</button>
   <p id="login-feedback" class="notice" role="status" aria-live="polite"></p>
+  <p id="firebase-sdk-status" class="firebase-sdk-status" role="status" aria-live="polite">Conectando ao Firebase…</p>
+  <button id="firebase-sdk-retry" type="button" hidden onclick="window.GiraFirebaseSDK?.retry?.()">↻ Tentar reconectar ao Firebase</button>
  </section>
 </div>
 <div class="overlay hidden" id="install-overlay" role="dialog" aria-modal="true" aria-labelledby="install-title"><section class="modal" style="max-width:440px"><div class="modal-header"><h2 id="install-title">Instalar GiraAI</h2><button class="close" onclick="closeInstallHelp()">×</button></div><p id="install-guide">No Chrome Android, abra o menu ⋮ e escolha “Instalar app” ou “Adicionar à tela inicial”. No Safari iOS, toque em Compartilhar → Adicionar à Tela de Início.</p><div class="modal-actions"><button onclick="closeInstallHelp()">Fechar</button></div></section></div>
 <script>
 'use strict';
-// GiraAI v3.1, derivado da base Cubo 3D v2.4. Eixos lógicos invariantes, giros de 90° por matrizes inteiras,
+// GiraAI v3.2, derivado da base Cubo 3D v2.4. Eixos lógicos invariantes, giros de 90° por matrizes inteiras,
 // câmera independente via quaternion, replay sem sobrescrever a partida.
 const $ = id => document.getElementById(id);
 const cube = $('cube'), scene = $('scene'), area = $('area-cena'), pyrCanvas = $('pyramid-canvas'), pyrCtx = pyrCanvas.getContext('2d',{alpha:true});
@@ -1070,19 +1073,17 @@ document.addEventListener('pointerdown',function unlockAudio(){if(currentMusic>0
 function giraFallbackStatus(){document.getElementById('cloud-sync-state').textContent='Login e sincronização requerem internet e o Firebase configurado; a partida local continua disponível.'}
 window.openCloudSettings=()=>{document.getElementById('cloud-overlay').classList.remove('hidden')};
 window.closeCloudSettings=()=>document.getElementById('cloud-overlay').classList.add('hidden');
-window.openLogin=()=>{document.getElementById('login-feedback').textContent='';document.getElementById('login-overlay').classList.remove('hidden')};
+window.openLogin=()=>{document.getElementById('login-feedback').textContent='';document.getElementById('login-overlay').classList.remove('hidden');if(window.GiraFirebaseSDK?.state==='error')document.getElementById('login-feedback').textContent=window.GiraFirebaseSDK.error;};
 window.closeLogin=()=>{document.getElementById('login-overlay').classList.add('hidden');document.getElementById('login-feedback').textContent=''};
 for(const name of ['loginWithGoogle','submitEmailLogin','createEmailAccount','sendResetEmail','logoutGiraAI','setCloudMode','syncCloudNow','pullCloudNow','saveCloudProfile','detectApproxLocation']){
- if(!window[name])window[name]=(event)=>{event?.preventDefault?.();if(name==='syncCloudNow'||name==='pullCloudNow')window.openCloudSettings();giraFallbackStatus();document.getElementById('login-feedback').textContent='SDK Firebase ainda não carregado. Verifique a conexão, bloqueadores e se abriu pelo site HTTPS (GitHub Pages).';};
+ if(!window[name])window[name]=(event)=>{event?.preventDefault?.();if(name==='syncCloudNow'||name==='pullCloudNow')window.openCloudSettings();giraFallbackStatus();const control=window.GiraFirebaseSDK;const msg=control?.state==='error'?'Firebase indisponível: '+control.error:'Conectando ao Firebase. Após carregar, toque novamente em Entrar com Google.';document.getElementById('login-feedback').textContent=msg;if(control?.state==='error')control.retry();};
 }
 </script>
-<script type="module">
-/* Firebase integrado diretamente ao GiraAI v3.1: não depende de firebase-cloud.js. */
-/* GiraAI v2.5 - Firebase CDN modular SDK. Configuracao web publica: acessos sao controlados pelas regras do Firestore. */
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, limit, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
-
+<script>
+/* GiraAI v3.2 — inicialização resiliente, baseada no carregamento modular do ProtegeAI.
+   SDKs são carregados explicitamente; erro de rede fica visível e pode ser repetido.
+   Nenhuma chamada ao Firestore é feita antes da autenticação. */
+const FIREBASE_SDK_VERSION='12.19.0';
 const firebaseConfig = {
  apiKey:'AIzaSyD2UTu6u_oHc44dmr1AFhz6YjB-XPKiJdY',
  authDomain:'cubo3d-rsp.firebaseapp.com',
@@ -1091,7 +1092,83 @@ const firebaseConfig = {
  messagingSenderId:'1026382169408',
  appId:'1:1026382169408:web:ffd046a6b8e19c32f7a6a5'
 };
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),provider=new GoogleAuthProvider();
+
+let giraSDKPromise=null;
+const giraSDKControl={state:'loading',error:'',retry:loadGiraFirebase};
+window.GiraFirebaseSDK=giraSDKControl;
+function giraCloudUi(text,failed=false){
+ const status=document.getElementById('firebase-sdk-status');
+ const retry=document.getElementById('firebase-sdk-retry');
+ if(status){status.textContent=text;status.dataset.state=failed?'error':giraSDKControl.state;}
+ if(retry)retry.hidden=!failed;
+ if(failed){
+  const feedback=document.getElementById('login-feedback');
+  if(feedback)feedback.textContent='Não foi possível iniciar o login: '+text;
+  const cloud=document.getElementById('cloud-sync-state');
+  if(cloud)cloud.textContent='Firebase desconectado: '+text;
+ }
+}
+function readableSDKError(error){
+ const msg=String(error?.message||error||'erro não identificado');
+ if(/Failed to fetch dynamically imported module|dynamically imported module|Importing a module script failed|Failed to load module script|NetworkError|ERR_/i.test(msg))
+  return 'Não foi possível baixar os módulos do Firebase. Confira a rede, bloqueadores e o domínio www.gstatic.com. Detalhes: '+msg.slice(0,180);
+ if(/CORS|cross.origin|policy/i.test(msg))return 'O navegador bloqueou um módulo Firebase por uma política de segurança. '+msg.slice(0,180);
+ return (error?.code?error.code+': ':'')+msg.slice(0,240);
+}
+async function loadGiraFirebase(){
+ if(giraSDKControl.state==='ready')return true;
+ if(giraSDKPromise)return giraSDKPromise;
+ giraSDKControl.state='loading';giraSDKControl.error='';
+ giraCloudUi('Conectando ao Firebase…');
+ giraSDKPromise=(async()=>{
+  try{
+   const base='https://www.gstatic.com/firebasejs/'+FIREBASE_SDK_VERSION+'/';
+   const [appMod,authMod,dbMod]=await Promise.all([
+    import(base+'firebase-app.js'),
+    import(base+'firebase-auth.js'),
+    import(base+'firebase-firestore.js')
+   ]);
+   const app=appMod.initializeApp(firebaseConfig,'GiraAI');
+   const auth=authMod.getAuth(app);
+   await authMod.setPersistence(auth,authMod.browserLocalPersistence);
+   // Só disponibilizar os botões funcionais depois de obter o SDK, como no ProtegeAI.
+   installGiraCloud({
+    app,auth,
+    initializeApp:appMod.initializeApp,
+    getAuth:authMod.getAuth,
+    GoogleAuthProvider:authMod.GoogleAuthProvider,
+    signInWithPopup:authMod.signInWithPopup,
+    signInWithEmailAndPassword:authMod.signInWithEmailAndPassword,
+    createUserWithEmailAndPassword:authMod.createUserWithEmailAndPassword,
+    sendPasswordResetEmail:authMod.sendPasswordResetEmail,
+    onAuthStateChanged:authMod.onAuthStateChanged,
+    signOut:authMod.signOut,
+    setPersistence:authMod.setPersistence,
+    browserLocalPersistence:authMod.browserLocalPersistence,
+    getFirestore:dbMod.getFirestore,
+    doc:dbMod.doc,getDoc:dbMod.getDoc,setDoc:dbMod.setDoc,
+    collection:dbMod.collection,query:dbMod.query,where:dbMod.where,
+    orderBy:dbMod.orderBy,limit:dbMod.limit,getDocs:dbMod.getDocs,
+    serverTimestamp:dbMod.serverTimestamp
+   });
+   giraSDKControl.state='ready';giraSDKControl.error='';
+   giraCloudUi('✓ Firebase conectado. Login Google e e-mail disponíveis.');
+   return true;
+  }catch(err){
+   giraSDKControl.state='error';giraSDKControl.error=readableSDKError(err);
+   giraCloudUi(giraSDKControl.error,true);
+   console.error('GiraAI: falha ao preparar Firebase',err);
+   return false;
+  }finally{giraSDKPromise=null;}
+ })();
+ return giraSDKPromise;
+}
+function installGiraCloud(sdk){
+ const {app,auth,initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,
+ signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,
+ onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,getFirestore,
+ doc,getDoc,setDoc,collection,query,where,orderBy,limit,getDocs,serverTimestamp}=sdk;
+const db=getFirestore(app),provider=new GoogleAuthProvider();
 const $=id=>document.getElementById(id), bridge=window.GiraAICloudBridge;
 let user=null, mode='both', ready=false, loading=false, syncTimer=null, syncing=false, dirty=false;
 let lastHistoryString='', token=0, revision=0, currentLocation={country:'',state:'',city:''};
@@ -1260,6 +1337,10 @@ async function handleAuth(next){
 }
 onAuthStateChanged(auth,handleAuth,e=>{status('Falha na autenticação: '+explainError(e));showAccount()});
 
+
+}
+// Conectar tão logo a página carrega, sem esperar que a pessoa pressione Google.
+loadGiraFirebase();
 </script>
 <script>
 let giraInstallPrompt=null, giraInstalledThisSession=false;
