@@ -1,5 +1,5 @@
 /* GiraAI PWA v2.5: cache somente de arquivos proprios. SDK Firebase e dados ficam na rede/Firestore. */
-const CACHE='giraai-static-v3.3';
+const CACHE='giraai-static-v3.5';
 const CORE=['./','./index.html','./manifest.webmanifest','./firebase-cloud.js','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png','./icons/apple-touch-icon.png','./icons/favicon-32.png','./assets/giraai-logo.png','./assets/giraai-preview.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
