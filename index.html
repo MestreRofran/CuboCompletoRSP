@@ -282,7 +282,7 @@ body.focus-mode{background:#090e17}
 <body class="mode-manual">
 <main class="app">
 <header class="topbar">
-  <div class="titleblock"><h1><img src="./icons/icon-192.png" alt="" class="brand-mark"> GiraAI</h1><p>v3.2 · Cubo mágico interativo · Rofran &amp; Laís</p></div>
+  <div class="titleblock"><h1><img src="./icons/icon-192.png" alt="" class="brand-mark"> GiraAI</h1><p>v3.3 · Cubo mágico interativo · Rofran &amp; Laís</p></div>
   <div class="kpis" aria-live="polite"><div class="kpi"><span>Movimentos</span><strong id="count-mov">0</strong></div><div class="kpi"><span>Tempo</span><strong id="timer">00:00</strong></div></div>
   <div class="mobile-header-actions" aria-label="Ações rápidas">
     <button class="mobile-icon-btn rank-shortcut" id="mobile-rank-shortcut" aria-label="Abrir ranking e login" title="Ranking e login" onclick="openQuickRanking()">🏆</button>
@@ -386,7 +386,7 @@ body.focus-mode{background:#090e17}
   </div>
   <p id="mobile-status-text" class="mobile-status" role="status">Pronto para jogar.</p>
 </section>
-<footer class="footer">GiraAI v3.2 · Desenvolvido por Rofran · 2026 · Offline e nuvem opcional</footer>
+<footer class="footer">GiraAI v3.3 · Desenvolvido por Rofran · 2026 · Offline e nuvem opcional</footer>
 </main>
 <div class="overlay hidden" id="mobile-settings-overlay" role="dialog" aria-modal="true" aria-labelledby="mobile-settings-title">
  <section class="modal mobile-settings-modal">
@@ -495,7 +495,7 @@ body.focus-mode{background:#090e17}
 <div class="overlay hidden" id="install-overlay" role="dialog" aria-modal="true" aria-labelledby="install-title"><section class="modal" style="max-width:440px"><div class="modal-header"><h2 id="install-title">Instalar GiraAI</h2><button class="close" onclick="closeInstallHelp()">×</button></div><p id="install-guide">No Chrome Android, abra o menu ⋮ e escolha “Instalar app” ou “Adicionar à tela inicial”. No Safari iOS, toque em Compartilhar → Adicionar à Tela de Início.</p><div class="modal-actions"><button onclick="closeInstallHelp()">Fechar</button></div></section></div>
 <script>
 'use strict';
-// GiraAI v3.2, derivado da base Cubo 3D v2.4. Eixos lógicos invariantes, giros de 90° por matrizes inteiras,
+// GiraAI v3.3, derivado da base Cubo 3D v2.4. Eixos lógicos invariantes, giros de 90° por matrizes inteiras,
 // câmera independente via quaternion, replay sem sobrescrever a partida.
 const $ = id => document.getElementById(id);
 const cube = $('cube'), scene = $('scene'), area = $('area-cena'), pyrCanvas = $('pyramid-canvas'), pyrCtx = pyrCanvas.getContext('2d',{alpha:true});
@@ -1080,7 +1080,7 @@ for(const name of ['loginWithGoogle','submitEmailLogin','createEmailAccount','se
 }
 </script>
 <script>
-/* GiraAI v3.2 — inicialização resiliente, baseada no carregamento modular do ProtegeAI.
+/* GiraAI v3.3 — inicialização resiliente, baseada no carregamento modular do ProtegeAI.
    SDKs são carregados explicitamente; erro de rede fica visível e pode ser repetido.
    Nenhuma chamada ao Firestore é feita antes da autenticação. */
 const FIREBASE_SDK_VERSION='12.19.0';
@@ -1172,7 +1172,14 @@ const db=getFirestore(app),provider=new GoogleAuthProvider();
 const $=id=>document.getElementById(id), bridge=window.GiraAICloudBridge;
 let user=null, mode='both', ready=false, loading=false, syncTimer=null, syncing=false, dirty=false;
 let lastHistoryString='', token=0, revision=0, currentLocation={country:'',state:'',city:''};
-const activeCloud={get user(){return user},get ready(){return ready},get mode(){return mode},queueSave,publishWin,loadRanking};
+// A publicação é criada abaixo em window.publishWin. Expor uma função ponte
+// evita ReferenceError na inicialização do SDK e preserva o acesso do jogo.
+const activeCloud={
+ get user(){return user},get ready(){return ready},get mode(){return mode},
+ queueSave,
+ publishWin:(record)=>window.publishWin?.(record),
+ loadRanking
+};
 window.GiraCloud=activeCloud;
 function localModeKey(uid){return 'giraai_cloud_mode_'+uid}
 function localDirtyKey(uid){return 'giraai_cloud_dirty_'+uid}
