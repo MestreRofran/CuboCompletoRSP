@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10131c">
+<title>GiraAI — Cubo Mágico 3D</title>
+<meta name="description" content="GiraAI: cubos 2×2, 3×3, 4×4 e pirâmide. Jogue, acompanhe seus recordes e participe do ranking global.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:type" content="website"><meta property="og:title" content="GiraAI — Cubo Mágico 3D">
+<meta property="og:description" content="Desafie seus reflexos e sua lógica. Cubos 2×2, 3×3, 4×4 e pirâmide, com ranking global.">
+<meta property="og:image" content="./assets/giraai-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{color-scheme:dark;--bg:#10131c;--panel:#1b2130;--panel2:#242d40;--line:#354055;--ink:#ecf2fb;--muted:#a4b2ca;--accent:#5cbcf6;--good:#54d7a0;--scene-size:480px;--cube-scale:.78;--cube-edge:96px}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse at 50% 24%,#1d2840 0,var(--bg) 63%);color:var(--ink);font:14px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer;color:inherit;border:1px solid var(--line);border-radius:10px;background:var(--panel2);min-height:40px;touch-action:manipulation;transition:background .15s,border-color .15s,transform .15s}button:hover{background:#30405a;border-color:#6186ae}button:active{transform:scale(.97)}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}button:disabled{cursor:not-allowed;opacity:.45;transform:none}button.primary{background:#196a9a;border-color:#358fc1;font-weight:700}button.primary:hover{background:#257fac}.danger{color:#ff9ca3}.muted{color:var(--muted)}.hidden{display:none!important}
+.app{max-width:1320px;margin:0 auto;padding:14px clamp(10px,2vw,24px) 16px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:0 2px 12px;border-bottom:1px solid #334056}.titleblock h1{font-size:clamp(18px,2.5vw,24px);margin:0;font-weight:730;letter-spacing:-.5px}.titleblock p{margin:3px 0 0;color:var(--muted);font-size:11px}.top-actions{display:flex;align-items:center;flex-wrap:wrap;gap:7px}.mode-switch{display:inline-flex;align-items:center;gap:8px;background:#223750;border:1px solid #507ba0;color:#def1ff;padding:0 14px;font-weight:700}.top-actions .small-btn{padding:0 12px}.kpis{display:flex;gap:6px}.kpi{background:#141c29;border:1px solid #2a3a51;border-radius:9px;min-width:90px;text-align:center;padding:4px 9px}.kpi span{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px}.kpi strong{font:700 19px ui-monospace,SFMono-Regular,Consolas,monospace;font-variant-numeric:tabular-nums}
+.workspace{display:grid;grid-template-columns:200px minmax(310px,1fr) 206px;gap:15px;align-items:start;margin-top:14px}.panel{background:linear-gradient(150deg,rgba(35,44,62,.94),rgba(24,30,43,.96));border:1px solid #33415a;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:14px;min-width:0;box-shadow:0 12px 30px #0003}.panel h2{margin:0;color:#ceddf1;font-size:11px;text-transform:uppercase;letter-spacing:1.5px}.stack{display:grid;gap:7px}.side-heading{font-size:11px;color:var(--muted);margin-bottom:7px}.mini-map{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,39px);gap:4px;max-width:184px;margin:auto}.mini-face{font-size:11px;padding:0 2px;min-height:36px;background:#111a27;color:#b8c7db}.mini-face.active{border-color:#6aceff;box-shadow:inset 0 0 0 1px #6aceff;background:#244262;color:white}.setting-grid{display:grid;gap:6px}.setting-grid button{font-size:12px;text-align:left;padding:8px 10px;min-height:37px}.setting-grid b{color:#fff}.helper{margin:0;font-size:11px;color:var(--muted);line-height:1.5}.key-list{color:#b7c6de}.center-stage{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}.stage-top{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:640px;font-size:11px;color:#aec8df;gap:10px}.stage-top .mode-label{padding:5px 10px;border:1px solid #365774;border-radius:20px;background:#182d42}.area-cena{width:min(100%,var(--scene-size));height:var(--scene-size);position:relative;display:flex;justify-content:center;align-items:center;touch-action:none;cursor:grab;overflow:hidden;border:1px solid #303f56;border-radius:24px;background:radial-gradient(circle at center,#2b3950 0%,#182233 39%,#111a29 72%);perspective:1250px;user-select:none;-webkit-user-select:none}.area-cena.orbiting{cursor:grabbing}.area-cena.twist-ready{cursor:crosshair}.area-cena::after{content:"";position:absolute;inset:0;border:1px solid #536c8622;border-radius:inherit;pointer-events:none}.axis-mark{position:absolute;font-size:10px;color:#7c9abb;letter-spacing:2px;pointer-events:none}.axis-mark.top{top:14px}.axis-mark.bottom{bottom:14px}.axis-mark.left{left:8px;writing-mode:vertical-rl}.axis-mark.right{right:8px;writing-mode:vertical-rl}.scene{position:relative;width:0;height:0;transform-style:preserve-3d;transform:rotate3d(1,0,0,0deg) scale3d(var(--cube-scale),var(--cube-scale),var(--cube-scale));pointer-events:auto;will-change:transform}.cube-inner{position:relative;width:0;height:0;transform-style:preserve-3d}.pivot{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;transition:transform 235ms cubic-bezier(.25,.1,.25,1)}.cubie{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}.sticker{position:absolute;left:calc(var(--cube-edge)/-2);top:calc(var(--cube-edge)/-2);width:var(--cube-edge);height:var(--cube-edge);border:4px solid #101217;border-radius:10px;background-color:var(--sticker-color);background-repeat:no-repeat;background-size:var(--cube-texture-size,300%) var(--cube-texture-size,300%);backface-visibility:hidden;-webkit-backface-visibility:hidden;cursor:inherit;box-shadow:inset 0 0 6px #0003,0 0 0 1px #111c;transform-style:preserve-3d}.sticker[data-normal="front"]{transform:translateZ(calc(var(--cube-edge)/2))}.sticker[data-normal="back"]{transform:rotateY(180deg) translateZ(calc(var(--cube-edge)/2))}.sticker[data-normal="right"]{transform:rotateY(90deg) translateZ(calc(var(--cube-edge)/2))}.sticker[data-normal="left"]{transform:rotateY(-90deg) translateZ(calc(var(--cube-edge)/2))}.sticker[data-normal="top"]{transform:rotateX(90deg) translateZ(calc(var(--cube-edge)/2))}.sticker[data-normal="bottom"]{transform:rotateX(-90deg) translateZ(calc(var(--cube-edge)/2))}.cubie.selected .sticker{box-shadow:inset 0 0 0 2px #71dcff,0 0 5px #12a6da99}.sticker:active{filter:brightness(1.1)}
+/* A aparencia IMAGENS LOCAIS replica o HTML original (IMG: 0):
+   todos os 6 lados de cada um dos 27 cubinhos, preenchimento RGBA a 80%,
+   borda preta de 1px, faces planas, sem brilho, sombra, camadas duplas
+   ou arredondamentos. As imagens Imagem1.jpg ... Imagem6.jpg continuam opcionais.
+   As figurinhas logicas permanecem no DOM para validar a montagem. */
+.body-face{position:absolute;left:calc(var(--cube-edge)/-2);top:calc(var(--cube-edge)/-2);width:var(--cube-edge);height:var(--cube-edge);border:1px solid #04070c;border-radius:5px;backface-visibility:hidden;-webkit-backface-visibility:hidden;pointer-events:none;background:#12161d;box-shadow:inset 0 0 18px #0008}
+.body-face[data-normal="front"]{transform:translateZ(calc(var(--cube-edge)/2 - 1.5px))}
+.body-face[data-normal="back"]{transform:rotateY(180deg) translateZ(calc(var(--cube-edge)/2 - 1.5px))}
+.body-face[data-normal="right"]{transform:rotateY(90deg) translateZ(calc(var(--cube-edge)/2 - 1.5px))}
+.body-face[data-normal="left"]{transform:rotateY(-90deg) translateZ(calc(var(--cube-edge)/2 - 1.5px))}
+.body-face[data-normal="top"]{transform:rotateX(90deg) translateZ(calc(var(--cube-edge)/2 - 1.5px))}
+.body-face[data-normal="bottom"]{transform:rotateX(-90deg) translateZ(calc(var(--cube-edge)/2 - 1.5px))}
+.local-image-mode .sticker{visibility:hidden;pointer-events:none}
+.local-image-mode .body-face{background-repeat:no-repeat;background-size:var(--cube-texture-size,300%) var(--cube-texture-size,300%);border:1px solid #000;border-radius:0;box-shadow:none;opacity:1;pointer-events:auto;cursor:inherit}
+.local-image-mode .body-face[data-normal="front"]{background-color:rgba(0,255,0,.8);transform:translateZ(calc(var(--cube-edge)/2))}
+.local-image-mode .body-face[data-normal="back"]{background-color:rgba(0,0,255,.8);transform:rotateY(180deg) translateZ(calc(var(--cube-edge)/2))}
+.local-image-mode .body-face[data-normal="right"]{background-color:rgba(255,0,0,.8);transform:rotateY(90deg) translateZ(calc(var(--cube-edge)/2))}
+.local-image-mode .body-face[data-normal="left"]{background-color:rgba(255,165,0,.8);transform:rotateY(-90deg) translateZ(calc(var(--cube-edge)/2))}
+.local-image-mode .body-face[data-normal="top"]{background-color:rgba(255,255,255,.8);transform:rotateX(90deg) translateZ(calc(var(--cube-edge)/2))}
+.local-image-mode .body-face[data-normal="bottom"]{background-color:rgba(255,255,0,.8);transform:rotateX(-90deg) translateZ(calc(var(--cube-edge)/2))}
+.local-image-mode .cubie.selected .body-face{border-color:#00d2ff;box-shadow:inset 0 0 15px #00d2ff}
+.stage-hint{max-width:600px;text-align:center;min-height:30px;color:#afc3de;font-size:12px}.camera-actions{display:flex;gap:7px;width:100%;max-width:500px}.camera-actions button{flex:1;min-width:0;font-size:12px;padding:0 5px}.layer-controls{text-align:center}.move-pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:auto;max-width:174px}.move-pad button{font-size:21px;min-height:46px}.move-pad .empty{min-height:0}.arrow-row{display:flex;justify-content:center;gap:6px}.arrow-row button{flex:1;font-size:20px}.selected-hint{font-size:11px;min-height:18px;color:#9bd8ff}.control-row{display:flex;align-items:center;gap:6px}.control-row button{flex:1;min-width:0;padding:0 7px;font-size:12px}.control-row button.shrink{flex:0 0 45px;padding:0}.line{height:1px;background:#354057;margin:0}.footer{margin-top:13px;color:#73839b;text-align:center;font-size:10px}.status{font-size:11px;line-height:1.4;color:#c4d5ec;min-height:17px}.status.error{color:#ffb6b9}
+.overlay{position:fixed;inset:0;z-index:20;background:#050914ca;display:flex;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(7px)}.overlay.replay{align-items:flex-end;background:transparent;backdrop-filter:none;pointer-events:none}.overlay.replay .modal{pointer-events:auto;width:min(96%,530px);max-height:45dvh;padding:13px 17px;background:#202d41f5;border-color:#6b93ba;box-shadow:0 5px 28px #000b}.overlay.replay .modal h2{font-size:17px}.overlay.replay .modal p{margin:5px 0;font-size:12px}@media(min-width:731px){.overlay.replay{justify-content:flex-end}.overlay.replay .modal{width:290px}}.modal{width:min(100%,660px);max-height:min(90dvh,760px);overflow:auto;background:#202a3b;border:1px solid #5e7593;border-radius:19px;padding:22px;box-shadow:0 28px 100px #000b}.modal-header{display:flex;align-items:center;justify-content:space-between;gap:10px}.modal h2{font-size:22px;margin:0}.modal p{color:#bdcce0}.modal h3{font-size:14px;margin:18px 0 9px}.modal input{display:block;width:100%;background:#121c2a;border:1px solid #586984;border-radius:10px;padding:11px 12px;color:white;outline:none;min-height:45px;margin:8px 0 12px}.modal .close{border-radius:50%;min-width:38px;padding:0;font-size:22px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}.modal-actions button{padding:0 14px}.record-list{display:grid;gap:8px;margin:12px 0}.record{border:1px solid #3a4e66;background:#182234;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:12px}.record .name{font-size:14px;font-weight:700;word-break:break-word}.record small{display:block;margin-top:3px;color:#a5bad2;line-height:1.5}.record .buttons{display:flex;gap:5px;flex-shrink:0}.record .buttons button{padding:0 10px;min-height:38px}.rankbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.rankbar button{padding:0 10px;min-height:33px}.playbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.playbar button{padding:0 12px}.playbar strong{font-family:monospace}.banner{background:#163d38;border:1px solid #3c967c;border-radius:13px;padding:12px;color:#bfffe4}.banner strong{font-size:24px}.notice{font-size:11px;color:#9fb3cb}.modal .warning{color:#ffa5ab}.mode-manual .mode-only-auto{display:none}.mode-auto .mode-only-manual{display:none}.mode-auto #right-panel{gap:12px}
+@media(max-width:930px){.workspace{grid-template-columns:160px minmax(280px,1fr) 170px;gap:9px}.panel{padding:10px}.topbar{align-items:flex-start}.mini-map{grid-template-rows:repeat(4,34px)}.mini-face{font-size:10px}}
+@media(max-width:730px){.app{padding:9px 9px 14px}.topbar{padding-bottom:8px;gap:7px}.top-actions{width:100%;justify-content:space-between}.top-actions .small-btn{flex:1}.top-actions .mode-switch{flex:1.5}.kpis{margin-left:auto}.workspace{display:flex;flex-direction:column;align-items:stretch;gap:9px;margin-top:8px}.center-stage{order:0}.panel.right{order:1}.panel.left{order:2}.area-cena{border-radius:19px}.panel{gap:8px;padding:11px}.panel.right{display:grid;grid-template-columns:1fr 1fr;column-gap:10px}.panel.right .layer-controls{grid-column:1}.panel.right .global-controls{grid-column:2}.mode-auto .panel.right{display:flex}.mode-auto .panel.right .global-controls{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}.mode-auto .panel.right .global-controls .control-row{display:flex}.panel.left{display:grid;grid-template-columns:130px 1fr;gap:9px;align-items:start}.panel.left .left-map{grid-row:span 3}.panel.left .mini-map{grid-template-rows:repeat(4,31px)}.panel.left .setting-grid{grid-template-columns:1fr 1fr}.panel.left .setting-grid button{font-size:11px}.panel.left .helper{grid-column:1/-1}.stage-hint{font-size:11px}.footer{margin-top:7px}.camera-actions button{min-height:36px}.move-pad button{min-height:42px}.modal{padding:16px}}
+@media(max-width:420px){.titleblock h1{font-size:19px}.titleblock p{font-size:10px}.kpi{min-width:73px}.kpi strong{font-size:17px}.mode-switch{font-size:11px}.top-actions .small-btn{font-size:11px;padding:0 6px}.panel.left{grid-template-columns:112px 1fr}.panel.left .setting-grid{grid-template-columns:1fr}.record{align-items:flex-start;flex-direction:column}.record .buttons{width:100%}.record .buttons button{flex:1}}
+@media(min-width:731px) and (max-height:640px){.app{padding:7px 10px}.topbar{flex-wrap:nowrap;gap:7px;padding-bottom:6px}.titleblock h1{font-size:16px}.titleblock p{display:none}.top-actions{flex-wrap:nowrap;gap:5px}.top-actions button{min-height:34px}.mode-switch{padding:0 7px;white-space:nowrap}.kpi{min-width:70px;padding:2px 5px}.kpi strong{font-size:16px}.workspace{margin-top:7px;grid-template-columns:155px minmax(210px,1fr) 172px}.panel{max-height:calc(100dvh - 74px);overflow-y:auto}.area-cena{max-height:none}.stage-hint{min-height:0;font-size:10px;line-height:1.2}.camera-actions button{min-height:34px}}
+@media(prefers-reduced-motion:reduce){button{transition:none}.pivot{transition-duration:1ms!important}}
+
+/* v2.3: seletor de modelos e painéis recolhíveis */
+.camera-fold{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.camera-fold .camera-actions{width:100%;justify-content:center}
+.camera-fold-button{min-height:29px;font-size:11px;color:#c0d9f2;border:1px solid #3a526e;background:#18283c;padding:0 12px}
+.camera-fold.collapsed .camera-actions{display:none}
+.camera-fold.collapsed .camera-fold-button span{display:inline-block;transform:rotate(180deg)}
+
+.puzzle-selector{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px 0 2px}
+.puzzle-selector span{color:#b5cbe4;font-size:11px;margin-right:5px;font-weight:700;letter-spacing:.4px}
+.puzzle-choice{padding:0 12px;min-height:36px;font-size:12px}
+.puzzle-choice.active{background:#175879;border-color:#7acffa;color:white;box-shadow:0 0 0 1px #58c4f733;font-weight:750}
+.panel-collapse{display:flex;align-items:center;justify-content:space-between;width:100%;padding:0 9px;min-height:36px;font-size:11px;color:#dceaff;background:#202e42;border:1px solid #3a526f}
+.panel .panel-content{display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel .panel-content>.helper{line-height:1.55}
+.workspace{grid-template-columns:200px minmax(310px,1fr) 206px;transition:grid-template-columns .2s}
+.workspace.left-collapsed{grid-template-columns:58px minmax(310px,1fr) 206px}
+.workspace.right-collapsed{grid-template-columns:200px minmax(310px,1fr) 58px}
+.workspace.left-collapsed.right-collapsed{grid-template-columns:58px minmax(310px,1fr) 58px}
+.workspace .panel.collapsed{padding:8px 5px;align-items:stretch;min-height:50px;overflow:hidden}
+.panel.collapsed .panel-content{display:none!important}
+.panel.collapsed .panel-collapse{writing-mode:vertical-rl;min-height:185px;min-width:0;flex-direction:column;gap:12px;padding:12px 4px;align-items:center;justify-content:flex-start}
+.panel.collapsed .panel-collapse .collapse-indicator{transform:rotate(90deg)}
+.pyramid-guide{margin-top:2px}
+.pyramid-controls{display:flex;flex-direction:column;gap:9px;text-align:center}
+.vertex-choices{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:9px}
+.vertex-choices button{min-height:34px;padding:0 3px;font-size:11px}
+.vertex-choices button.active{background:#1c5273;border-color:#7acffa}
+.pyramid-rotate{display:flex;flex-direction:column;gap:5px}
+.pyramid-mode .left-map,.pyramid-mode #mode-toggle,.pyramid-mode .layer-controls{display:none!important}
+.pyramid-mode.mode-manual #pyramid-controls{display:flex!important}.pyramid-mode.mode-auto #pyramid-controls{display:none!important}
+.pyramid-mode .pyramid-guide{display:block!important}
+.pyramid-mode .axis-mark{display:none}
+.pyr-tile{position:absolute;left:0;top:0;transform-origin:0 0;transform-style:preserve-3d;backface-visibility:hidden;-webkit-backface-visibility:hidden;cursor:inherit;touch-action:none;clip-path:polygon(0 0,100% 0,50% 100%);background:#080e16;}
+.pyr-surface{position:absolute;inset:3px 3px 4px;clip-path:polygon(0 0,100% 0,50% 100%);background:var(--pyr-color);filter:brightness(1.05);pointer-events:none;}
+.pyr-tile.selected .pyr-surface{filter:brightness(1.3) drop-shadow(0 0 4px #9de6ff)}
+.pyr-base{position:absolute;left:0;top:0;transform-origin:0 0;backface-visibility:hidden;clip-path:polygon(0 0,100% 0,50% 100%);background:#0b0f18;pointer-events:none;}
+@media(max-width:930px) and (min-width:731px){.workspace.left-collapsed{grid-template-columns:54px minmax(270px,1fr) 170px}.workspace.right-collapsed{grid-template-columns:160px minmax(270px,1fr) 54px}.workspace.left-collapsed.right-collapsed{grid-template-columns:54px minmax(270px,1fr) 54px}}
+@media(max-width:730px){
+ .workspace,.workspace.left-collapsed,.workspace.right-collapsed,.workspace.left-collapsed.right-collapsed{display:flex;flex-direction:column}
+ .panel,.panel.collapsed{width:100%}
+ .panel .panel-content{gap:8px}
+ .panel.right .panel-content{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+ .mode-auto .panel.right .panel-content{display:block}
+ .panel.left .panel-content{display:grid;grid-template-columns:130px 1fr;align-items:start;gap:8px}
+ .panel.left .panel-content>.helper{grid-column:1/-1}
+ .panel.left .panel-content>.pyramid-guide{grid-column:1/-1}
+ .panel.collapsed .panel-collapse{writing-mode:horizontal-tb;min-height:36px;flex-direction:row;justify-content:space-between;padding:0 10px}
+ .panel.collapsed .panel-collapse .collapse-indicator{transform:rotate(-90deg)}
+ .panel.collapsed{padding:7px;min-height:0}
+ .workspace .panel.right{order:1;display:flex;flex-direction:column}
+ .workspace .panel.left{order:2;display:flex;flex-direction:column}
+ .pyramid-controls{grid-column:1}
+ .pyramid-mode .panel.right .panel-content{display:grid;grid-template-columns:1fr 1fr}
+ .pyramid-mode.mode-auto .panel.right .panel-content{display:block}
+}
+@media(max-width:420px){.puzzle-selector{gap:4px;margin-top:8px}.puzzle-selector span{width:100%;text-align:center}.puzzle-choice{flex:1;padding:0 5px;font-size:11px}.panel.left .panel-content{grid-template-columns:112px 1fr}.pyramid-controls{font-size:11px}}
+@media(min-width:731px) and (max-height:640px){.workspace.left-collapsed{grid-template-columns:48px minmax(210px,1fr) 172px}.workspace.right-collapsed{grid-template-columns:155px minmax(210px,1fr) 48px}.workspace.left-collapsed.right-collapsed{grid-template-columns:48px minmax(210px,1fr) 48px}}
+
+
+
+/* v2.4 — comandos com visual simples, conservando os painéis recolhíveis */
+.panel button:not(.panel-collapse),.camera-actions button,.mobile-dashboard button:not(.mobile-section-title){background:#242424;border:1px solid #444;color:#f0f0f0;border-radius:7px;box-shadow:none;font-weight:500}
+.panel button:not(.panel-collapse):hover,.camera-actions button:hover,.mobile-dashboard button:hover{background:#303030;border-color:#666}
+.panel button.primary{background:#196a9a}
+body:not(.local-image-mode) .body-face{display:none!important}
+/* Pirâmide: um recorte triangular por peça (antes dois recortes e filtro por face). */
+.pyr-surface{clip-path:none;filter:none;inset:3px}
+.pyr-tile.selected .pyr-surface{filter:none;outline:2px solid #80dafa}
+.mobile-header-actions,.mobile-camera-strip,.mobile-dashboard{display:none}
+.mobile-settings-modal{max-width:500px}.mobile-settings-content{display:grid;gap:9px;padding-bottom:8px}.mobile-settings-content h3{margin:10px 0 0;color:#d5e7fa;font-size:13px}.mobile-settings-content>button{width:100%;text-align:left;padding:0 12px}.mobile-settings-grid,.mobile-puzzle-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.mobile-settings-grid button{min-width:0;white-space:normal;text-align:left;padding:7px 10px;min-height:42px}.mobile-puzzle-grid button{width:100%}.setting-check{display:flex;align-items:center;gap:10px;min-height:42px;padding:8px 10px;border:1px solid #3c4d65;border-radius:9px;background:#172338}.setting-check input{width:17px;height:17px;accent-color:#4cacf0;margin:0;flex:none}
+@media(max-width:730px) and (orientation:portrait){
+ html,body{min-height:100%;overscroll-behavior:none}
+ body{background:#10131c}
+ .app{max-width:600px;padding:calc(env(safe-area-inset-top,0px) + 6px) 9px calc(env(safe-area-inset-bottom,0px) + 8px);min-height:100dvh;display:flex;flex-direction:column;gap:5px}
+ .topbar{display:flex;flex-wrap:nowrap;align-items:center;min-height:42px;padding:2px 2px 6px;margin:0;border-bottom:1px solid #2b3547;gap:6px}
+ .titleblock{min-width:0;flex:1}.titleblock h1{font-size:clamp(14px,4.1vw,19px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.5px}.titleblock p{display:none}
+ .topbar>.kpis,.top-actions,.puzzle-selector{display:none!important}
+ .mobile-header-actions{display:flex;align-items:center;gap:6px;flex:none}.mobile-icon-btn{width:38px;min-height:38px;display:flex;align-items:center;justify-content:center;font-size:21px;background:#222c3d;border:1px solid #36465d;border-radius:8px}
+ .workspace,.workspace.left-collapsed,.workspace.right-collapsed,.workspace.left-collapsed.right-collapsed{display:block;margin:0;min-width:0;flex:none}
+ .workspace>.panel{display:none!important}
+ .center-stage{gap:4px;width:100%}.stage-top{font-size:10px;min-height:18px}.stage-top .mode-label{font-size:10px;padding:1px 7px;background:transparent;border:0}
+ .area-cena{width:var(--scene-size);height:var(--scene-size);max-width:100%;border-radius:13px;border-color:#28394e;background:radial-gradient(circle at center,#1e2b40,#111926 68%)}
+ .stage-hint{font-size:10px;min-height:0;line-height:1.15;max-width:96%;margin:1px auto 0;display:none}
+ .camera-fold{display:none!important}
+ .mobile-camera-strip{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr) minmax(0,.84fr) minmax(0,1fr);gap:4px;width:100%;margin:3px auto 0;align-items:stretch}
+ .mobile-camera-strip button{min-width:0;min-height:44px;background:#252525;border:1px solid #444;border-radius:6px;padding:0 2px;font-weight:600;font-size:clamp(9px,2.7vw,11px)}
+ .mobile-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:#141b29;border:1px solid #2c3b51;border-radius:6px;min-width:0;padding:2px 1px}.mobile-stat span{font-size:8px;color:#b1c1d6;letter-spacing:0}.mobile-stat strong{font-size:clamp(10px,3vw,13px);line-height:1.25;font-family:monospace;white-space:nowrap;font-variant-numeric:tabular-nums}
+ .mobile-dashboard{display:flex;flex-direction:column;gap:6px;width:100%;flex:none;margin-top:1px}
+ .mobile-main-panels{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;align-items:stretch}
+ .mobile-match,.mobile-orientation,.mobile-turn-panel{background:#1b2434;border:1px solid #324056;border-radius:10px;padding:6px;min-width:0}
+ .mobile-section-title{width:100%;min-height:27px;display:flex;align-items:center;justify-content:space-between;gap:5px;padding:0 6px;color:#d4e0f1;font-size:11px;font-weight:700;text-align:left;border:0;background:transparent;border-radius:4px}.static-title{cursor:default;pointer-events:none}
+ .mobile-match-content{display:grid;gap:4px;margin-top:5px}.mobile-match-content>button,.mobile-mix button{min-height:32px;padding:0 6px;font-size:11px;text-align:left}
+ .mobile-mix{display:grid;grid-template-columns:minmax(0,1fr) 37px;gap:4px}.mobile-mix button:last-child{text-align:center;padding:0 2px}
+ .mobile-orientation{display:flex;flex-direction:column;align-items:center}.mobile-orientation>.mobile-section-title{align-self:stretch}
+ .mobile-mini-map{width:min(100%,165px);grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,29px);gap:3px;margin:4px auto 1px}
+ .mobile-mini-map button{min-height:0;padding:0;font-size:9px;background:#121923;border:1px solid #364154;border-radius:4px}
+ .mobile-mini-map button.active{background:#294a6b;border-color:#76b9ea}
+ .mobile-pyramid-label{display:none;font-size:11px;text-align:center;color:#b7c8dd;margin:9px 5px}.pyramid-mode .mobile-mini-map{display:none}.pyramid-mode .mobile-pyramid-label{display:block}
+ .mobile-turn-panel{display:block;padding:5px 7px}
+ .mobile-cube-turn{display:flex;align-items:center;gap:8px}.mobile-turn-title{display:flex;flex-direction:column;gap:2px;align-items:flex-start;justify-content:center;font-size:11px;font-weight:700;min-width:90px;max-width:32%}.mobile-turn-title small{font-size:9px;font-weight:400;color:#b5c5db;line-height:1.15}
+ .mobile-turn-pad{flex:1;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.mobile-turn-pad button{padding:0;min-width:0;min-height:38px;font-size:19px}
+ .mobile-pyr-turn{display:none;align-items:center;gap:5px;flex-wrap:wrap}.mobile-vertex-choices{display:flex;gap:3px}.mobile-vertex-choices button{min-height:34px;min-width:27px;padding:0 3px}.mobile-vertex-choices button.active{border-color:#80d1ff;background:#24517b}.mobile-pyr-directions{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.mobile-pyr-directions button{min-height:32px;font-size:10px;padding:0 2px}
+ .mobile-status{font-size:10px;line-height:1.2;color:#afc2dc;text-align:center;margin:0;padding:0 6px;min-height:0}.mobile-status.error{color:#ffb6b9}
+ .mobile-no-orientation .mobile-orientation{display:none}.mobile-no-orientation .mobile-main-panels{grid-template-columns:1fr}
+ .mobile-match-closed .mobile-match-content{display:none}.mobile-match-closed #mobile-match-toggle span{transform:none}
+ .mobile-no-turns .mobile-turn-panel,.mode-auto .mobile-turn-panel{display:none}
+ .pyramid-mode .mobile-cube-turn{display:none}.pyramid-mode .mobile-pyr-turn{display:flex}
+ .footer{font-size:9px;margin-top:auto;padding-top:6px}
+ .mobile-settings-modal{width:min(100%,480px);max-height:90dvh;padding:15px 14px;overscroll-behavior:contain}.mobile-settings-modal h2{font-size:19px}
+ .focus-mode .mobile-dashboard,.focus-mode .mobile-camera-strip{opacity:.35;transition:opacity .18s}.focus-mode .mobile-dashboard:focus-within,.focus-mode .mobile-camera-strip:focus-within{opacity:1}.focus-mode .area-cena{border-color:#4776a4}
+ .app-pseudo-fullscreen .app{min-height:100dvh}
+}
+@media(max-width:730px) and (orientation:portrait) and (max-height:680px){
+ .app{gap:3px}.topbar{min-height:36px;padding-bottom:3px}.mobile-icon-btn{width:33px;min-height:33px;font-size:18px}.mobile-camera-strip button{min-height:35px}.mobile-match-content>button,.mobile-mix button{min-height:28px}.mobile-mini-map{grid-template-rows:repeat(4,25px)}.mobile-turn-pad button{min-height:32px}.mobile-turn-title{font-size:10px}.footer{display:none}
+}
+@media(max-width:730px) and (orientation:portrait) and (max-width:350px){
+ .app{padding-left:5px;padding-right:5px}.mobile-main-panels{gap:4px}.mobile-mini-map{grid-template-rows:repeat(4,26px)}.mobile-turn-title{min-width:64px}.mobile-turn-pad{gap:2px}.mobile-turn-pad button{font-size:17px}
+}
+@media(max-width:730px) and (orientation:landscape){
+ .app{padding:5px 8px;max-width:none}.topbar{flex-wrap:nowrap;align-items:center;padding-bottom:4px;gap:5px}.titleblock h1{font-size:13px}.titleblock p{display:none}.top-actions{width:auto;flex-wrap:nowrap;gap:4px}.top-actions .mode-switch{padding:0 5px;flex:none;min-height:32px;font-size:11px}.top-actions .small-btn{padding:0 5px;flex:none;min-height:32px;font-size:10px}.kpis{margin-left:0}.kpi{min-width:53px;padding:2px 4px}.kpi strong{font-size:12px}.kpi span{font-size:7px}
+ .puzzle-selector{gap:3px;margin:5px 0}.puzzle-selector span{font-size:9px;width:auto}.puzzle-choice{min-height:28px;padding:0 5px;font-size:10px;flex:none}
+ .workspace,.workspace.left-collapsed,.workspace.right-collapsed,.workspace.left-collapsed.right-collapsed{display:grid!important;grid-template-columns:112px minmax(170px,1fr) 116px!important;gap:5px;align-items:start;margin-top:4px}
+ .workspace.left-collapsed{grid-template-columns:38px minmax(170px,1fr) 116px!important}.workspace.right-collapsed{grid-template-columns:112px minmax(170px,1fr) 38px!important}.workspace.left-collapsed.right-collapsed{grid-template-columns:38px minmax(170px,1fr) 38px!important}
+ .workspace .panel{display:flex!important;flex-direction:column!important;gap:7px;min-height:0;padding:7px;max-height:calc(100dvh - 105px);overflow-y:auto;width:auto}.workspace .panel.left{order:0}.workspace .center-stage{order:1}.workspace .panel.right{order:2}
+ .workspace .panel.collapsed{padding:5px 3px}.panel.collapsed .panel-collapse{writing-mode:vertical-rl;min-height:140px;min-width:0;flex-direction:column;justify-content:flex-start;padding:8px 2px}.panel.collapsed .panel-content{display:none!important}
+ .workspace .panel .panel-content,.workspace .panel.right .panel-content,.workspace .panel.left .panel-content{display:flex!important;flex-direction:column!important;gap:8px}.workspace .panel.collapsed .panel-content{display:none!important}.panel h2{font-size:9px;letter-spacing:1px}.panel .helper{font-size:9px}.mini-map{grid-template-rows:repeat(4,26px)}.mini-face{font-size:9px;min-height:25px}.panel.left .setting-grid{grid-template-columns:1fr}.panel .setting-grid button{font-size:10px}.panel .panel-collapse{min-height:32px;font-size:10px}
+ .center-stage{order:unset;gap:4px}.stage-top{font-size:10px}.stage-hint{font-size:9px;min-height:0}.camera-fold-button{min-height:24px}.camera-actions button{min-height:29px;font-size:10px}.move-pad button{min-height:34px;font-size:16px}.control-row button{min-height:32px}
+}
+@media(min-width:731px){.focus-mode .panel,.focus-mode .puzzle-selector,.focus-mode .top-actions,.focus-mode .kpis,.focus-mode .camera-fold{opacity:.35;transition:opacity .18s}.focus-mode .panel:hover,.focus-mode .panel:focus-within,.focus-mode .top-actions:hover,.focus-mode .camera-fold:hover{opacity:1}}
+@media(min-width:731px), (orientation:landscape){.mobile-dashboard,.mobile-header-actions,.mobile-camera-strip{display:none!important}}
+
+/* v2.8: Pirâmide com apenas um polígono pintado por peça, sem 36 camadas
+   internas recortadas, filtros e sombras recompostas a cada giro. */
+.pyramid-mode .pyr-tile{clip-path:polygon(3% 3%,97% 3%,50% 97%);background-color:#080e16;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:flat;contain:paint;}
+.pyramid-mode .pyr-tile.selected{filter:brightness(1.2)}
+.pyramid-mode .pyr-base{background:#0b0f18}
+.pyramid-mode .pyr-surface{display:none}
+.pyramid-mode .overlay{backdrop-filter:none}
+.account-chevron{font-size:20px;color:#a5c6ec}
+button[data-install-app]:disabled{opacity:.85;cursor:default;color:#b3f8d2;border-color:#3c9872}
+/* Evita que a janela de login fique sob outra janela na navegação empilhada. */
+#mobile-settings-overlay{z-index:20}#history-overlay,#quick-audio-overlay,#name-overlay,#cloud-overlay,#install-overlay{z-index:25}#login-overlay{z-index:35}#replay-overlay{z-index:40}
+/* GiraAI conta, nuvem, instalação e branding */
+.brand-mark{width:32px;height:32px;object-fit:contain;vertical-align:middle;filter:drop-shadow(0 2px 3px #0008)}
+.cloud-modal{max-width:580px}.cloud-modal h3{margin-top:18px}.cloud-modal .setting-check{align-items:flex-start;margin-top:6px}.cloud-modal .setting-check small{display:block;font-size:11px;font-weight:400;color:#b9cadd;margin:4px 0}.cloud-modal .setting-check input[type=radio]{margin-top:3px}
+.cloud-status{display:flex;align-items:center;gap:6px;font-size:10px;color:#e3acb2;margin:4px 0 0}.cloud-status.large{padding:9px 12px;border:1px solid #45536a;border-radius:10px;background:#131d2b;font-size:13px;margin:14px 0}.cloud-status.online{color:#a3f5c3}.cloud-dot{width:9px;height:9px;background:#ed5a64;border-radius:50%;box-shadow:0 0 0 2px #e64d6024;display:inline-block;flex:none}.online .cloud-dot{background:#36db89;box-shadow:0 0 0 2px #2de28b22}.cloud-entry{text-align:left;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 10px}.cloud-entry .cloud-status{margin:0;font-size:9px;flex:0 0 auto;max-width:48%;overflow:hidden}.cloud-entry .cloud-status>span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cloud-buttons{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.cloud-buttons button{padding:0 13px;flex:1}.profile-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.profile-fields label{font-size:11px}.profile-fields input{min-width:0;margin:5px 0 8px;min-height:40px;font-size:12px}.google-button{width:100%;min-height:46px;background:#f8fbff;color:#243246;border-color:#fff;margin:13px 0;font-weight:700}.google-button:hover{background:#e6effa;color:#172334}.google-G{font-weight:900;margin-right:6px;color:#4285f4;font-size:19px}.login-divider{text-align:center;color:#95aac4;margin:6px 0 13px}.login-modal form label{font-size:12px}.login-modal form input{margin:5px 0 10px}.login-modal form .password-checkbox{display:flex;align-items:center;gap:8px;font-size:12px}.login-modal form .password-checkbox input{width:17px;height:17px;min-height:0;margin:0}.text-button{border:0;background:transparent;color:#9fcefc;text-decoration:underline;min-height:33px;padding:0 5px}.history-tabs{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}.history-tabs button{padding:0 10px;min-height:35px}.rank-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.rank-filters label{display:flex;align-items:center;gap:5px;font-size:12px}.rank-filters select{border:1px solid #485d77;border-radius:8px;background:#151e2b;color:white;padding:8px}.rank-filters button{padding:0 10px}.record .rank-number{font-weight:bold;color:#a8bcdc}.record .rank-location{color:#b5c6dc}@media(max-width:900px) and (orientation:landscape){.app{overflow-x:clip}.top-actions>.small-btn:first-child{display:none}}#cloud-profile-feedback{min-height:17px}#giraai-toast{position:fixed;z-index:80;left:50%;bottom:20px;transform:translate(-50%,25px);opacity:0;pointer-events:none;background:#164536;color:#d3ffe7;border:1px solid #4aae80;box-shadow:0 8px 35px #000a;border-radius:12px;padding:12px 19px;max-width:92vw;transition:opacity .2s,transform .2s;text-align:center}#giraai-toast.visible{opacity:1;transform:translate(-50%,0)}#login-feedback{min-height:25px}.cloud-status span:last-child{overflow-wrap:anywhere}
+@media(max-width:480px){.profile-fields{grid-template-columns:1fr}.profile-fields input{width:100%;min-height:35px}.cloud-modal{max-height:92dvh}.cloud-modal .cloud-buttons button{min-height:38px}.brand-mark{width:27px;height:27px}}
+
+/* v2.8 · Pirâmide desenhada em Canvas 2D: nenhum recorte CSS 3D por peça. */
+#pyramid-canvas{position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none;z-index:3}
+.pyramid-mode #pyramid-canvas{display:block}
+.pyramid-mode #scene{visibility:hidden;pointer-events:none}
+/* Verde discreto, mantendo o formato do botão. */
+.mode-switch,#mobile-gesture-toggle{background:#23443b!important;border-color:#4d9275!important;color:#d4f7e5!important;font-weight:700}
+.mode-switch:hover,#mobile-gesture-toggle:hover{background:#2c5c4b!important;border-color:#6db993!important}
+.volume-toggle{background:#203f43;border-color:#3f7378;color:#e0f5f4}
+.volume-panel{background:#121f2e;border:1px solid #3b5671;border-radius:12px;padding:12px;display:grid;gap:12px;margin-top:8px}
+.volume-panel.hidden{display:none}
+.volume-control{display:grid;gap:6px}
+.volume-control>div{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:12px;color:#d7e9fb}
+.volume-control output{color:#8bd7f8;font-variant-numeric:tabular-nums;font-weight:700}
+.volume-control input[type=range]{width:100%;accent-color:#63b89c;min-height:28px;margin:0;cursor:pointer;touch-action:pan-x}
+.cloud-modal{max-width:540px}
+.cloud-modal .cloud-intro{font-size:12px;color:#c3d3e4;line-height:1.55;margin:12px 0}
+.cloud-section{border-top:1px solid #384b60;padding-top:13px;margin-top:12px}
+.cloud-section h3{margin:0 0 9px}
+.cloud-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cloud-actions button{min-width:0;padding:6px 9px}
+.cloud-choice{display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid #3c5169;border-radius:10px;margin:7px 0;background:#182537;font-size:12px}
+.cloud-choice input{margin:2px 0 0!important;min-height:auto!important;width:auto!important;flex:none;accent-color:#67cba4}
+.cloud-choice b{display:block;margin-bottom:3px}
+.cloud-choice small{color:#a9bfd5;display:block;line-height:1.45}
+.cloud-disclosure{border:1px solid #3c5169;border-radius:11px;padding:0 11px;margin-top:14px}
+.cloud-disclosure summary{cursor:pointer;padding:12px 0;font-weight:700;color:#dde9f9}
+.cloud-disclosure[open] summary{border-bottom:1px solid #344c63;margin-bottom:10px}
+.cloud-disclosure .profile-fields{margin-top:10px}
+.mobile-quick-group{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mobile-quick-group button{width:100%;padding:0 6px}
+@media(max-width:480px){.cloud-actions{grid-template-columns:1fr}.volume-panel{padding:10px}}
+
+/* GiraAI v2.9: cor Temporizada — 3s cores, 10s cinza escuro, em loop. */
+/* Aplicar filtros ao contêiner 3D achata as faces no Chromium.
+   Apenas a textura superficial recebe cinza; a cena mantém preserve-3d. */
+.sticker,#pyramid-canvas{transition:filter .24s ease-out}
+body.timed-gray .sticker,body.timed-gray #pyramid-canvas{filter:grayscale(1) brightness(.62) contrast(1.15)}
+.pyramid-mode #mode-toggle{display:block!important}
+.pyramid-mode .pyramid-rotate:last-child{border-top:1px solid #35475d;padding-top:7px}
+.mobile-pyr-directions{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.mobile-pyr-directions button{font-size:11px;padding:0 3px}
+#history-overlay #cloud-public-profile{margin-top:12px;background:#18263a;padding:9px 11px;border:1px solid #39536d;border-radius:10px}
+@media (prefers-reduced-motion:reduce){.sticker,#pyramid-canvas{transition:none}}
+
+
+/* v3.0: aparência e áudio compartilháveis entre modelos. */
+.shared-look-toggle{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;margin:12px 0 2px;border:1px solid #416b66;border-radius:11px;background:#1b3338;color:#e4f4ef;font-size:12px;cursor:pointer}
+.shared-look-toggle input{width:18px;height:18px;min-width:18px;margin:1px 0 0;accent-color:#61caaa;cursor:pointer}
+.shared-look-toggle small{display:block;margin-top:3px;color:#b0cdc6;font-size:11px;line-height:1.4}
+#history-cloud-tabs button{flex:1 1 110px;font-weight:650;white-space:nowrap}
+#history-cloud-tabs button.primary{background:#1c6e70;border-color:#5ec7b3}
+
+/* GiraAI v2.9: atalhos compactos, diálogos rápidos e foco mais escuro. */
+.top-quick{min-width:40px;padding:0 9px!important;font-size:18px;font-weight:750}
+.top-quick.puzzle-shortcut,.puzzle-shortcut{font:800 17px ui-monospace,Consolas,monospace;color:#b6e1ff}
+.rank-shortcut{transition:background .18s,border-color .18s,box-shadow .18s}
+.rank-shortcut.connected{background:#20503b!important;border-color:#43bc7a!important;box-shadow:inset 0 0 0 1px #287e52}
+.quick-audio-modal{max-width:440px}
+.quick-audio-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.quick-audio-grid button{padding:9px 11px;min-height:49px;text-align:left;font-size:12px;line-height:1.35}
+.quick-audio-modal .volume-panel{margin-top:12px}
+.quick-ranking-login{border:1px solid #38617b;border-radius:11px;padding:12px;margin:12px 0;background:#182737}
+.quick-ranking-head{display:flex;gap:10px;align-items:center;color:#e7f2ff;font-size:13px}
+.quick-ranking-login p{margin:8px 0}
+.quick-rank-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.quick-rank-actions button{min-height:42px;padding:6px 7px;font-size:12px}
+body.focus-mode{background:#090e17}
+.focus-mode .area-cena{background:radial-gradient(circle at center,#182437 0,#0d1523 70%)}
+@media(min-width:731px){.focus-mode .panel,.focus-mode .puzzle-selector,.focus-mode .top-actions,.focus-mode .kpis,.focus-mode .camera-fold{opacity:.14}}
+@media(max-width:730px) and (orientation:portrait){
+ .mobile-header-actions{gap:4px!important;flex-wrap:nowrap}
+ .mobile-header-actions .mobile-icon-btn{width:clamp(29px,8vw,37px);min-height:clamp(31px,8.8vw,38px);font-size:clamp(16px,4.7vw,21px);padding:0}
+ .mobile-header-actions .puzzle-shortcut{font-size:18px}
+ .focus-mode .mobile-dashboard,.focus-mode .mobile-camera-strip{opacity:.14}
+}
+@media(max-width:350px) and (orientation:portrait){.mobile-header-actions{gap:3px!important}.brand-mark{width:22px;height:22px}.titleblock h1{font-size:15px}}
+@media(max-width:400px){.quick-rank-actions{grid-template-columns:1fr}}
+.firebase-sdk-status{font-size:11px;color:#8daeb5;margin:10px 0 4px;line-height:1.4;overflow-wrap:anywhere}.firebase-sdk-status[data-state="error"]{color:#ffb59b}#firebase-sdk-retry{font-size:12px;padding:8px 12px;border:1px solid #b87642;background:#302016;color:#ffd9aa;border-radius:7px}#firebase-sdk-retry[hidden]{display:none}
+
+/* GiraAI v3.4 — ajustes APENAS na visualização desktop (>=731px). */
+.visitor-button{width:100%;min-height:46px;background:#214b43;border-color:#49a88c;color:#e0fff0;font-weight:750;margin-top:10px}
+.visitor-button:hover{background:#2d6757}
+.guest-explanation{margin:8px 0!important}
+.cloud-status.anonymous{color:#ffdc9d}
+.cloud-status.anonymous .cloud-dot{background:#efb55a;box-shadow:0 0 0 2px #eeb65a22}
+.rank-shortcut.anonymous{background:#695128!important;border-color:#cb9956!important}
+.desktop-cloud-label{display:none}
+@media(min-width:731px){
+ .desktop-account-block{display:none!important}
+ .camera-fold-button{display:none!important}
+ .camera-fold .camera-actions{display:flex!important;gap:6px}
+ #gesture-toggle{display:none!important}
+ .desktop-puzzle-mode{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:5px 12px;border:1px solid #4a7a69;border-radius:8px;background:#254338;color:#d8f7e7;font-weight:650;white-space:nowrap;font-size:12px;margin-left:8px}
+ .desktop-puzzle-mode:hover{background:#2e5a48}
+ .desktop-cloud-label{display:inline}.mobile-cloud-label{display:none}
+ .top-actions{justify-content:flex-end}
+}
+@media(max-width:730px){.desktop-puzzle-mode{display:none!important}}
+@media(max-width:730px) and (orientation:landscape){.top-actions>.small-btn:first-child{display:inline-flex}}
+
+/* GiraAI v3.5 — indicadores exatamente no centro horizontal do topo no desktop.
+   Colunas laterais flexíveis conservam a posição central mesmo quando as ações quebram linha. */
+@media(min-width:731px){
+ .topbar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:14px;row-gap:7px}
+ .topbar>.titleblock{grid-column:1;min-width:0}
+ .topbar>.kpis{grid-column:2;justify-self:center}
+ .topbar>.top-actions{grid-column:3;justify-self:stretch;justify-content:flex-end;min-width:0}
+}
+</style>
+</head>
+<body class="mode-manual">
+<main class="app">
+<header class="topbar">
+  <div class="titleblock"><h1><img src="./icons/icon-192.png" alt="" class="brand-mark"> GiraAI</h1><p>v3.5 · Cubo mágico interativo · Rofran &amp; Laís</p></div>
+  <div class="kpis" aria-live="polite"><div class="kpi"><span>Movimentos</span><strong id="count-mov">0</strong></div><div class="kpi"><span>Tempo</span><strong id="timer">00:00</strong></div></div>
+  <div class="mobile-header-actions" aria-label="Ações rápidas">
+    <button class="mobile-icon-btn rank-shortcut" id="mobile-rank-shortcut" aria-label="Abrir ranking e login" title="Ranking e login" onclick="openQuickRanking()">🏆</button>
+    <button class="mobile-icon-btn" title="Aparência, sons e volume" aria-label="Abrir aparência e áudio" onclick="openQuickAudio()">♫</button>
+    <button class="mobile-icon-btn puzzle-shortcut" id="mobile-puzzle-shortcut" title="Trocar quebra-cabeça" aria-label="Trocar quebra-cabeça" onclick="cyclePuzzleQuick()">3</button>
+    <button class="mobile-icon-btn" id="mobile-fullscreen" title="Ênfase no cubo / Tela cheia" aria-label="Ênfase no cubo / Tela cheia" onclick="toggleFullScreen()">⛶</button>
+    <button class="mobile-icon-btn" aria-label="Abrir configurações" title="Configurações" onclick="openMobileSettings()">⚙</button>
+  </div>
+  <nav class="top-actions" aria-label="Modos e histórico"><button class="small-btn" onclick="openSaveAttempt()">💾 Salvar</button><button class="mode-switch" id="gesture-toggle" onclick="toggleInputMode()">◉ Modo: controles</button><button class="small-btn" onclick="openLogin()">♙ Login</button><button class="small-btn" onclick="openCloudSettings()">☁ Conta</button><button class="small-btn top-quick rank-shortcut" id="desktop-rank-shortcut" title="Ranking e login" aria-label="Abrir ranking e login" onclick="openQuickRanking()">🏆</button><button class="small-btn top-quick" title="Aparência, sons e volume" aria-label="Abrir aparência e áudio" onclick="openQuickAudio()">♫</button><button class="small-btn top-quick puzzle-shortcut" id="desktop-puzzle-shortcut" title="Trocar quebra-cabeça" aria-label="Trocar quebra-cabeça" onclick="cyclePuzzleQuick()">3</button><button class="small-btn" id="btn-fullscreen" title="Tela cheia" onclick="toggleFullScreen()">⛶</button></nav>
+</header>
+<div class="puzzle-selector" role="group" aria-label="Escolha o quebra-cabeça">
+  <span>Quebra-cabeça</span>
+  <button class="puzzle-choice" data-puzzle="2" onclick="switchPuzzle('2')">2×2×2</button>
+  <button class="puzzle-choice" data-puzzle="3" onclick="switchPuzzle('3')">3×3×3</button>
+  <button class="puzzle-choice" data-puzzle="4" onclick="switchPuzzle('4')">4×4×4</button>
+  <button class="puzzle-choice" data-puzzle="pyramid" onclick="switchPuzzle('pyramid')">△ Pirâmide</button>
+  <button class="desktop-puzzle-mode" id="desktop-mode-badge" onclick="toggleInputMode()" title="Alternar entre controles e gestos">Modo com controles</button>
+</div>
+<div class="workspace" id="workspace">
+  <aside class="panel left" id="left-panel" aria-label="Orientação e aparência">
+    <button class="panel-collapse" id="toggle-left" aria-expanded="true" onclick="togglePanel('left')"><span>◫ Orientação e aparência</span><span class="collapse-indicator">◀</span></button>
+    <div class="panel-content">
+    <div class="left-map"><h2>Orientação</h2><div class="mini-map" aria-label="Ver face do cubo">
+      <button class="mini-face" style="grid-column:2;grid-row:1" id="m-top" onclick="snapTo('top')">Topo</button>
+      <button class="mini-face" style="grid-column:1;grid-row:2" id="m-left" onclick="snapTo('left')">Esq.</button>
+      <button class="mini-face" style="grid-column:2;grid-row:2" id="m-front" onclick="snapTo('front')">Frente</button>
+      <button class="mini-face" style="grid-column:3;grid-row:2" id="m-right" onclick="snapTo('right')">Dir.</button>
+      <button class="mini-face" style="grid-column:2;grid-row:3" id="m-bottom" onclick="snapTo('bottom')">Base</button>
+      <button class="mini-face" style="grid-column:2;grid-row:4" id="m-back" onclick="snapTo('back')">Verso</button>
+    </div></div>
+    <div><h2>Aparência e áudio</h2><div class="setting-grid" style="margin-top:8px"><button id="mode-toggle" onclick="cycleMode()">🎨 <b>Cores</b></button><button id="sound-toggle" onclick="cycleSound()">🔊 <b>Movimento: mudo</b></button><button id="music-toggle" onclick="cycleMusic()">♫ <b>Música: mudo</b></button><button class="volume-toggle" id="volume-toggle" onclick="toggleVolumePanel(false)">◖ Volumes</button></div><div class="volume-panel hidden" id="volume-panel"><label class="volume-control"><div><span>♫ Volume da música</span><output id="volume-music-label">55%</output></div><input id="volume-music" type="range" min="0" max="100" value="55" oninput="setAudioVolume('music',this.value)"></label><label class="volume-control"><div><span>🔊 Volume dos movimentos</span><output id="volume-move-label">70%</output></div><input id="volume-move" type="range" min="0" max="100" value="70" oninput="setAudioVolume('move',this.value)"></label></div></div>
+    <div class="desktop-account-block"><h2>Conta, nuvem e instalação</h2><div class="setting-grid" style="margin-top:7px"><button onclick="openLogin()">♙ Entrar / Criar conta</button><button onclick="openCloudSettings()">☁ Conta e nuvem</button><button data-install-app onclick="installGiraAI()">⬇ Instalar App</button></div><p id="desktop-auth-status" class="cloud-status"><span class="cloud-dot"></span><span>Login não efetuado</span></p></div>
+    <div class="pyramid-guide hidden" id="pyramid-guide"><h2>Pirâmide</h2><p class="helper">Os giros são de 120°: ponta, camada intermediária e base podem girar separadamente. No modo inteligente, arraste um triângulo inferior lateralmente para girar a base.</p></div>
+    <p class="helper"><b>Dica:</b> arraste o fundo para mover o cubo. No modo inteligente, arraste uma peça para girar sua camada. Dois dedos, botão direito do mouse ou <span class="key-list">Shift + arrastar</span> movem a câmera em qualquer ponto.</p>
+  </div></aside>
+  <section class="center-stage" aria-label="Área de jogo">
+    <div class="stage-top"><span class="mode-label" id="mode-badge">Modo com controles</span><span id="zoom-label">Zoom 100%</span></div>
+    <div id="area-cena" class="area-cena" aria-label="Cubo mágico 3D interativo">
+      <span class="axis-mark top">CIMA</span><span class="axis-mark bottom">BAIXO</span><span class="axis-mark left">LUA</span><span class="axis-mark right">SOL</span>
+      <div class="scene" id="scene"><div class="cube-inner" id="cube"></div></div><canvas id="pyramid-canvas" aria-hidden="true"></canvas>
+    </div>
+    <div class="stage-hint" id="stage-hint">Clique numa peça para selecioná-la. Arraste para observar o cubo de qualquer lado.</div>
+    <div class="camera-fold" id="camera-fold"><button class="camera-fold-button" id="toggle-camera" aria-expanded="true" onclick="toggleCameraPanel()">Visão · recolher <span>▴</span></button><div class="camera-actions"><button onclick="rollCamera(-90)" title="Girar a visão para a esquerda">⟲ Visão 90°</button><button onclick="straighten()" title="Alinhar a visão aos eixos">⊞ Endireitar</button><button onclick="rollCamera(90)" title="Girar a visão para a direita">Visão 90° ⟳</button></div></div>
+    <div class="mobile-camera-strip" aria-label="Visão e placar da partida">
+      <button onclick="rollCamera(-90)" title="Girar visão 90° à esquerda">⟲ 90°</button>
+      <button onclick="straighten()" title="Endireitar visão">Endireitar</button>
+      <button onclick="rollCamera(90)" title="Girar visão 90° à direita">90° ⟳</button>
+      <div class="mobile-stat"><span>Mov.</span><strong id="mobile-count-mov">0</strong></div>
+      <div class="mobile-stat"><span>Tempo</span><strong id="mobile-timer">00:00</strong></div>
+    </div>
+  </section>
+  <aside class="panel right" id="right-panel" aria-label="Movimentos e ações">
+    <button class="panel-collapse" id="toggle-right" aria-expanded="true" onclick="togglePanel('right')"><span>⤨ Controles e partida</span><span class="collapse-indicator">▶</span></button>
+    <div class="panel-content">
+    <div class="layer-controls mode-only-manual"><h2>Girar a camada selecionada</h2><p class="selected-hint" id="selected-hint">Selecione uma peça</p>
+      <div class="move-pad"><span class="empty"></span><button title="Camada para cima" onclick="moveViewRelative('up')">↑</button><span></span><button title="Camada para a esquerda" onclick="moveViewRelative('left')">←</button><button title="Camada no sentido horário" onclick="moveViewRelative('roll-cw')">↻</button><button title="Camada para a direita" onclick="moveViewRelative('right')">→</button><span></span><button title="Camada para baixo" onclick="moveViewRelative('down')">↓</button><button title="Camada no sentido anti-horário" onclick="moveViewRelative('roll-ccw')">↺</button></div>
+      <p class="helper" style="margin-top:8px">Os botões seguem a orientação visual. Podem girar qualquer camada, inclusive a central.</p></div>
+    <div class="pyramid-controls mode-only-manual hidden" id="pyramid-controls">
+      <h2>Pirâmide · selecione um vértice</h2>
+      <div class="vertex-choices" id="vertex-choices">
+        <button onclick="selectPyrVertex(0)">▲ Cima</button><button onclick="selectPyrVertex(1)">◀ Esquerda</button>
+        <button onclick="selectPyrVertex(2)">▶ Direita</button><button onclick="selectPyrVertex(3)">▼ Atrás</button>
+      </div>
+      <div class="selected-hint" id="pyramid-selected">Vértice: cima</div>
+      <div class="pyramid-rotate"><div class="side-heading">Girar camada</div><div class="control-row"><button onclick="manualPyrTurn(false,-1)">↶ 120°</button><button onclick="manualPyrTurn(false,1)">120° ↷</button></div></div>
+      <div class="pyramid-rotate"><div class="side-heading">Girar apenas a ponta</div><div class="control-row"><button onclick="manualPyrTurn(true,-1)">↶ 120°</button><button onclick="manualPyrTurn(true,1)">120° ↷</button></div></div>
+      <div class="pyramid-rotate"><div class="side-heading">Girar a base (parte inferior)</div><div class="control-row"><button onclick="manualPyrBase(-1)" title="Girar a base 120 graus à esquerda">Base ↶</button><button onclick="manualPyrBase(1)" title="Girar a base 120 graus à direita">Base ↷</button></div></div>
+    </div>
+    <div class="global-controls stack"><h2>Partida</h2><button onclick="undoMove()">↶ Desfazer movimento</button><div class="control-row"><button onclick="scramble()">⤨ Misturar</button><button class="shrink" id="multi-mistura" onclick="toggleMultiMistura()" title="Número de misturas">1×</button></div><button onclick="solve()">✧ Resolver automaticamente</button><button class="danger" onclick="resetApp()">↺ Reiniciar modelo</button><div class="line"></div><p class="status" id="status-text" role="status">Pronto para jogar.</p></div>
+  </div></aside>
+</div>
+<section class="mobile-dashboard" id="mobile-dashboard" aria-label="Painel da partida no celular">
+  <div class="mobile-main-panels">
+    <div class="mobile-match" id="mobile-match"><button class="mobile-section-title" onclick="toggleMobileMatch()" aria-expanded="true" id="mobile-match-toggle">Partida <span>▴</span></button>
+      <div class="mobile-match-content" id="mobile-match-content">
+        <button onclick="undoMove()">↶ Desfazer</button>
+        <div class="mobile-mix"><button onclick="scramble()">⤨ Misturar</button><button id="mobile-multi" onclick="toggleMultiMistura()" title="Multiplicador de misturas">1×</button></div>
+        <button onclick="solve()">✧ Resolver</button><button onclick="resetApp()" class="danger">↺ Reiniciar</button>
+      </div>
+    </div>
+    <div class="mobile-orientation" id="mobile-orientation"><div class="mobile-section-title static-title">Orientação</div>
+      <div class="mobile-mini-map mini-map" aria-label="Escolher orientação">
+       <button class="mini-face" data-view="top" style="grid-column:2;grid-row:1" onclick="snapTo('top')">Topo</button>
+       <button class="mini-face" data-view="left" style="grid-column:1;grid-row:2" onclick="snapTo('left')">Esq.</button>
+       <button class="mini-face" data-view="front" style="grid-column:2;grid-row:2" onclick="snapTo('front')">Frente</button>
+       <button class="mini-face" data-view="right" style="grid-column:3;grid-row:2" onclick="snapTo('right')">Dir.</button>
+       <button class="mini-face" data-view="bottom" style="grid-column:2;grid-row:3" onclick="snapTo('bottom')">Base</button>
+       <button class="mini-face" data-view="back" style="grid-column:2;grid-row:4" onclick="snapTo('back')">Verso</button>
+      </div>
+      <p class="mobile-pyramid-label" id="mobile-pyramid-orientation">Pirâmide · gire livremente a visão</p>
+    </div>
+  </div>
+  <div class="mobile-turn-panel" id="mobile-turn-panel" aria-label="Girar camadas">
+    <div class="mobile-cube-turn">
+       <div class="mobile-turn-title">Girar camada <small id="mobile-selected-hint">Selecione uma peça</small></div>
+       <div class="mobile-turn-pad"><button onclick="moveViewRelative('left')">←</button><button onclick="moveViewRelative('up')">↑</button><button onclick="moveViewRelative('down')">↓</button><button onclick="moveViewRelative('right')">→</button><button onclick="moveViewRelative('roll-ccw')">↺</button><button onclick="moveViewRelative('roll-cw')">↻</button></div>
+    </div>
+    <div class="mobile-pyr-turn"><div class="mobile-turn-title">Pirâmide <small id="mobile-pyr-selected">Vértice: cima</small></div>
+      <div class="mobile-vertex-choices"><button data-vertex="0" onclick="selectPyrVertex(0)">▲</button><button data-vertex="1" onclick="selectPyrVertex(1)">◀</button><button data-vertex="2" onclick="selectPyrVertex(2)">▶</button><button data-vertex="3" onclick="selectPyrVertex(3)">▼</button></div>
+      <div class="mobile-pyr-directions"><button onclick="manualPyrTurn(false,-1)">Cam. ↶</button><button onclick="manualPyrTurn(false,1)">Cam. ↷</button><button onclick="manualPyrTurn(true,-1)">Ponta ↶</button><button onclick="manualPyrTurn(true,1)">Ponta ↷</button><button onclick="manualPyrBase(-1)">Base ↶</button><button onclick="manualPyrBase(1)">Base ↷</button></div>
+    </div>
+  </div>
+  <p id="mobile-status-text" class="mobile-status" role="status">Pronto para jogar.</p>
+</section>
+<footer class="footer">GiraAI v3.5 · Desenvolvido por Rofran · 2026 · Offline e nuvem opcional</footer>
+</main>
+<div class="overlay hidden" id="mobile-settings-overlay" role="dialog" aria-modal="true" aria-labelledby="mobile-settings-title">
+ <section class="modal mobile-settings-modal">
+  <div class="modal-header"><h2 id="mobile-settings-title">⚙ Configurações</h2><button class="close" onclick="closeMobileSettings()" aria-label="Fechar configurações">×</button></div>
+  <div class="mobile-settings-content">
+   <h3>Partidas e histórico</h3><div class="mobile-quick-group"><button onclick="openMobileHistory()">🏆 Histórico e ranking</button><button onclick="openMobileSave()">💾 Salvar tentativa</button></div>
+   <h3>Modo de controle</h3><button id="mobile-gesture-toggle" onclick="toggleInputMode()">Modo: controles</button>
+   <h3>Escolher quebra-cabeça</h3><div class="mobile-puzzle-grid" role="group" aria-label="Quebra-cabeça">
+    <button class="puzzle-choice" data-puzzle="2" onclick="switchPuzzle('2')">2×2×2</button><button class="puzzle-choice" data-puzzle="3" onclick="switchPuzzle('3')">3×3×3</button><button class="puzzle-choice" data-puzzle="4" onclick="switchPuzzle('4')">4×4×4</button><button class="puzzle-choice" data-puzzle="pyramid" onclick="switchPuzzle('pyramid')">△ Pirâmide</button>
+   </div>
+   <h3>Aparência e áudio</h3><div class="mobile-settings-grid"><button id="mobile-mode-toggle" onclick="cycleMode()">🎨 Cores</button><button id="mobile-sound-toggle" onclick="cycleSound()">🔊 Movimentos</button><button id="mobile-music-toggle" onclick="cycleMusic()">♫ Música</button><button id="mobile-volume-toggle" class="volume-toggle" onclick="toggleVolumePanel(true)">◖ Volumes</button></div>
+   <div class="volume-panel hidden" id="mobile-volume-panel"><label class="volume-control"><div><span>♫ Volume da música</span><output id="mobile-volume-music-label">55%</output></div><input id="mobile-volume-music" type="range" min="0" max="100" value="55" oninput="setAudioVolume('music',this.value)"></label><label class="volume-control"><div><span>🔊 Volume dos movimentos</span><output id="mobile-volume-move-label">70%</output></div><input id="mobile-volume-move" type="range" min="0" max="100" value="70" oninput="setAudioVolume('move',this.value)"></label></div>
+   <h3>Exibição no celular</h3>
+   <label class="setting-check"><input id="pref-orientation" type="checkbox" checked onchange="updateMobilePref('orientation',this.checked)"> Mostrar orientação</label>
+   <label class="setting-check"><input id="pref-turns" type="checkbox" checked onchange="updateMobilePref('turns',this.checked)"> Mostrar botões para girar camadas</label>
+   <label class="setting-check"><input id="pref-match" type="checkbox" onchange="updateMobilePref('match',this.checked)"> Manter botões de partida recolhidos</label>
+   <h3>Conta e dados na nuvem</h3>
+   <button class="cloud-entry" onclick="openLogin()"><span>♙ Entrar / Criar conta</span><span id="mobile-auth-status" class="cloud-status"><span class="cloud-dot"></span><span>Login não efetuado</span></span></button><button class="cloud-entry" onclick="openCloudSettings()"><span>☁ Conta e configurações de nuvem</span><span class="account-chevron">›</span></button>
+   <div class="mobile-settings-grid"><button data-install-app onclick="installGiraAI()">⬇ Instalar App</button><button onclick="syncCloudNow()">↻ Sincronizar agora</button></div>
+   <p class="helper">O botão ⛶ percorre quatro modos: Normal → Normal com entorno escuro → Tela cheia com entorno escuro → Tela cheia normal.</p>
+  </div>
+ </section>
+</div>
+<div class="overlay hidden" id="quick-audio-overlay" role="dialog" aria-modal="true" aria-labelledby="quick-audio-title">
+ <section class="modal quick-audio-modal">
+  <div class="modal-header"><h2 id="quick-audio-title">♫ Aparência e áudio</h2><button class="close" onclick="closeQuickAudio()" aria-label="Fechar áudio">×</button></div>
+  <p class="helper" style="margin:9px 0 12px">Altere os modos tocando nos botões. Música e movimentos possuem volumes independentes.</p>
+  <div class="quick-audio-grid">
+   <button id="quick-mode-toggle" onclick="cycleMode()">🎨 Cores</button>
+   <button id="quick-sound-toggle" onclick="cycleSound()">🔊 Movimento: mudo</button>
+   <button id="quick-music-toggle" onclick="cycleMusic()">♫ Música: mudo</button>
+   <button id="quick-volume-toggle" class="volume-toggle" onclick="toggleQuickVolume()" aria-expanded="true">◖ Volume ▴</button>
+  </div>
+  <div class="volume-panel" id="quick-volume-panel">
+   <label class="volume-control"><div><span>♫ Volume da música</span><output id="quick-volume-music-label">55%</output></div><input id="quick-volume-music" type="range" min="0" max="100" value="55" oninput="setAudioVolume('music',this.value)"></label>
+   <label class="volume-control"><div><span>🔊 Volume dos movimentos</span><output id="quick-volume-move-label">70%</output></div><input id="quick-volume-move" type="range" min="0" max="100" value="70" oninput="setAudioVolume('move',this.value)"></label>
+  </div>
+  <label class="shared-look-toggle" for="quick-shared-appearance">
+   <input id="quick-shared-appearance" type="checkbox" onchange="toggleSharedAppearance(this.checked)">
+   <span><strong>Manter áudio e aparência iguais em todos os cubos</strong><small>Ao marcar, cores, músicas, som de movimento e volumes deste modelo passam a valer também para 2×2, 3×3, 4×4 e pirâmide. Desmarcado: ajustes individuais por modelo.</small></span>
+  </label>
+  <div class="modal-actions"><button onclick="closeQuickAudio()">Fechar</button></div>
+ </section>
+</div>
+<div class="overlay hidden" id="history-overlay" role="dialog" aria-modal="true" aria-labelledby="history-title">
+ <section class="modal"><div class="modal-header"><h2 id="history-title">🏆 Histórico e ranking</h2><button class="close" onclick="closeHistory()" aria-label="Fechar">×</button></div>
+ <p class="helper" style="margin-top:8px">Seu histórico mantém até 10 registros e reproduz movimentos. Os recordes globais são públicos apenas se você permitir a publicação.</p>
+ <div id="quick-ranking-login" class="quick-ranking-login hidden">
+  <div class="quick-ranking-head"><span class="cloud-dot"></span><b id="quick-ranking-title">Entre para acessar o ranking global e seus recordes na nuvem.</b></div>
+  <p class="helper" id="quick-ranking-explanation">É possível jogar sem conta. Você também pode criar uma identidade anônima e vinculá-la a Google ou e-mail depois.</p>
+  <div class="quick-rank-actions"><button id="quick-visitor-login" onclick="openQuickAnonymousLogin()">♙ Visitante</button><button onclick="openQuickGoogleLogin()">G Entrar com Google</button><button onclick="openQuickEmailLogin()">✉ E-mail / Criar conta</button></div>
+ </div>
+ <div id="history-cloud-tabs" class="history-tabs" role="tablist" aria-label="Tipos de histórico e ranking"><button id="hist-local" class="primary" role="tab" aria-selected="true" onclick="chooseHistoryView('local')">📱 Neste aparelho</button><button id="hist-personal" class="hidden" role="tab" aria-selected="false" onclick="chooseHistoryView('personal')">☁ Minha conta</button><button id="hist-global" class="hidden" role="tab" aria-selected="false" onclick="chooseHistoryView('global')">🌍 Ranking global</button></div>
+ <p class="helper" id="history-view-description" style="margin-top:8px">Registros deste aparelho, inclusive os disponíveis sem internet.</p>
+ <div id="global-rank-controls" class="hidden rank-filters"><label>Modelo <select id="global-rank-type" onchange="loadGlobalRanking()"><option value="2">2×2×2</option><option value="3">3×3×3</option><option value="4">4×4×4</option><option value="pyramid">Pirâmide</option></select></label><label>Classificar <select id="global-rank-sort" onchange="loadGlobalRanking()"><option value="durationMs">Menor tempo</option><option value="count">Menos movimentos</option></select></label><button onclick="loadGlobalRanking()">↻ Atualizar</button></div>
+  <details class="cloud-disclosure" id="cloud-public-profile"><summary>🌍 Localização no ranking (opcional)</summary>
+    <p class="helper">Adicione país, estado e cidade ao seu perfil público do ranking. A detecção aproximada por IP é opcional e só ocorre ao solicitar. É necessário entrar na conta para salvar e publicar esta informação. Coordenadas GPS não são coletadas.</p>
+    <div class="profile-fields"><label>País<input id="profile-country" maxlength="48" placeholder="Brasil"></label><label>Estado<input id="profile-state" maxlength="56" placeholder="Estado"></label><label>Cidade<input id="profile-city" maxlength="64" placeholder="Cidade"></label></div>
+    <div class="cloud-actions"><button onclick="detectApproxLocation()">⌖ Detectar por IP</button><button onclick="saveCloudProfile()">Salvar localização</button></div><p id="cloud-profile-feedback" class="notice" role="status"></p>
+  </details>
+
+ <div class="rankbar" id="local-rank-controls" style="margin-top:13px"><div class="control-row"><button id="sort-time" onclick="setHistorySort('time')">⏱ Tempo</button><button id="sort-moves" onclick="setHistorySort('moves')">↻ Movimentos</button><button id="sort-date" onclick="setHistorySort('date')">▤ Data</button></div><button class="danger" onclick="clearHistory()">Limpar histórico</button></div>
+ <div class="record-list" id="record-list"></div><div id="global-record-list" class="record-list hidden"></div><div class="modal-actions"><button onclick="closeHistory()">Fechar</button></div>
+ </section>
+</div>
+<div class="overlay hidden" id="name-overlay" role="dialog" aria-modal="true" aria-labelledby="name-title">
+ <form class="modal" style="max-width:480px" id="name-form"><div class="modal-header"><h2 id="name-title">Salvar partida</h2><button type="button" class="close" onclick="closeName()" aria-label="Fechar">×</button></div>
+ <div id="win-banner" class="banner hidden" style="margin-top:16px"><strong>🎉 Parabéns!</strong><div>Você completou o quebra-cabeça!</div></div>
+ <p id="name-description">Dê um nome a esta tentativa para registrá-la no histórico.</p><label for="player-name">Seu nome</label><input id="player-name" name="name" maxlength="36" autocomplete="nickname" placeholder="Digite seu nome" required><div id="name-summary" class="notice"></div><label id="share-win-label" class="setting-check hidden"><input id="share-win-global" type="checkbox" checked> Publicar esta vitória no ranking global (nome, país, estado, cidade, tempo e movimentos)</label>
+ <div class="modal-actions" style="margin-top:20px"><button type="button" onclick="closeName()">Agora não</button><button type="submit" class="primary">Salvar no ranking</button></div></form>
+</div>
+<div class="overlay replay hidden" id="replay-overlay" role="dialog" aria-modal="true" aria-labelledby="replay-title"><section class="modal" style="max-width:500px"><div class="modal-header"><h2 id="replay-title">▶ Reprodução</h2><button class="close" onclick="stopReplay()" aria-label="Parar e fechar">×</button></div><p id="replay-description">Reproduzindo os movimentos...</p><p id="replay-progress" class="muted">0/0 movimentos</p><div class="playbar"><button id="replay-pause" onclick="toggleReplayPause()">⏸ Pausar</button><button onclick="stopReplay()">■ Parar e voltar</button></div><p class="notice" style="margin-top:14px">O quebra-cabeça atrás desta janela exibe a partida reproduzida. Ao fechar, a partida atual é restaurada.</p></section></div>
+
+<div class="overlay hidden" id="cloud-overlay" role="dialog" aria-modal="true" aria-labelledby="cloud-title">
+ <section class="modal cloud-modal">
+  <div class="modal-header"><h2 id="cloud-title"><span class="desktop-cloud-label">☁ Conta</span><span class="mobile-cloud-label">☁ Conta e nuvem</span></h2><button class="close" onclick="closeCloudSettings()" aria-label="Fechar conta e nuvem">×</button></div>
+  <p id="cloud-account-status" class="cloud-status large"><span class="cloud-dot"></span><span>Login não efetuado</span></p>
+  <p class="cloud-intro">Com sua conta conectada e a nuvem ativada, partidas e preferências acompanham você em outros aparelhos. O jogo continua disponível offline.</p>
+  <div class="cloud-actions"><button id="open-login-btn" class="primary" onclick="openLogin()">Entrar / Criar conta</button><button id="upgrade-anonymous-btn" class="hidden" onclick="openLogin()">Vincular Google / E-mail</button><button id="logout-btn" class="hidden" onclick="logoutGiraAI()">Sair da conta</button><button onclick="closeCloudSettings()">Voltar ao jogo</button></div>
+  <div class="cloud-section">
+   <h3>Onde salvar</h3>
+   <label class="cloud-choice"><input type="radio" name="cloud-storage-mode" value="both" checked onchange="setCloudMode(this.value)"><span><b>Neste aparelho e na nuvem</b><small>Recomendado: sincroniza ao conectar e mantém cópia para jogar offline.</small></span></label>
+   <label class="cloud-choice"><input type="radio" name="cloud-storage-mode" value="local" onchange="setCloudMode(this.value)"><span><b>Somente neste aparelho</b><small>Sem envio automático. Limpar os dados do navegador pode apagar o progresso.</small></span></label>
+  </div>
+  <div class="cloud-section"><h3>Meus dados</h3><div class="cloud-actions"><button onclick="syncCloudNow()">↻ Sincronizar agora</button><button onclick="pullCloudNow()">↓ Recuperar da nuvem</button></div><p id="cloud-sync-state" class="notice" aria-live="polite">Entre na sua conta para sincronizar.</p></div>
+ </section>
+</div>
+<div class="overlay hidden" id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
+ <section class="modal cloud-modal login-modal">
+  <div class="modal-header"><h2 id="login-title">Entrar no GiraAI</h2><button class="close" onclick="closeLogin()" aria-label="Fechar login">×</button></div>
+  <p class="helper">Entre com Google, e-mail ou como visitante anônimo. Depois, você poderá vincular o visitante a uma conta para conservar o mesmo UID e acessar seus dados em outros aparelhos. A sincronização é opcional e depende de ativar a nuvem em Conta.</p>
+  <button class="visitor-button" id="anonymous-login-btn" type="button" onclick="loginAnonymously()">♙ Jogar como visitante (anônimo)</button>
+  <p class="helper guest-explanation">O Firebase cria um identificador temporário sem e-mail. Se limpar os dados deste navegador antes de vincular a conta, você poderá perder o acesso aos dados do visitante.</p>
+  <button class="google-button" onclick="loginWithGoogle()"><span class="google-G">G</span> Entrar com o Google</button>
+  <div class="login-divider">ou com e-mail</div>
+  <form id="email-login-form" onsubmit="submitEmailLogin(event)">
+   <label>E-mail<input id="auth-email" type="email" autocomplete="email" required placeholder="seu@email.com"></label>
+   <label>Senha<input id="auth-password" type="password" autocomplete="current-password" minlength="6" required placeholder="Mínimo de 6 caracteres"></label>
+   <label class="password-checkbox"><input type="checkbox" onchange="document.getElementById('auth-password').type=this.checked?'text':'password'"> Mostrar senha</label>
+   <div class="cloud-buttons"><button class="primary" type="submit">Entrar</button><button type="button" onclick="createEmailAccount()">Criar conta</button></div>
+  </form>
+  <button class="text-button" onclick="sendResetEmail()">Esqueci minha senha</button>
+  <p id="login-feedback" class="notice" role="status" aria-live="polite"></p>
+  <p id="firebase-sdk-status" class="firebase-sdk-status" role="status" aria-live="polite">Conectando ao Firebase…</p>
+  <button id="firebase-sdk-retry" type="button" hidden onclick="window.GiraFirebaseSDK?.retry?.()">↻ Tentar reconectar ao Firebase</button>
+ </section>
+</div>
+<div class="overlay hidden" id="install-overlay" role="dialog" aria-modal="true" aria-labelledby="install-title"><section class="modal" style="max-width:440px"><div class="modal-header"><h2 id="install-title">Instalar GiraAI</h2><button class="close" onclick="closeInstallHelp()">×</button></div><p id="install-guide">No Chrome Android, abra o menu ⋮ e escolha “Instalar app” ou “Adicionar à tela inicial”. No Safari iOS, toque em Compartilhar → Adicionar à Tela de Início.</p><div class="modal-actions"><button onclick="closeInstallHelp()">Fechar</button></div></section></div>
+<script>
+'use strict';
+// GiraAI v3.5, derivado da base Cubo 3D v2.4. Eixos lógicos invariantes, giros de 90° por matrizes inteiras,
+// câmera independente via quaternion, replay sem sobrescrever a partida.
+const $ = id => document.getElementById(id);
+const cube = $('cube'), scene = $('scene'), area = $('area-cena'), pyrCanvas = $('pyramid-canvas'), pyrCtx = pyrCanvas.getContext('2d',{alpha:true});
+const NORMALS = {front:[0,0,1],back:[0,0,-1],right:[1,0,0],left:[-1,0,0],top:[0,-1,0],bottom:[0,1,0]};
+const COLORS = {front:'#17bc61',back:'#257be9',right:'#f24a55',left:'#ff9e32',top:'#f9fafb',bottom:'#ffd83f'};
+const FACES = ['front','back','right','left','top','bottom'];
+const ID = [1,0,0,0,1,0,0,0,1];
+const DATA_KEY = 'cuboRofran_v3', RECORD_KEY='cuboRofran_ranking_v1', PUZZLE_SLOT='cuboRofran_type_', MOBILE_UI_KEY='cuboRofran_mobile_v24';
+let giraProfileUid = (()=>{try{return localStorage.getItem('giraai_last_uid')||null}catch(_){return null}})(), historyView = 'local', cloudApplyInProgress = false;
+function profileKey(k){return giraProfileUid && (k===DATA_KEY||k===RECORD_KEY||k===MOBILE_UI_KEY||k.startsWith(PUZZLE_SLOT)) ? 'giraAI_user_'+giraProfileUid+'_'+k : k}
+const Q = {normalize(a){let l=Math.hypot(...a)||1;return a.map(v=>v/l)},mul(a,b){return [a[3]*b[0]+a[0]*b[3]+a[1]*b[2]-a[2]*b[1],a[3]*b[1]-a[0]*b[2]+a[1]*b[3]+a[2]*b[0],a[3]*b[2]+a[0]*b[1]-a[1]*b[0]+a[2]*b[3],a[3]*b[3]-a[0]*b[0]-a[1]*b[1]-a[2]*b[2]]},axis(axis,rad){const v=axis==='x'?[1,0,0]:axis==='y'?[0,1,0]:[0,0,1],s=Math.sin(rad/2);return [...v.map(n=>n*s),Math.cos(rad/2)]},vec(q,v){let u=q.slice(0,3),s=q[3],dot=u[0]*v[0]+u[1]*v[1]+u[2]*v[2];let cr=cross(u,v);return v.map((n,i)=>2*dot*u[i]+(s*s-dot3(u,u))*n+2*s*cr[i])},slerp(a,b,t){let d=a.reduce((v,x,i)=>v+x*b[i],0),bb=d<0?b.map(v=>-v):b;if(Math.abs(d)>.998)return Q.normalize(a.map((x,i)=>x+(bb[i]-x)*t));let th=Math.acos(Math.min(1,Math.abs(d))),den=Math.sin(th);return a.map((x,i)=>(Math.sin((1-t)*th)*x+Math.sin(t*th)*bb[i])/den)}};
+function dot3(a,b){return a.reduce((v,x,i)=>v+x*b[i],0)}
+function cross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+function norm2(v){let d=Math.hypot(v[0],v[1])||1;return [v[0]/d,v[1]/d]}
+function rotateVec(v,axis,dir){let [x,y,z]=v;if(axis==='x')return [x,-dir*z,dir*y];if(axis==='y')return [dir*z,y,-dir*x];return [-dir*y,dir*x,z]}
+function applyOri(ori,v){return [ori[0]*v[0]+ori[3]*v[1]+ori[6]*v[2],ori[1]*v[0]+ori[4]*v[1]+ori[7]*v[2],ori[2]*v[0]+ori[5]*v[1]+ori[8]*v[2]]}
+function turnOri(ori,axis,dir){let next=[];for(let i=0;i<3;i++) next.push(...rotateVec(ori.slice(3*i,3*i+3),axis,dir));return next}
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+let pieces=[], pieceById=new Map(), selectedPiece=null, busy=false, inputMode='manual', imageMode=0, sharedAppearanceAcrossPuzzles=false;
+let puzzleType='3', gridSize=3, selectedPyrVertex=0, pyrSlots=[],pyramidColors=[];
+const PYR_NAMES=['Cima','Esquerda','Direita','Atrás'];
+const PYR_COLORS=['#ecdd37','#f34844','#2bd472','#328fea'];
+const PYR_LENGTH=276, PYR_HEIGHT=PYR_LENGTH*Math.sqrt(2/3);
+const PYR_VERTS=[[0,-3*PYR_HEIGHT/4,0],[-PYR_LENGTH/2,PYR_HEIGHT/4,PYR_LENGTH/(2*Math.sqrt(3))],[PYR_LENGTH/2,PYR_HEIGHT/4,PYR_LENGTH/(2*Math.sqrt(3))],[0,PYR_HEIGHT/4,-PYR_LENGTH/Math.sqrt(3)]];
+function sizeHalf(){return(gridSize-1)/2}function positions(){return Array.from({length:gridSize},(_,i)=>i-sizeHalf())}
+function puzzleLabel(t=puzzleType){return t==='pyramid'?'Pirâmide':t+'×'+t+'×'+t}
+function isPyramid(){return puzzleType==='pyramid'}
+function norm3(v){let n=Math.hypot(...v)||1;return v.map(x=>x/n)}
+function subtract3(a,b){return a.map((v,i)=>v-b[i])}
+function add3(a,b){return a.map((v,i)=>v+b[i])}
+function scaled3(a,n){return a.map(v=>v*n)}
+function rotated3(v,axis,rad){const a=norm3(axis),c=Math.cos(rad),s=Math.sin(rad),crossVal=cross(a,v),d=dot3(a,v);return v.map((n,i)=>n*c+crossVal[i]*s+a[i]*d*(1-c))}
+let cam=Q.normalize(Q.mul(Q.axis('x',-Math.PI/7),Q.axis('y',-Math.PI/5))), desiredCam=[...cam], camMoving=false, userZoom=1, baseScale=.78;
+let moveStack=[], sessionMoves=[], sessionStart=null, moveCount=0, elapsed=0, timerOrigin=0, running=false, readyToStart=false, autoRunning=false, attemptEligible=false, attemptFinished=false;
+let multiplicadorMistura=1, currentSound=0, currentMusic=0, musicInterval=null, audioCtx=null, noteStep=0, musicVolume=55, moveVolume=70, musicGain=null, moveGain=null, audioLimiter=null, musicNextTime=0, currentTrack=0, noiseBuffer=null;
+let historySort='time', pendingSaveWon=false, resumeAfterName=false, resumeAfterHistory=false, isReplaying=false, replayPaused=false, replayCancel=false, replayBackup=null, replayIsRunning=false, replayRecord=null;
+let darkImages=[],lightImages=[];
+let pyrTurnCache=new Map();
+const originalImages=['Imagem1.jpg','Imagem2.jpg','Imagem3.jpg','Imagem4.jpg','Imagem5.jpg','Imagem6.jpg'];
+const soundModes=['Mudo','Mecânico','Sintético','Agudo'];
+const musicModes=['Mudo','Zen','Techno','Arpejo','Bass','Galáxia','MIDI surpresa'];
+/* Trilha procedural local: sequenciador com agendamento antecipado no AudioContext.
+   Cada tema tem andamento, harmonia, percussão e instrumentação próprios. */
+const TRACKS=[null,
+ {bpm:72,root:57,seq:[0,4,7,11,7,4,2,7,0,4,9,11,7,4,2,4],chords:[[0,4,7],[5,9,12],[7,11,14],[3,7,10]],kind:'zen'},
+ {bpm:124,root:45,seq:[0,0,7,0,3,0,7,10,0,0,7,0,5,0,7,10],chords:[[0,3,7],[5,8,12],[7,10,14],[3,7,10]],kind:'techno'},
+ {bpm:110,root:52,seq:[0,4,7,12,7,4,0,7,5,9,12,16,12,9,5,12],chords:[[0,4,7],[5,9,12],[9,12,16],[7,11,14]],kind:'arp'},
+ {bpm:108,root:40,seq:[0,0,7,0,10,7,3,0,0,12,7,5,3,0,7,10],chords:[[0,3,7],[3,7,10],[5,8,12],[7,10,14]],kind:'bass'},
+ {bpm:86,root:50,seq:[0,7,12,19,14,12,7,2,0,5,9,14,12,9,5,7],chords:[[0,7,12],[5,9,14],[3,7,12],[7,12,16]],kind:'galaxy'},
+ {bpm:112,root:52,seq:Array(16).fill(0),chords:[[0,4,7],[5,9,12],[7,11,14],[3,7,10]],kind:'midi'}
+];
+const midiFreq=n=>440*Math.pow(2,(n-69)/12);
+function setStatus(text,error=false){$('status-text').textContent=text;$('status-text').classList.toggle('error',error);$('mobile-status-text').textContent=text;$('mobile-status-text').classList.toggle('error',error)}
+function syncVolumeUI(){for(const id of ['volume-music','mobile-volume-music','quick-volume-music'])if($(id))$(id).value=musicVolume;
+ for(const id of ['volume-move','mobile-volume-move','quick-volume-move'])if($(id))$(id).value=moveVolume;
+ for(const id of ['volume-music-label','mobile-volume-music-label','quick-volume-music-label'])if($(id))$(id).textContent=musicVolume+'%';
+ for(const id of ['volume-move-label','mobile-volume-move-label','quick-volume-move-label'])if($(id))$(id).textContent=moveVolume+'%';
+ // Mixagem reforçada. O limitador controla picos e reduz distorção ao elevar o volume.
+ if(musicGain)musicGain.gain.setTargetAtTime(musicVolume/100*2.3,audioCtx.currentTime,.02);
+ if(moveGain)moveGain.gain.setTargetAtTime(moveVolume/100*1.45,audioCtx.currentTime,.02);
+}
+function setAudioVolume(kind,v){const val=clamp(Math.round(Number(v)||0),0,100);if(kind==='music')musicVolume=val;else moveVolume=val;
+ syncVolumeUI();tryAudio();clearTimeout(window.giraVolumeSaveTimer);window.giraVolumeSaveTimer=setTimeout(appearanceSettingsChanged,180);}
+function toggleVolumePanel(mobile=false){const el=$(mobile?'mobile-volume-panel':'volume-panel');const closed=el.classList.toggle('hidden');$(mobile?'mobile-volume-toggle':'volume-toggle').setAttribute('aria-expanded',String(!closed));syncVolumeUI()}
+function setupAudio(){if(audioCtx)return true;const C=window.AudioContext||window.webkitAudioContext;if(!C)return false;
+ try{audioCtx=new C();musicGain=audioCtx.createGain();moveGain=audioCtx.createGain();audioLimiter=audioCtx.createDynamicsCompressor();audioLimiter.threshold.value=-16;audioLimiter.knee.value=10;audioLimiter.ratio.value=7;audioLimiter.attack.value=.004;audioLimiter.release.value=.19;musicGain.connect(audioLimiter);moveGain.connect(audioLimiter);audioLimiter.connect(audioCtx.destination);
+ syncVolumeUI();return true}catch(_){return false}}
+function tryAudio(){if(!setupAudio())return;try{if(audioCtx.state!=='running')audioCtx.resume().then(()=>{if(currentMusic&&!musicInterval)startMusic()}).catch(()=>{});else if(currentMusic&&!musicInterval)startMusic()}catch(_){}}
+function voice(freq,when,duration=.2,level=.1,wave='sine',target='music',filter=0){if(!audioCtx||audioCtx.state!=='running'||freq<=0)return;
+ const osc=audioCtx.createOscillator(),amp=audioCtx.createGain();osc.type=wave;osc.frequency.setValueAtTime(freq,when);
+ let dest=amp;if(filter){const f=audioCtx.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(filter,when);osc.connect(f);f.connect(amp)}else osc.connect(amp);
+ const a=Math.min(.055,duration*.2),r=Math.max(.06,duration-a);amp.gain.setValueAtTime(.00001,when);amp.gain.exponentialRampToValueAtTime(Math.max(.0001,level),when+a);amp.gain.exponentialRampToValueAtTime(.00001,when+a+r);
+ dest.connect(target==='move'?moveGain:musicGain);osc.start(when);osc.stop(when+a+r+.02)}
+function drum(kind,when,amount=.12){if(!audioCtx||audioCtx.state!=='running')return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';
+ const start=kind==='kick'?150:kind==='snare'?220:460;o.frequency.setValueAtTime(start,when);o.frequency.exponentialRampToValueAtTime(kind==='kick'?46:kind==='snare'?94:250,when+(kind==='kick'?.13:.055));
+ const len=kind==='kick'?.2:kind==='snare'?.105:.047;g.gain.setValueAtTime(amount,when);g.gain.exponentialRampToValueAtTime(.0001,when+len);o.connect(g).connect(musicGain);o.start(when);o.stop(when+len+.01);
+ if(kind!=='kick'){const buffer=getNoiseBuffer(),src=audioCtx.createBufferSource(),noiseG=audioCtx.createGain(),f=audioCtx.createBiquadFilter();src.buffer=buffer;f.type='highpass';f.frequency.value=kind==='hat'?6200:2000;noiseG.gain.setValueAtTime(kind==='hat'?.028:.055,when);noiseG.gain.exponentialRampToValueAtTime(.0001,when+(kind==='hat'?.038:.09));src.connect(f).connect(noiseG).connect(musicGain);src.start(when);src.stop(when+.11)}}
+function getNoiseBuffer(){if(noiseBuffer)return noiseBuffer;const sr=audioCtx.sampleRate;noiseBuffer=audioCtx.createBuffer(1,Math.round(sr*.14),sr);const d=noiseBuffer.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return noiseBuffer}
+function moveSound(){if(!currentSound||moveVolume<=0)return;tryAudio();if(!audioCtx||audioCtx.state!=='running')return;const t=audioCtx.currentTime+.006;
+ if(currentSound===1){voice(195,t,.09,.13,'triangle','move',850);voice(98,t,.07,.08,'sine','move')}
+ else if(currentSound===2){voice(420,t,.14,.12,'sine','move');voice(620,t+.03,.09,.07,'triangle','move')}
+ else {voice(830,t,.10,.09,'triangle','move');voice(1100,t+.028,.08,.055,'sine','move')}}
+/* MIDI surpresa: notas MIDI numeradas (0-127), sintetizadas pelo AudioContext.
+   Melodias geradas localmente com escala, harmonia e ritmo aleatórios. Sem downloads,
+   direitos de música de terceiros ou dependência de uma biblioteca externa. */
+let midiComposition=null;
+function createMidiComposition(){
+ const pick=a=>a[Math.floor(Math.random()*a.length)];
+ const major=Math.random()>.45,intervals=major?[0,2,4,5,7,9,11]:[0,2,3,5,7,8,10];
+ const tonic=pick([45,47,48,50,52,53,55,57]),bpm=pick([92,100,108,116,124,132]);
+ const progressions=major?[[0,5,3,4],[0,4,5,3],[0,3,5,4]]:[[0,5,3,6],[0,6,5,4],[0,3,6,5]];
+ const progression=pick(progressions);const events=[];let prev=5;
+ for(let bar=0;bar<8;bar++){
+  const degree=progression[bar%4],chord=[0,2,4].map(n=>intervals[(degree+n)%7]+12*Math.floor((degree+n)/7));
+  events.push({step:bar*16,note:tonic+chord[0]-12,len:13,vel:.052,wave:'triangle'});
+  for(const off of [0,4,8,12])events.push({step:bar*16+off,note:tonic+chord[(off/4)%3],len:3.6,vel:.04,wave:'sine'});
+  for(let beat=0;beat<16;beat+=2){
+   if(Math.random()<.17)continue;
+   const change=pick([-2,-1,0,1,2,3]);prev=clamp(prev+change,0,12);
+   const di=(degree+prev)%7,oct=Math.floor((degree+prev)/7);
+   const pitch=tonic+12+intervals[di]+12*oct;
+   events.push({step:bar*16+beat,note:pitch,len:pick([1.5,2.2,3,3.6]),vel:Math.random()*.035+.045,wave:pick(['triangle','sine','square'])});
+  }
+ }
+ return {bpm,eventsByStep:new Map(Array.from({length:128},(_,i)=>[i,events.filter(e=>e.step===i)]))};
+}
+function arrangeNote(track,step,t){const bar=Math.floor(step/16)%4,s=step%16,root=track.root,base=track.chords[bar];
+ if(track.kind==='zen'){
+  if(s===0){for(const n of base)voice(midiFreq(root+n),t,3.0,.035,'sine','music',1800)}
+  if([0,3,6,10,13].includes(s)){const n=track.seq[s];voice(midiFreq(root+12+n),t,1.1,.075,'sine','music');voice(midiFreq(root+24+n),t+.075,.55,.018,'triangle','music')}
+ }else if(track.kind==='techno'){
+  if(s%4===0)drum('kick',t,.18);if(s===4||s===12)drum('snare',t,.065);if(s%2===0)drum('hat',t,.028);
+  if(s%2===0)voice(midiFreq(root+track.seq[s]),t,.19,.10,'sawtooth','music',520);
+  if(s===2||s===10)for(const n of base)voice(midiFreq(root+12+n),t,.22,.028,'sawtooth','music',1150);
+ }else if(track.kind==='arp'){
+  voice(midiFreq(root+12+track.seq[s]),t,.26,.065,'triangle','music',2100);
+  if(s===0)for(const n of base)voice(midiFreq(root+n),t,1.9,.027,'sine','music');
+  if(s%4===0)voice(midiFreq(root-12+base[0]),t,.38,.046,'sine','music');
+ }else if(track.kind==='bass'){
+  if(s%4===0)drum('kick',t,.21);if(s===4||s===12)drum('snare',t,.085);if(s%2===1)drum('hat',t,.034);
+  if([0,2,3,6,8,10,12,14].includes(s))voice(midiFreq(root+track.seq[s]),t,.34,.14,'sawtooth','music',380);
+  if(s===0||s===8)voice(midiFreq(root+24+base[1]),t,.13,.033,'triangle','music');
+ }else if(track.kind==='midi'){
+  for(const e of (midiComposition?.eventsByStep.get(step%128)||[])){
+   voice(midiFreq(e.note),t,e.len*60/(midiComposition.bpm*4),e.vel,e.wave,'music',e.wave==='square'?1900:3000);
+  }
+  if(s%4===0)drum('kick',t,.055);if(s===4||s===12)drum('snare',t,.025);
+ }else if(track.kind==='galaxy'){
+  if(s===0){for(const n of base){voice(midiFreq(root+n),t,3.6,.037,'sine','music');voice(midiFreq(root+12+n),t+.17,2.7,.012,'triangle','music')}}
+  if(s%2===0){voice(midiFreq(root+24+track.seq[s]),t,1.45,.042,'sine','music');if(s%4===0)voice(midiFreq(root+12+track.seq[s]),t+.12,1.7,.014,'sine','music')}
+  if(s===8)voice(midiFreq(root-12),t,.9,.036,'triangle','music');
+ }}
+function stopMusic(){if(musicInterval!==null)clearInterval(musicInterval);musicInterval=null;musicNextTime=0}
+function startMusic(){stopMusic();if(!currentMusic||document.hidden||!setupAudio())return;
+ if(audioCtx.state!=='running'){audioCtx.resume().then(()=>{if(currentMusic&&!musicInterval)startMusic()}).catch(()=>{});return}
+ noteStep=0;currentTrack=currentMusic;musicNextTime=audioCtx.currentTime+.035;
+ if(currentTrack===6&&!midiComposition)midiComposition=createMidiComposition();
+ const pump=()=>{if(!audioCtx||audioCtx.state!=='running'||!currentMusic||document.hidden)return;
+ if(currentTrack!==currentMusic){startMusic();return}const track=TRACKS[currentTrack],dt=60/(currentTrack===6?midiComposition.bpm:track.bpm)/4;
+ let n=0;while(musicNextTime<audioCtx.currentTime+.12&&n++<7){arrangeNote(track,noteStep++,musicNextTime);musicNextTime+=dt}
+ };pump();musicInterval=setInterval(pump,55)}
+function cycleSound(){currentSound=(currentSound+1)%soundModes.length;tryAudio();updateOptions();appearanceSettingsChanged();if(currentSound)moveSound()}
+function cycleMusic(){currentMusic=(currentMusic+1)%musicModes.length;if(currentMusic===6)midiComposition=createMidiComposition();tryAudio();startMusic();updateOptions();appearanceSettingsChanged()}
+function seedImages(){let seed=Math.floor(Math.random()*1e6);darkImages=Array.from({length:6},(_,i)=>`https://picsum.photos/seed/rofrand${seed+i}/600/600?grayscale`);lightImages=Array.from({length:6},(_,i)=>`https://picsum.photos/seed/rofranl${seed+i}/600/600`)}
+function imageUV(face,home){let [x,y,z]=home,u=0,v=0;switch(face){case'front':u=x;v=y;break;case'back':u=-x;v=y;break;case'right':u=-z;v=y;break;case'left':u=z;v=y;break;case'top':u=x;v=z;break;case'bottom':u=x;v=-z;break;}const denom=gridSize-1;return `${((u+sizeHalf())/denom*100).toFixed(3)}% ${((v+sizeHalf())/denom*100).toFixed(3)}%`}
+function appendBodyFace(p,face){const d=document.createElement('div');d.className='body-face';d.dataset.normal=face;d.dataset.face=face;d.dataset.owner=p.id;d.style.setProperty('--sticker-color',COLORS[face]);d.style.backgroundPosition=imageUV(face,p.home);p.el.insertBefore(d,p.el.querySelector('.sticker'))}
+function isHomeExteriorFace(home,face){const n=NORMALS[face],axis=n.findIndex(v=>v!==0);return home[axis]===n[axis]*sizeHalf()}
+/* Imagens locais: todas as faces das peças, como no 3x3 original.
+   No 4x4 as faces internas extras existem apenas neste modo para não pesar nos demais. */
+function syncLocalImageGeometry(){if(isPyramid())return;const full=imageMode===1;
+ for(const p of pieces){const faces=p.el.querySelectorAll('.body-face'),set=new Set([...faces].map(el=>el.dataset.face));
+  if(full){for(const face of FACES)if(!set.has(face))appendBodyFace(p,face)}
+  else if(gridSize!==3){for(const el of faces)if(!isHomeExteriorFace(p.home,el.dataset.face))el.remove()}
+ }
+}
+function makePiece(home,pos=home,ori=ID){let p={id:home.join(','),home:[...home],pos:[...pos],ori:[...ori],el:document.createElement('div')};p.el.className='cubie';p.el.dataset.piece=p.id;const axisSpec=[['front',2,1],['back',2,-1],['right',0,1],['left',0,-1],['top',1,-1],['bottom',1,1]];
+for(const face of (gridSize===3?FACES:FACES.filter(f=>isHomeExteriorFace(home,f))))appendBodyFace(p,face);
+for(const [face,axis,side] of axisSpec){if(home[axis]!==side*sizeHalf())continue;const d=document.createElement('div');d.className='sticker';d.dataset.normal=face;d.dataset.owner=p.id;d.dataset.face=face;d.style.setProperty('--sticker-color',COLORS[face]);d.style.backgroundPosition=imageUV(face,home);p.el.appendChild(d)}
+cube.appendChild(p.el);pieces.push(p);pieceById.set(p.id,p);renderPiece(p);return p}
+function renderPiece(p){const o=p.ori,a=[o[0],o[1],o[2],0,o[3],o[4],o[5],0,o[6],o[7],o[8],0,0,0,0,1];const edge=288/gridSize;p.el.style.transform=`translate3d(${p.pos[0]*edge}px,${p.pos[1]*edge}px,${p.pos[2]*edge}px) matrix3d(${a.join(',')})`}
+function trianglePosition(points,el,width){let p0=points[0],p1=points[1],p2=points[2],a=norm3(subtract3(p1,p0)),h=width*Math.sqrt(3)/2;let b=norm3(subtract3(subtract3(p2,p0),scaled3(a,width/2))),n=norm3(cross(a,b));el.style.width=width+'px';el.style.height=h+'px';el.style.transform=`matrix3d(${a[0]},${a[1]},${a[2]},0,${b[0]},${b[1]},${b[2]},0,${n[0]},${n[1]},${n[2]},0,${p0[0]},${p0[1]},${p0[2]},1)`}
+function orderTriangle(pts){let normal=cross(subtract3(pts[1],pts[0]),subtract3(pts[2],pts[0])),center=scaled3(pts.reduce((sum,p)=>add3(sum,p),[0,0,0]),1/3);return dot3(normal,center)>=0?pts:[pts[0],pts[2],pts[1]]}
+function baryPos(a,b,c,wa,wb,wc){return PYR_VERTS[a].map((_,i)=>PYR_VERTS[a][i]*wa+PYR_VERTS[b][i]*wb+PYR_VERTS[c][i]*wc)}
+function initPyramid(snapshot=null){cube.replaceChildren();pieces=[];pieceById.clear();selectedPiece=null;pyrSlots=[];pyrAnimation=null;
+ for(let f=0;f<4;f++){const tri=[0,1,2,3].filter(v=>v!==f),[a,b,c]=tri;
+  const makePoint=(i,j)=>baryPos(a,b,c,(3-i-j)/3,i/3,j/3);
+  for(let i=0;i<3;i++)for(let j=0;j<3-i;j++){
+   const triangles=[[makePoint(i,j),makePoint(i+1,j),makePoint(i,j+1)]];
+   if(i+j<2)triangles.push([makePoint(i+1,j),makePoint(i+1,j+1),makePoint(i,j+1)]);
+   for(const verts of triangles){const bary=[0,0,0,0];
+    const center=scaled3(verts.reduce((sum,p)=>add3(sum,p),[0,0,0]),1/3);
+    const v0=PYR_VERTS[a],v1=PYR_VERTS[b],v2=PYR_VERTS[c],r=subtract3(center,v0),u=subtract3(v1,v0),v=subtract3(v2,v0),uu=dot3(u,u),uv=dot3(u,v),vv=dot3(v,v),ru=dot3(r,u),rv=dot3(r,v),det=uu*vv-uv*uv;
+    const wb=(ru*vv-rv*uv)/det,wc=(rv*uu-ru*uv)/det;bary[a]=1-wb-wc;bary[b]=wb;bary[c]=wc;
+    pyrSlots.push({id:pyrSlots.length,face:f,verts,center,bary});
+   }
+  }
+ }
+ pyramidColors=Array.isArray(snapshot)&&snapshot.length===36&&snapshot.every(v=>Number.isInteger(v)&&v>=0&&v<4)?[...snapshot]:pyrSlots.map(s=>s.face);
+ pyrTurnCache.clear();for(let vertex=0;vertex<4;vertex++)for(const tip of [true,false])for(const dir of [-1,1]){const m={vertex,tip,dir};pyrTurnCache.set(`${vertex}:${tip}:${dir}`,pyrTurnMap(m))}
+ for(let vertex=0;vertex<4;vertex++)for(const dir of [-1,1]){const m={vertex,tip:false,base:true,dir};pyrTurnCache.set(`${vertex}:base:${dir}`,pyrTurnMap(m))}
+ renderPyrColors();updateSelection()
+}
+let pyrAnimation=null,pyrHitSlots=[];
+/* Imagens nas faces da pirâmide: cache de texturas carregadas uma vez. Se um
+   arquivo local não existir (ou estiver offline), a face conserva sua cor. */
+const pyramidTextureCache=new Map();
+function pyramidTexture(url){
+ if(!url)return null;
+ let entry=pyramidTextureCache.get(url);
+ if(!entry){const img=new Image();entry={img,ready:false};pyramidTextureCache.set(url,entry);
+  img.onload=()=>{entry.ready=true;if(isPyramid())drawPyramid()};
+  img.onerror=()=>{entry.ready=false};img.src=url;
+  if(pyramidTextureCache.size>35){const key=pyramidTextureCache.keys().next().value;pyramidTextureCache.delete(key)}
+ }
+ return entry.ready?entry.img:null;
+}
+
+function renderPyrColors(){drawPyramid()}
+/* Projeção 3D em um único Canvas: 36 triângulos, sem 36 camadas de composição do navegador. */
+function resizePyramidCanvas(){if(!isPyramid())return;const size=area.clientWidth||400,dpr=Math.min(devicePixelRatio||1,2,840/size),physical=Math.max(1,Math.round(size*dpr));
+ if(pyrCanvas.width!==physical||pyrCanvas.height!==physical){pyrCanvas.width=physical;pyrCanvas.height=physical;}drawPyramid()}
+function triangleVisible(verts){const a=Q.vec(cam,verts[0]),b=Q.vec(cam,verts[1]),c=Q.vec(cam,verts[2]);const n=cross(subtract3(b,a),subtract3(c,a));return n[2]>0}
+function projectPyr(v,width){const p=Q.vec(cam,v),scale=baseScale,perspective=1250,depth=p[2]*scale,k=perspective/(perspective-depth);
+ return {x:width/2+p[0]*scale*k,y:width/2+p[1]*scale*k,z:depth}}
+function drawPyramid(){if(!isPyramid()||!pyrSlots.length||!pyrCtx)return;
+ const w=area.clientWidth||400;if(!pyrCanvas.width||!pyrCanvas.height)return;
+ const ctx=pyrCtx,ratio=pyrCanvas.width/w;ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,w,w);
+ const triangles=[];
+ for(const slot of pyrSlots){let v=orderTriangle(slot.verts);
+  if(pyrAnimation?.selected.has(slot.id))v=v.map(pt=>rotated3(pt,pyrAnimation.axis,pyrAnimation.angle));
+  if(!triangleVisible(v))continue;
+  const pts=v.map(x=>projectPyr(x,w)),depth=(pts[0].z+pts[1].z+pts[2].z)/3;
+  const a=Q.vec(cam,v[0]),b=Q.vec(cam,v[1]),c=Q.vec(cam,v[2]);const norm=norm3(cross(subtract3(b,a),subtract3(c,a)));
+  triangles.push({slot,pts,depth,light:clamp(.82+.18*norm[2]+.07*norm[0],.72,1.09)});
+ }
+ triangles.sort((a,b)=>a.depth-b.depth);pyrHitSlots=triangles;
+ ctx.lineJoin='round';ctx.lineCap='round';
+ for(const {slot,pts,light} of triangles){const col=PYR_COLORS[pyramidColors[slot.id]],r=parseInt(col.slice(1,3),16),g=parseInt(col.slice(3,5),16),b=parseInt(col.slice(5,7),16);
+  const picked=slot.bary[selectedPyrVertex]>.75;
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);ctx.lineTo(pts[1].x,pts[1].y);ctx.lineTo(pts[2].x,pts[2].y);ctx.closePath();
+  /* Imagens locais na pirâmide: mesmo acabamento da coleção de cubos —
+     tonalidade 80% translúcida e contornos pretos discretos. */
+  const rr=Math.min(255,r*light)|0,gg=Math.min(255,g*light)|0,bb=Math.min(255,b*light)|0;
+  ctx.fillStyle=imageMode===1?`rgba(${rr},${gg},${bb},.8)`:`rgb(${rr},${gg},${bb})`;ctx.fill();
+  if(imageMode===1||imageMode===2||imageMode===3){
+   const all=imageMode===1?originalImages:imageMode===2?darkImages:lightImages;
+   const img=pyramidTexture(all[slot.face]);
+   if(img){ctx.save();ctx.clip();const minX=Math.min(...pts.map(p=>p.x)),minY=Math.min(...pts.map(p=>p.y)),maxX=Math.max(...pts.map(p=>p.x)),maxY=Math.max(...pts.map(p=>p.y));
+    const ww=Math.max(1,maxX-minX),hh=Math.max(1,maxY-minY);ctx.globalAlpha=imageMode===1?.8:.91;
+    if(imageMode===2)ctx.filter='grayscale(1) brightness(.83)';
+    ctx.drawImage(img,minX,minY,ww,hh);ctx.restore();}
+  }
+  ctx.strokeStyle=imageMode===1?'#000':'#10151f';ctx.lineWidth=imageMode===1?1.2:3.4;ctx.stroke();
+  if(picked){ctx.strokeStyle='rgba(162,234,255,.68)';ctx.lineWidth=1.1;ctx.stroke()}
+ }
+}
+function baryPoint2D(x,y,p){const [a,b,c]=p,den=(b.y-c.y)*(a.x-c.x)+(c.x-b.x)*(a.y-c.y);if(Math.abs(den)<.00001)return false;
+ const u=((b.y-c.y)*(x-c.x)+(c.x-b.x)*(y-c.y))/den,v=((c.y-a.y)*(x-c.x)+(a.x-c.x)*(y-c.y))/den;return u>=-.015&&v>=-.015&&u+v<=1.015}
+function hitPyramidAt(clientX,clientY){if(!isPyramid()||pyrAnimation)return null;
+ const r=area.getBoundingClientRect(),x=clientX-r.left,y=clientY-r.top;
+ for(let i=pyrHitSlots.length-1;i>=0;i--){const p=pyrHitSlots[i];if(baryPoint2D(x,y,p.pts))return p.slot}return null}
+function gridSnapshot(snapshot){cube.replaceChildren();pieces=[];pieceById.clear();pyrSlots=[];selectedPiece=null;
+ const prev=Array.isArray(snapshot)?new Map(snapshot.filter(p=>p&&p.id).map(p=>[p.id,p])):new Map();const h=sizeHalf();const edge=288/gridSize;cube.style.setProperty('--cube-edge',edge+'px');cube.style.setProperty('--cube-texture-size',(gridSize*100)+'%');document.documentElement.style.setProperty('--cube-edge',edge+'px');document.documentElement.style.setProperty('--cube-texture-size',(gridSize*100)+'%');
+ for(const x of positions())for(const y of positions())for(const z of positions()){if(gridSize===4&&Math.abs(x)<h&&Math.abs(y)<h&&Math.abs(z)<h)continue;let home=[x,y,z],s=prev.get(home.join(','));makePiece(home,validPiece(s)?s.pos:home,validPiece(s)?s.ori:ID)}updateImages();updateSelection()}
+function buildCube(snapshot=null){if(isPyramid()){initPyramid(snapshot);updateImages()}else gridSnapshot(snapshot)}
+function validPiece(s){const h=sizeHalf();return s&&Array.isArray(s.pos)&&s.pos.length===3&&s.pos.every(n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=h&&Math.abs(n-Math.round(n+h)+h)<.0001)&&Array.isArray(s.ori)&&s.ori.length===9&&s.ori.every(n=>n===0||n===1||n===-1)}
+function snapshotCube(){return isPyramid()?[...pyramidColors]:pieces.map(p=>({id:p.id,pos:[...p.pos],ori:[...p.ori]}))}
+function restoreCube(s){buildCube(s)}
+function updateImages(){const urlList=imageMode===1?originalImages:imageMode===2?darkImages:imageMode===3?lightImages:[];
+syncLocalImageGeometry();document.body.classList.toggle('local-image-mode',imageMode===1&&!isPyramid());
+for(const p of pieces){for(const s of p.el.children){const isBody=s.classList.contains('body-face');if(imageMode===0||imageMode===4||(isBody&&imageMode!==1)){s.style.backgroundImage='none'}else{const i=FACES.indexOf(s.dataset.face);s.style.backgroundImage=i>=0&&urlList[i]?`url("${urlList[i]}")`:'none'}}}if(isPyramid())drawPyramid();updateOptions()}
+const IMAGE_MODES=['Cores','Imagens locais','Fotos P&B','Paisagens','Temporizada'];
+let timedColorSince=Date.now(),timedColorTimer=null,timedColorActive=false;
+function syncTimedColors(){
+ if(timedColorTimer!==null){clearTimeout(timedColorTimer);timedColorTimer=null}
+ if(imageMode!==4){document.body.classList.remove('timed-gray');timedColorActive=false;return}
+ if(!timedColorActive){timedColorActive=true;timedColorSince=Date.now()}
+ const phase=((Date.now()-timedColorSince)%13000+13000)%13000;
+ document.body.classList.toggle('timed-gray',phase>=3000);
+ const ms=phase<3000?3000-phase:13000-phase;
+ timedColorTimer=setTimeout(syncTimedColors,Math.max(50,Math.ceil(ms+12)));
+}
+function cycleMode(){imageMode=(imageMode+1)%IMAGE_MODES.length;
+ // Todos os cinco modos permanecem disponíveis nos quatro modelos.
+ if(imageMode===4){timedColorSince=Date.now();timedColorActive=true}
+ updateImages();appearanceSettingsChanged()}
+
+function updateOptions(){syncVolumeUI();$('mode-toggle').innerHTML=`🎨 <b>${IMAGE_MODES[imageMode]}</b>`;$('sound-toggle').innerHTML=`🔊 <b>Mov.: ${soundModes[currentSound]}</b>`;$('music-toggle').innerHTML=`♫ <b>Música: ${musicModes[currentMusic]}</b>`;$('multi-mistura').textContent=multiplicadorMistura+'×';$('mobile-multi').textContent=multiplicadorMistura+'×';$('mobile-gesture-toggle').textContent=inputMode==='manual'?'◉ Modo: controles':'✦ Modo: gestos';$('mobile-mode-toggle').textContent='🎨 '+IMAGE_MODES[imageMode];$('mobile-sound-toggle').textContent='🔊 Movimento: '+soundModes[currentSound];$('mobile-music-toggle').textContent='♫ Música: '+musicModes[currentMusic];$('quick-mode-toggle').textContent='🎨 '+IMAGE_MODES[imageMode];$('quick-sound-toggle').textContent='🔊 Mov.: '+soundModes[currentSound];$('quick-music-toggle').textContent='♫ Música: '+musicModes[currentMusic];$('quick-shared-appearance').checked=sharedAppearanceAcrossPuzzles;for(const b of document.querySelectorAll('.puzzle-shortcut')){b.textContent=puzzleType==='pyramid'?'∆':puzzleType;b.title='Modelo '+puzzleLabel()+' · toque para trocar';b.setAttribute('aria-label','Modelo '+puzzleLabel()+'. Trocar quebra-cabeça')} $('gesture-toggle').textContent=inputMode==='manual'?'◉ Modo: controles':'✦ Modo: gestos';$('mode-badge').textContent=inputMode==='manual'?'Modo com controles':'Modo inteligente · gestos';$('desktop-mode-badge').textContent=$('mode-badge').textContent;document.body.classList.toggle('pyramid-mode',isPyramid());syncTimedColors();document.querySelectorAll('.puzzle-choice').forEach(b=>{b.classList.toggle('active',b.dataset.puzzle===puzzleType);b.setAttribute('aria-pressed',String(b.dataset.puzzle===puzzleType))});$('pyramid-controls').classList.toggle('hidden',!isPyramid());$('pyramid-guide').classList.toggle('hidden',!isPyramid());updateSelection();document.body.classList.toggle('mode-auto',inputMode==='smart');document.body.classList.toggle('mode-manual',inputMode==='manual');$('stage-hint').textContent=isPyramid()?(inputMode==='manual'?'Escolha um vértice e gire ponta, camada ou base por 120°. Arraste para observar.':'Deslize sobre a base para girar a parte inferior. Pontas e camadas também giram em 120°. Botão direito, Shift e dois dedos movem a câmera.') :inputMode==='manual'?'Toque numa peça para selecioná-la. Arraste em qualquer direção para mover a câmera.':'Deslize uma peça em linha reta para girar. Ao segurar ou sacudir o mouse, o cubo acompanha o deslocamento sem girar sozinho. Um deslize curto e direto sobre a peça gira a camada; botão direito, Shift e dois dedos movem a câmera.'}
+function appearancePack(){return {imageMode,currentSound,currentMusic,musicVolume,moveVolume}}
+function applyAppearancePack(pack){imageMode=clamp(pack.imageMode|0,0,4);currentSound=clamp(pack.currentSound|0,0,soundModes.length-1);currentMusic=clamp(pack.currentMusic|0,0,musicModes.length-1);musicVolume=clamp(Math.round(+pack.musicVolume||0),0,100);moveVolume=clamp(Math.round(+pack.moveVolume||0),0,100);syncVolumeUI()}
+function syncOtherPuzzleAppearances(includeValues){const pack=appearancePack();for(const type of ['2','3','4','pyramid']){if(type===puzzleType)continue;const slot=safeRead(PUZZLE_SLOT+type);if(!slot||typeof slot!=='object')continue;const updated={...slot,sharedAppearanceAcrossPuzzles};if(includeValues)Object.assign(updated,pack);safeStore(PUZZLE_SLOT+type,updated)}}
+function appearanceSettingsChanged(){saveGameState();if(sharedAppearanceAcrossPuzzles)syncOtherPuzzleAppearances(true)}
+function toggleSharedAppearance(checked){sharedAppearanceAcrossPuzzles=!!checked;$('quick-shared-appearance').checked=sharedAppearanceAcrossPuzzles;saveGameState();syncOtherPuzzleAppearances(sharedAppearanceAcrossPuzzles);setStatus(sharedAppearanceAcrossPuzzles?'Áudio, volume e aparência agora valem para todos os modelos.':'Aparência e áudio passam a ser configurados separadamente para cada modelo.')}
+function toggleInputMode(){if(busy||isReplaying)return;inputMode=inputMode==='manual'?'smart':'manual';updateOptions();saveGameState()}
+function selectPyrVertex(n){selectedPyrVertex=n;updateSelection()}
+function manualPyrTurn(tip,dir){performMove({type:'p',vertex:selectedPyrVertex,tip,dir})}
+function manualPyrBase(dir){performMove({type:'p',vertex:selectedPyrVertex,tip:false,base:true,dir})}
+function toggleCameraPanel(){const folder=$('camera-fold');let closed=folder.classList.toggle('collapsed');$('toggle-camera').setAttribute('aria-expanded',String(!closed));$('toggle-camera').firstChild.textContent=closed?'Visão · expandir ':'Visão · recolher ';saveGameState()}
+function togglePanel(side){const panel=$(side==='left'?'left-panel':'right-panel');const next=!panel.classList.contains('collapsed');panel.classList.toggle('collapsed',next);$('workspace').classList.toggle(side+'-collapsed',next);const btn=$('toggle-'+side);btn.setAttribute('aria-expanded',String(!next));saveGameState();requestAnimationFrame(resizeScene)}
+function restorePanels(v){$('camera-fold').classList.toggle('collapsed',!!v?.camera);$('toggle-camera').setAttribute('aria-expanded',String(!v?.camera));$('toggle-camera').firstChild.textContent=v?.camera?'Visão · expandir ':'Visão · recolher ';for(const side of ['left','right']){const collapsed=!!v?.[side];const panel=$(side+'-panel');panel.classList.toggle('collapsed',collapsed);$('workspace').classList.toggle(side+'-collapsed',collapsed);$('toggle-'+side).setAttribute('aria-expanded',String(!collapsed))}}
+function toggleMultiMistura(){let arr=[1,2,3,5],i=arr.indexOf(multiplicadorMistura);multiplicadorMistura=arr[(i+1)%arr.length];updateOptions();saveGameState()}
+function updateSelection(){pieces.forEach(p=>p.el.classList.toggle('selected',p===selectedPiece));$('selected-hint').textContent=selectedPiece?`Peça ${selectedPiece.pos.map(x=>x+sizeHalf()+1).join(' · ')}`:'Selecione uma peça';$('mobile-selected-hint').textContent=$('selected-hint').textContent; if(isPyramid()){$('pyramid-selected').textContent='Vértice: '+PYR_NAMES[selectedPyrVertex];$('mobile-pyr-selected').textContent=$('pyramid-selected').textContent;document.querySelectorAll('.mobile-vertex-choices button').forEach(b=>b.classList.toggle('active',Number(b.dataset.vertex)===selectedPyrVertex));document.querySelectorAll('#vertex-choices button').forEach((b,i)=>b.classList.toggle('active',i===selectedPyrVertex));drawPyramid()}}
+function selectPiece(p){selectedPiece=p;updateSelection()}
+function formatTime(ms){let s=Math.floor(Math.max(0,ms)/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return(h?h+':'+String(m).padStart(2,'0')+':':String(m).padStart(2,'0')+':')+String(s%60).padStart(2,'0')}
+function timeNow(){return elapsed+(running?performance.now()-timerOrigin:0)}
+function showStats(){const t=formatTime(timeNow());$('timer').textContent=t;$('count-mov').textContent=moveCount;$('mobile-timer').textContent=t;$('mobile-count-mov').textContent=moveCount}
+function startTimer(){if(running||!attemptEligible||attemptFinished)return;timerOrigin=performance.now();running=true;readyToStart=false}
+function pauseTimer(){if(running){elapsed=timeNow();running=false}showStats()}
+function resetStats(){pauseTimer();elapsed=0;moveCount=0;readyToStart=false;sessionMoves=[];sessionStart=null;showStats()}
+function safeStore(k,v){try{localStorage.setItem(profileKey(k),JSON.stringify(v));if(!cloudApplyInProgress && giraProfileUid && (k===DATA_KEY||k===RECORD_KEY||k===MOBILE_UI_KEY||k.startsWith(PUZZLE_SLOT))){try{localStorage.setItem('giraai_cloud_dirty_'+giraProfileUid,'1')}catch(_){}window.GiraCloud?.queueSave?.()}return true}catch(e){setStatus('Armazenamento do navegador indisponível.',true);return false}}
+function safeRead(k){try{return JSON.parse(localStorage.getItem(profileKey(k))||'null')}catch(e){return null}}
+function saveGameState(){if(isReplaying||busy)return;const obj={version:6,puzzleType,sharedAppearanceAcrossPuzzles,attemptEligible,attemptFinished,pieces:snapshotCube(),camera:desiredCam,zoom:userZoom,inputMode,imageMode,currentSound,currentMusic,musicVolume,moveVolume,darkImages,lightImages,multiplicadorMistura,stack:moveStack,sessionMoves,sessionStart,moveCount,elapsed:timeNow(),running,readyToStart,panels:{left:$('left-panel').classList.contains('collapsed'),right:$('right-panel').classList.contains('collapsed'),camera:$('camera-fold').classList.contains('collapsed')}};safeStore(DATA_KEY,obj);safeStore(PUZZLE_SLOT+puzzleType,obj)}
+function loadGameState(source){let s=source===undefined?safeRead(DATA_KEY):source;if(!s && !giraProfileUid){let legacy=safeRead('rubikSave_v2');if(legacy&&Array.isArray(legacy.cubies)&&legacy.cubies.length===27){let imports=[];let i=0;for(let x=-1;x<=1;x++)for(let y=-1;y<=1;y++)for(let z=-1;z<=1;z++){let c=legacy.cubies[i++];let raw=(c.matrix||[]);let ori=[raw[0],raw[1],raw[2],raw[4],raw[5],raw[6],raw[8],raw[9],raw[10]].map(n=>Math.round(n)||0);imports.push({id:[x,y,z].join(','),pos:[+c.x,+c.y,+c.z],ori})}s={pieces:imports,imageMode:legacy.settings?.mode===3?0:legacy.settings?.mode===0?1:(legacy.settings?.mode===1?2:3),currentSound:legacy.settings?.sound||0,currentMusic:legacy.settings?.music||0,darkImages:legacy.images?.dark,lightImages:legacy.images?.light,multiplicadorMistura:legacy.mix||1}}}
+if(!s)return null;
+try{puzzleType=['2','3','4','pyramid'].includes(s.puzzleType)?s.puzzleType:'3';gridSize=isPyramid()?3:Number(puzzleType);restorePanels(s.panels);inputMode=s.inputMode==='smart'?'smart':'manual';sharedAppearanceAcrossPuzzles=!!s.sharedAppearanceAcrossPuzzles;imageMode=clamp(s.imageMode|0,0,4);currentSound=clamp(s.currentSound|0,0,3);currentMusic=clamp(s.currentMusic|0,0,6);musicVolume=clamp(Number.isFinite(+s.musicVolume)?Math.round(+s.musicVolume):55,0,100);moveVolume=clamp(Number.isFinite(+s.moveVolume)?Math.round(+s.moveVolume):70,0,100);syncVolumeUI();if(Array.isArray(s.camera)&&s.camera.length===4&&s.camera.every(Number.isFinite))desiredCam=cam=Q.normalize(s.camera);userZoom=clamp(Number(s.zoom)||1,.65,1.55);if(Array.isArray(s.darkImages)&&s.darkImages.length===6)darkImages=s.darkImages;if(Array.isArray(s.lightImages)&&s.lightImages.length===6)lightImages=s.lightImages;multiplicadorMistura=[1,2,3,5].includes(s.multiplicadorMistura)?s.multiplicadorMistura:1;moveStack=Array.isArray(s.stack)?s.stack.filter(validMove):[];sessionMoves=Array.isArray(s.sessionMoves)?s.sessionMoves.filter(validMove):[];sessionStart=Array.isArray(s.sessionStart)?s.sessionStart:null;moveCount=Math.max(0,Number(s.moveCount)||0);elapsed=Math.max(0,Number(s.elapsed)||0);readyToStart=!!s.readyToStart;running=!!s.running;
+// Migração da v2.0: aceitar apenas partida iniciada a partir de um cubo misturado,
+// jamais o primeiro movimento executado em um cubo inicialmente montado.
+const previouslyScrambled=!isPyramid()&&Array.isArray(s.sessionStart)&&s.sessionStart.length===gridSize**3&&s.sessionStart.some(p=>!p?.id||p.pos?.join(',')!==p.id||p.ori?.some((v,i)=>v!==ID[i]));
+attemptEligible=s.attemptEligible===true||(s.version===3&&previouslyScrambled);
+attemptFinished=s.attemptFinished===true;
+if(!attemptEligible){readyToStart=false;running=false;elapsed=0;moveCount=0;sessionMoves=[];sessionStart=null;}
+timerOrigin=performance.now();return Array.isArray(s.pieces)?s.pieces:null}catch(e){console.warn('Save inválido',e);return null}}
+function validMove(m){if(!m||(m.dir!==1&&m.dir!==-1))return false;if(m.type==='p')return Number.isInteger(m.vertex)&&m.vertex>=0&&m.vertex<4&&typeof m.tip==='boolean'&&(!m.base||!m.tip);return ['x','y','z'].includes(m.axis)&&typeof m.layer==='number'&&[-1.5,-1,-.5,0,.5,1,1.5].includes(m.layer)}
+function switchPuzzle(type){if(busy||isReplaying||!['2','3','4','pyramid'].includes(type)||type===puzzleType)return;if(attemptEligible&&sessionMoves.length&&!confirm('Trocar de modelo? A partida atual ficará salva neste navegador para quando você retornar.'))return;pauseTimer();saveGameState();const sharedPack=sharedAppearanceAcrossPuzzles?appearancePack():null;let stored=safeRead(PUZZLE_SLOT+type);puzzleType=type;gridSize=isPyramid()?3:Number(type);moveStack=[];sessionMoves=[];sessionStart=null;moveCount=0;elapsed=0;running=false;readyToStart=false;attemptEligible=false;attemptFinished=false;selectedPyrVertex=0;if(stored)loadGameState(stored);if(sharedPack){sharedAppearanceAcrossPuzzles=true;applyAppearancePack(sharedPack)}buildCube(stored?.pieces||null);updateOptions();resizeScene();showStats();if(currentMusic)tryAudio();setStatus('Modelo '+puzzleLabel()+' pronto. Use Misturar para iniciar a pontuação.');saveGameState()}
+function resetApp(){if(busy||isReplaying)return;if(!confirm('Reiniciar este quebra-cabeça e a partida atual? O histórico salvo será preservado.'))return;pauseTimer();moveStack=[];resetStats();readyToStart=false;attemptEligible=false;attemptFinished=false;buildCube();saveGameState();setStatus('Quebra-cabeça reiniciado. Histórico preservado.')}
+function updateCamera(){let q=Q.normalize(cam),angle=2*Math.acos(clamp(q[3],-1,1)),s=Math.sqrt(Math.max(0,1-q[3]*q[3]));let axis=s<.00001?[1,0,0]:[q[0]/s,q[1]/s,q[2]/s];scene.style.transform=`rotate3d(${axis.join(',')},${(angle*180/Math.PI).toFixed(4)}deg) scale3d(var(--cube-scale),var(--cube-scale),var(--cube-scale))`}
+let lastActiveMap='';
+function updateMap(){let best='front',bestVal=-Infinity;for(const face of FACES){let n=Q.vec(cam,NORMALS[face]),v=n[2];if(v>bestVal){best=face;bestVal=v}}if(lastActiveMap!==best){document.querySelectorAll('.mini-face').forEach(b=>b.classList.toggle('active',b.id==='m-'+best||b.dataset.view===best));lastActiveMap=best}}
+let lastTimerRender=0;function cameraLoop(now=0){if(camMoving){cam=Q.slerp(cam,desiredCam,.22);if(Math.abs(dot3(cam,desiredCam.slice(0,3))+cam[3]*desiredCam[3])>.999999){cam=[...desiredCam];camMoving=false}updateCamera();updateMap();if(isPyramid())drawPyramid()}if(running&&!document.hidden&&now-lastTimerRender>130){lastTimerRender=now;showStats()}requestAnimationFrame(cameraLoop)}
+function changeCamera(q,smooth=true){desiredCam=Q.normalize(q);if(!smooth){cam=[...desiredCam];camMoving=false;updateCamera();updateMap();if(isPyramid())drawPyramid()}else camMoving=true}
+// Rotação vinculada ao ponto onde o dedo ou mouse segurou o cubo.
+// Nunca integra pequenos giros sucessivos: sacudir e voltar ao ponto inicial
+// restaura EXATAMENTE a orientacao de antes do clique (sem roll residual).
+function orbitFromAnchor(baseQuat,dx,dy){
+ const scale=.0072;
+ const yaw=Q.axis('y',dx*scale), pitch=Q.axis('x',-dy*scale);
+ changeCamera(Q.mul(pitch,Q.mul(yaw,baseQuat)),false);
+}
+function orbitHeld(g){orbitFromAnchor(g.cameraBase,g.dx,g.dy)}
+function rollCamera(deg){if(busy||isReplaying)return;changeCamera(Q.mul(Q.axis('z',deg*Math.PI/180),desiredCam));saveGameState()}
+function snapTo(face){if(busy||isReplaying)return;const rotations={front:[0,0],right:[0,-90],back:[0,180],left:[0,90],top:[-90,0],bottom:[90,0]},[x,y]=rotations[face]||[0,0];changeCamera(Q.mul(Q.axis('x',x*Math.PI/180),Q.axis('y',y*Math.PI/180)));saveGameState()}
+let cardinalCameras=[];function makeCardinals(){const visited=new Set(),todo=[[0,0,0,1]];while(todo.length&&cardinalCameras.length<24){let q=Q.normalize(todo.pop());let v1=Q.vec(q,[1,0,0]).map(Math.round).join(','),v2=Q.vec(q,[0,1,0]).map(Math.round).join(',');let k=v1+'/'+v2;if(visited.has(k))continue;visited.add(k);cardinalCameras.push(q);for(let ax of ['x','y','z'])todo.push(Q.mul(Q.axis(ax,Math.PI/2),q))}}
+function straighten(){if(busy||isReplaying)return;let nearest=cardinalCameras.reduce((a,b)=>Math.abs(dot4(b,desiredCam))>Math.abs(dot4(a,desiredCam))?b:a);changeCamera(nearest);saveGameState()}
+function dot4(a,b){return a.reduce((v,x,i)=>v+x*b[i],0)}
+function resizeScene(){const portraitMobile=isMobilePortrait(),desktop=!portraitMobile&&innerWidth>730,rect=area.parentElement.getBoundingClientRect();let width=desktop?clamp(rect.width,270,590):Math.min(innerWidth-20,560);if(portraitMobile){const overhead=(innerHeight<=700?366:340)-(inputMode==='smart'||mobilePrefs.turns===false?48:0)-(mobilePrefs.match?94:0);width=Math.min(width,Math.max(180,innerHeight-overhead));}if(desktop&&innerHeight<650)width=Math.min(width,Math.max(240,innerHeight-185));if(!desktop&&innerWidth>innerHeight)width=Math.min(width,Math.max(245,innerHeight-195));if(!desktop&&innerHeight<640)width=Math.min(width,Math.max(235,innerHeight-245));area.style.setProperty('--scene-size',`${width}px`);const scale=clamp(width/570,.38,.98)*userZoom*(isPyramid()?1.04:1);baseScale=scale;area.style.setProperty('--cube-scale',scale.toFixed(4));$('zoom-label').textContent=`Zoom ${Math.round(userZoom*100)}%`;updateCamera();if(isPyramid())resizePyramidCanvas()}
+function adjustZoom(factor){if(isReplaying)return;userZoom=clamp(userZoom*factor,.65,1.55);resizeScene()}
+// Rotação da peça em torno do eixo global do cubo. Sem erro de ponto flutuante.
+function pyrSlotAffected(s,m){return m.base?s.bary[m.vertex]<.33334:s.bary[m.vertex]>(m.tip?.72:.33334)}
+function pyrTurnMap(m){const axis=PYR_VERTS[m.vertex],rad=m.dir*2*Math.PI/3;const slots=pyrSlots.filter(s=>pyrSlotAffected(s,m));let mapping=[];for(const from of slots){const turned=rotated3(from.center,axis,rad);let nearest=slots.reduce((a,b)=>{let delta=Math.hypot(...subtract3(turned,b.center));return delta<a.delta?{slot:b,delta}:a},{slot:null,delta:Infinity});if(nearest.delta>1.0)throw Error('Falha de geometria pirâmide '+nearest.delta);mapping.push([from.id,nearest.slot.id])}if(new Set(mapping.map(x=>x[1])).size!==mapping.length)throw Error('Permutação pirâmide não bijetiva');return mapping}
+async function animatePyramid(m,opts={}){const ms=opts.ms??(opts.auto?100:235),axis=norm3(PYR_VERTS[m.vertex]);
+ const selected=new Set(pyrSlots.filter(s=>pyrSlotAffected(s,m)).map(s=>s.id));
+ const mapping=pyrTurnCache.get(`${m.vertex}:${m.base?'base':!!m.tip}:${m.dir}`)||pyrTurnMap(m),next=[...pyramidColors];
+ for(const [from,to]of mapping)next[to]=pyramidColors[from];
+ if(!opts.silent)moveSound();
+ if(document.hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches){pyramidColors=next;renderPyrColors();updateSelection();return true}
+ return new Promise(resolve=>{let complete=false;const t0=performance.now();pyrAnimation={selected,axis,angle:0};
+  const finish=()=>{if(complete)return;complete=true;pyrAnimation=null;pyramidColors=next;renderPyrColors();updateSelection();resolve(true)};
+  const frame=t=>{if(complete)return;const p=clamp((t-t0)/ms,0,1),ease=p*p*(3-2*p);pyrAnimation.angle=m.dir*2*Math.PI/3*ease;drawPyramid();if(p>=1)finish();else requestAnimationFrame(frame)};
+  requestAnimationFrame(frame);setTimeout(finish,ms+200);
+ })}
+async function animateMove(m,opts={}){if(!validMove(m))return false;if(m.type==='p')return animatePyramid(m,opts);const axis=m.axis,dir=m.dir,ms=opts.ms??(opts.auto?105:235);
+const selected=pieces.filter(p=>p.pos[['x','y','z'].indexOf(axis)]===m.layer);const pivot=document.createElement('div');pivot.className='pivot';pivot.style.transitionDuration=ms+'ms';cube.appendChild(pivot);for(const p of selected)pivot.appendChild(p.el);
+if(!opts.silent)moveSound();pivot.getBoundingClientRect();pivot.style.transform=`rotate${axis.toUpperCase()}(${dir*90}deg)`;
+await new Promise(res=>setTimeout(res,ms+22));for(const p of selected){p.pos=rotateVec(p.pos,axis,dir);p.ori=turnOri(p.ori,axis,dir);renderPiece(p);cube.appendChild(p.el)}pivot.remove();updateSelection();return true}
+async function performMove(m,opts={}){if(busy||isReplaying)return;busy=true;try{
+const isScored=!opts.auto&&attemptEligible&&!attemptFinished;
+if(isScored){if(readyToStart){sessionStart=snapshotCube();startTimer()}else if(!running&&sessionMoves.length>0&&!opts.reversing)startTimer()}
+await animateMove(m,{auto:opts.auto});if(opts.record!==false){moveStack.push({...m});if(isScored){sessionMoves.push({...m});moveCount++;showStats()}}
+if(isScored&&checkSolved()&&moveCount>0){attemptFinished=true;pauseTimer();pendingSaveWon=true;openName(true)}
+else if(!opts.auto){setStatus(isScored?'Movimento registrado.':'Movimentação livre: clique em Misturar para começar uma partida com pontuação.')}}finally{busy=false;saveGameState()}}
+function checkSolved(){if(isPyramid())return [0,1,2,3].every(f=>pyrSlots.filter(s=>s.face===f).every(s=>pyramidColors[s.id]===pyramidColors[pyrSlots.find(q=>q.face===f).id]));for(const face of FACES){let n=NORMALS[face],idx=n.findIndex(v=>v!==0),sgn=n[idx];let stickers=[];for(const p of pieces){if(p.pos[idx]!==sgn*sizeHalf())continue;for(const child of p.el.querySelectorAll('.sticker')){const world=applyOri(p.ori,NORMALS[child.dataset.normal]);if(world.every((v,i)=>v===n[i]))stickers.push(child.dataset.face)}}if(stickers.length!==gridSize*gridSize||stickers.some(v=>v!==stickers[0]))return false}return true}
+// Controles relativos à câmera, funcionam mesmo de cabeça para baixo.
+function moveViewRelative(dir){if(busy||isReplaying)return;if(isPyramid()){manualPyrTurn(false,dir==='left'||dir==='down'||dir==='roll-ccw'?-1:1);return}if(!selectedPiece){setStatus('Selecione uma peça do cubo primeiro.',true);return}let screen;
+if(dir==='up'||dir==='down')screen=dir==='up'?[0,-1]:[0,1];else if(dir==='left'||dir==='right')screen=dir==='left'?[-1,0]:[1,0];else screen=[0,0];
+if(screen[0]===0&&screen[1]===0){let projected=FACES.map(f=>({f,n:Q.vec(desiredCam,NORMALS[f])})).sort((a,b)=>b.n[2]-a.n[2])[0],ax=NORMALS[projected.f],i=ax.findIndex(v=>v!==0),axis=['x','y','z'][i];performMove({axis,layer:selectedPiece.pos[i],dir:(dir==='roll-cw'?-1:1)*ax[i]});return}
+// Seleciona o eixo cuja rotação da peça gera o deslocamento solicitado em tela.
+let best=null;for(let i=0;i<3;i++){let axis=['x','y','z'][i],r=[0,0,0];r[i]=1;let tangent=cross(r,selectedPiece.pos);let screenTan=Q.vec(desiredCam,tangent),strength=Math.hypot(screenTan[0],screenTan[1]);if(strength<.05)continue;let score=Math.abs((screenTan[0]*screen[0]+screenTan[1]*screen[1])/strength);if(!best||score>best.score)best={axis,i,score,dir:(screenTan[0]*screen[0]+screenTan[1]*screen[1])>=0?1:-1}}
+if(!best||best.score<.12){setStatus('Gire a câmera ou selecione outra peça para esse movimento.',true);return}performMove({axis:best.axis,layer:selectedPiece.pos[best.i],dir:best.dir})}
+async function undoMove(){if(busy||isReplaying||moveStack.length===0)return;const last=moveStack.pop();let m={...last,dir:-last.dir};busy=true;try{const isScored=attemptEligible&&!attemptFinished;if(isScored&&readyToStart){sessionStart=snapshotCube();startTimer()}await animateMove(m);if(isScored){sessionMoves.push({...m});moveCount++;showStats()}if(isScored&&checkSolved()&&moveCount>0){attemptFinished=true;pauseTimer();pendingSaveWon=true;openName(true)}}finally{busy=false;saveGameState()}}
+async function scramble(){if(busy||isReplaying)return;if(!confirm('Misturar este quebra-cabeça e iniciar uma nova tentativa?'))return;busy=true;pauseTimer();moveStack=[];resetStats();attemptEligible=false;attemptFinished=false;buildCube();setStatus('Misturando...');try{const count=(isPyramid()?16:gridSize===2?10:gridSize===4?22:12)*multiplicadorMistura;let previous=null;for(let i=0;i<count;i++){let m;do{if(isPyramid())m={type:'p',vertex:Math.floor(Math.random()*4),tip:Math.random()<.28,dir:Math.random()<.5?-1:1};else m={axis:['x','y','z'][Math.floor(Math.random()*3)],layer:positions()[Math.floor(Math.random()*gridSize)],dir:Math.random()<.5?-1:1}}while(previous&&(isPyramid()?previous.vertex===m.vertex&&previous.tip===m.tip:previous.axis===m.axis&&previous.layer===m.layer));await animateMove(m,{auto:true,ms:65,silent:true});moveStack.push(m);previous=m}sessionStart=snapshotCube();attemptEligible=true;attemptFinished=false;readyToStart=true;setStatus('Misturado! O cronômetro começa no primeiro giro manual.')}finally{busy=false;saveGameState()}}
+async function solve(){if(busy||isReplaying||!moveStack.length){setStatus('Não há movimentos registrados para reverter.');return}if(!confirm('Resolver automaticamente desfazendo os movimentos desta partida? Não registra vitória.'))return;busy=true;autoRunning=true;pauseTimer();try{setStatus('Resolvendo automaticamente...');while(moveStack.length){let m=moveStack.pop();await animateMove({...m,dir:-m.dir},{auto:true,ms:80,silent:true})}sessionMoves=[];sessionStart=null;moveCount=0;elapsed=0;readyToStart=false;attemptEligible=false;attemptFinished=false;showStats();setStatus('Reversão automática concluída.')}finally{autoRunning=false;busy=false;saveGameState()}}
+/* Atalhos rápidos do cabeçalho, compartilhando as mesmas funções do jogo. */
+function cyclePuzzleQuick(){if(busy||isReplaying)return;const order=['2','3','4','pyramid'],next=order[(order.indexOf(puzzleType)+1)%order.length];switchPuzzle(next)}
+function openQuickAudio(){if(busy||isReplaying)return;syncVolumeUI();$('quick-audio-overlay').classList.remove('hidden')}
+function closeQuickAudio(){$('quick-audio-overlay').classList.add('hidden')}
+function toggleQuickVolume(){const el=$('quick-volume-panel'),hidden=el.classList.toggle('hidden');$('quick-volume-toggle').setAttribute('aria-expanded',String(!hidden));$('quick-volume-toggle').textContent=hidden?'◖ Volume ▾':'◖ Volume ▴';syncVolumeUI()}
+function isGiraLoggedIn(){return !!window.GiraCloud?.user&&!window.GiraCloud.user.isAnonymous}
+function updateQuickRankingAuth(){const logged=isGiraLoggedIn(),anonymous=!!window.GiraCloud?.user?.isAnonymous;document.querySelectorAll('.rank-shortcut').forEach(b=>{b.classList.toggle('connected',logged);b.classList.toggle('anonymous',anonymous);b.title=logged?'Ranking · conta conectada':anonymous?'Ranking · visitante anônimo':'Ranking e login';b.setAttribute('aria-label',b.title)});$('quick-ranking-login').classList.toggle('hidden',logged);$('quick-visitor-login').classList.toggle('hidden',anonymous);$('quick-ranking-title').textContent=anonymous?'Visitante ativo · vincule uma conta para acessar de outros aparelhos.':'Entre para acessar o ranking global e seus recordes na nuvem.';$('quick-ranking-explanation').textContent=anonymous?'Você está jogando anonimamente. Vincule sua conta ao Google ou crie uma conta com e-mail sem perder o UID e o histórico.':'É possível jogar sem conta. Você também pode criar uma identidade anônima e vinculá-la a Google ou e-mail depois.'}
+function openQuickRanking(){openHistory();if($('history-overlay').classList.contains('hidden'))return;updateQuickRankingAuth();if(isGiraLoggedIn())chooseHistoryView('global')}
+function openQuickAnonymousLogin(){openLogin();if(typeof window.loginAnonymously==='function')window.loginAnonymously()}
+function openQuickGoogleLogin(){openLogin();if(typeof window.loginWithGoogle==='function')window.loginWithGoogle()}
+function openQuickEmailLogin(){openLogin();setTimeout(()=>$('auth-email')?.focus({preventScroll:true}),80)}
+const statusForQuickRanking=$('cloud-account-status');
+new MutationObserver(updateQuickRankingAuth).observe(statusForQuickRanking,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
+updateQuickRankingAuth();
+// Os quatro estágios são idênticos em computadores e smartphones.
+// Não aplicamos filtros no contêiner 3D: o efeito escuro é apenas do entorno.
+let focusStage=0;
+const FOCUS_DESCRIPTIONS=['Normal','Normal com entorno escuro','Tela cheia com entorno escuro','Tela cheia normal'];
+function applyFocusStage(){
+ const dark=focusStage===1||focusStage===2;
+ document.body.classList.toggle('focus-mode',dark);
+ document.body.classList.toggle('app-pseudo-fullscreen',focusStage>=2&&!document.fullscreenElement);
+ for(const id of ['btn-fullscreen','mobile-fullscreen']){
+  const b=$(id);if(!b)continue;
+  const title='Visualização: '+FOCUS_DESCRIPTIONS[focusStage]+' · próximo modo: '+FOCUS_DESCRIPTIONS[(focusStage+1)%FOCUS_DESCRIPTIONS.length];
+  b.title=title;b.setAttribute('aria-label',title);b.setAttribute('aria-pressed',String(focusStage!==0));
+ }
+}
+async function toggleFullScreen(){
+ if(focusStage===0){focusStage=1;applyFocusStage();return}
+ if(focusStage===1){
+  focusStage=2;applyFocusStage();
+  if(!document.fullscreenElement&&document.documentElement.requestFullscreen){
+   try{await document.documentElement.requestFullscreen()}
+   catch(e){setStatus('Tela cheia nativa indisponível; modo de tela ampliada mantido.')}
+  }
+  applyFocusStage();resizeScene();return;
+ }
+ if(focusStage===2){focusStage=3;applyFocusStage();resizeScene();return}
+ focusStage=0;applyFocusStage();
+ if(document.fullscreenElement){try{await document.exitFullscreen()}catch(e){}}
+ applyFocusStage();resizeScene();
+}
+document.addEventListener('fullscreenchange',()=>{
+ // Quando o navegador sai de tela cheia por ESC ou gesto, volta ao modo normal.
+ if(!document.fullscreenElement&&focusStage>=2&&!document.body.classList.contains('app-pseudo-fullscreen'))focusStage=0;
+ applyFocusStage();resizeScene();
+});
+// Reconhecimento de gesto pelo quadradinho tocado e projeção do eixo no plano da tela.
+function gestureMove(gesture){if(isPyramid()){
+ const slot=gesture.pyrSlot;if(!slot)return null;
+ const drag=norm2([gesture.dx,gesture.dy]);let best=null;
+ // A base tem coordenada baricêntrica próxima de zero no vértice oposto.
+ // Antes era excluída pelo filtro bary < .055, impossibilitando o giro.
+ for(let v=0;v<4;v++){
+  const axis=norm3(PYR_VERTS[v]);const tangent=cross(axis,slot.center);
+  const proj=Q.vec(desiredCam,tangent),mag=Math.hypot(proj[0],proj[1]);
+  if(mag<5)continue;
+  const similarity=(proj[0]*drag[0]+proj[1]*drag[1])/mag;
+  const b=slot.bary[v];
+  // Regiões superiores ou inferiores participam do reconhecimento.
+  const isBase=b<.33334, tip=b>.74;
+  const strength=Math.abs(similarity);
+  const score=strength*(.82+Math.min(.26,b))+(isBase? .035:0);
+  if(!best||score>best.score)best={v,score,similarity,base:isBase,tip:!isBase&&tip};
+ }
+ if(!best||Math.abs(best.similarity)<.48)return null;
+ // Na faixa inferior, um arraste aproximadamente tangencial à base
+ // deve escolher o giro inferior em torno do vértice principal (cima).
+ const bottom=slot.bary[0]<.33334;
+ if(bottom){
+  const tangent=cross(norm3(PYR_VERTS[0]),slot.center),p=Q.vec(desiredCam,tangent),mag=Math.hypot(p[0],p[1]);
+  if(mag>5){const sim=(p[0]*drag[0]+p[1]*drag[1])/mag;
+   if(Math.abs(sim)>=.53 && Math.abs(sim) >= Math.abs(best.similarity)*.78)
+    return {type:'p',vertex:0,tip:false,base:true,dir:sim>=0?1:-1};
+  }
+ }
+ return {type:'p',vertex:best.v,tip:best.tip,base:best.base,dir:best.similarity>=0?1:-1};
+ }
+ const p=gesture.piece,sticker=gesture.sticker;if(!p||!sticker)return null;let n=applyOri(p.ori,NORMALS[sticker.dataset.normal]);let drag=norm2([gesture.dx,gesture.dy]);let best=null;
+for(let j=0;j<3;j++){if(n[j]!==0)continue;let t=[0,0,0];t[j]=1;const proj=Q.vec(desiredCam,t),v=[proj[0],proj[1]],length=Math.hypot(...v);if(length<.17)continue;let val=(v[0]*drag[0]+v[1]*drag[1])/length;let score=Math.abs(val);if(!best||score>best.score)best={t,score,s:val>=0?1:-1}}
+if(!best||best.score<.3)return null;const axVec=cross(n,best.t),axisI=axVec.findIndex(v=>v!==0);return {axis:['x','y','z'][axisI],layer:p.pos[axisI],dir:axVec[axisI]*best.s}}
+let pointers=new Map(),gesture=null,lastTouchDistance=0,lastMid=null,ignoreUp=false;
+let multiCameraBase=null,multiMidStart=null,multiZoomStart=1,multiDistanceStart=1;
+// Camada: somente um deslize intencional, curto e predominantemente reto.
+// Segurar, sacudir, mudar o trajeto ou usar dois dedos equivale a segurar
+// o cubo para observá-lo. A câmera fica presa ao ponto inicial da pegada.
+function turnThreshold(g){return isPyramid()?(g.pointerType==='mouse'?29:24):(g.pointerType==='mouse'?48:36)}
+function turnDuration(g){return isPyramid()?(g.pointerType==='mouse'?950:1400):(g.pointerType==='mouse'?850:1200)}
+function isCleanTurn(g){const d=Math.hypot(g.dx,g.dy),eff=d/Math.max(d,g.pathLength),span=performance.now()-g.startedAt;
+ return d>=turnThreshold(g)&&eff>=.86&&g.reverseDistance<10&&span<=turnDuration(g)}
+function midpoint(){let pts=[...pointers.values()];return [(pts[0].x+pts[1].x)/2,(pts[0].y+pts[1].y)/2]}
+function distance2(){let pts=[...pointers.values()];return Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y)}
+function startTwoFinger(){
+ if(gesture)gesture.canceled=true;
+ gesture=null;multiCameraBase=[...desiredCam];multiMidStart=midpoint();multiDistanceStart=distance2()||1;multiZoomStart=userZoom;
+ area.classList.remove('twist-ready');area.classList.add('orbiting');
+}
+function trackTwoFinger(){
+ if(!multiCameraBase)startTwoFinger();
+ const mid=midpoint();
+ orbitFromAnchor(multiCameraBase,mid[0]-multiMidStart[0],mid[1]-multiMidStart[1]);
+ userZoom=clamp(multiZoomStart*(distance2()/multiDistanceStart),.65,1.55);
+ resizeScene();
+}
+area.addEventListener('contextmenu',e=>e.preventDefault());
+area.addEventListener('pointerdown',e=>{
+ if(busy||isReplaying)return;
+ if(e.pointerType==='mouse'&&e.button!==0&&e.button!==2)return;
+ e.preventDefault();tryAudio();try{area.setPointerCapture(e.pointerId)}catch(_){}
+ pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pointers.size>=2){startTwoFinger();return}
+ let sticker=e.target.closest('.sticker, .local-image-mode .body-face');let pyrSlot=isPyramid()?hitPyramidAt(e.clientX,e.clientY):null;
+ let p=sticker?pieceById.get(sticker.dataset.owner):null;
+ let cameraAlways=inputMode==='manual'||(!sticker&&!pyrSlot)||e.button===2||e.shiftKey||e.ctrlKey;
+ gesture={pointerId:e.pointerId,pointerType:e.pointerType,startedAt:performance.now(),mode:cameraAlways?'camera':'candidate',cameraBase:[...desiredCam],piece:p,sticker,pyrSlot,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,dx:0,dy:0,pathLength:0,reverseDistance:0,turnDirection:null,moved:false,canceled:false};
+ area.classList.toggle('twist-ready',!cameraAlways);area.classList.toggle('orbiting',cameraAlways);
+});
+area.addEventListener('pointermove',e=>{
+ if(!pointers.has(e.pointerId))return;
+ pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pointers.size>=2){trackTwoFinger();return}
+ if(!gesture||gesture.pointerId!==e.pointerId||gesture.canceled)return;
+ const g=gesture,stepX=e.clientX-g.lastX,stepY=e.clientY-g.lastY;
+ g.dx=e.clientX-g.x;g.dy=e.clientY-g.y;
+ g.pathLength+=Math.hypot(stepX,stepY);
+ const dist=Math.hypot(g.dx,g.dy);
+ if(dist>6||g.pathLength>9)g.moved=true;
+ if(g.mode==='camera'){orbitHeld(g)}
+ else if(g.mode==='candidate'){
+  if((g.pathLength>38&&dist/g.pathLength<.78)||(performance.now()-g.startedAt>turnDuration(g)&&g.pathLength>20)){
+   g.mode='camera';area.classList.remove('twist-ready');area.classList.add('orbiting');orbitHeld(g);
+  }else if(dist>=turnThreshold(g)){
+   const move=gestureMove(g);
+   if(move&&isCleanTurn(g)){
+    g.mode='turn';g.turn=move;g.turnDirection=norm2([g.dx,g.dy]);
+   }else{
+    g.mode='camera';area.classList.remove('twist-ready');area.classList.add('orbiting');orbitHeld(g);
+   }
+  }
+ }else if(g.mode==='turn'){
+  if(g.turnDirection){let v=stepX*g.turnDirection[0]+stepY*g.turnDirection[1];if(v<0)g.reverseDistance+=-v}
+  if(g.reverseDistance>=10||dist/Math.max(dist,g.pathLength)<.82||performance.now()-g.startedAt>turnDuration(g)){
+   g.mode='camera';g.turn=null;area.classList.remove('twist-ready');area.classList.add('orbiting');orbitHeld(g);
+  }
+ }
+ g.lastX=e.clientX;g.lastY=e.clientY;
+});
+function endPointer(e){
+ if(!pointers.has(e.pointerId))return;
+ pointers.delete(e.pointerId);
+ if(pointers.size<2){multiCameraBase=null;multiMidStart=null}
+ if(pointers.size===1){ignoreUp=true;gesture=null;lastMid=null;lastTouchDistance=0}
+ else if(pointers.size===0){lastMid=null;lastTouchDistance=0}
+ if(gesture&&gesture.pointerId===e.pointerId){
+  const g=gesture;gesture=null;
+  // Cancels/focus-loss never turn a layer.
+  if(e.type!=='pointercancel'&&e.type!=='lostpointercapture'&&!g.canceled&&!busy){
+   if(g.mode==='turn'&&g.turn&&isCleanTurn(g))performMove(g.turn);
+   else if((g.mode==='candidate'||g.mode==='camera')&&!g.moved&&g.piece)selectPiece(g.piece);else if((g.mode==='candidate'||g.mode==='camera')&&!g.moved&&g.pyrSlot){let ranks=g.pyrSlot.bary.map((val,i)=>({i,val})).sort((a,b)=>b.val-a.val);selectPyrVertex(ranks[0].i)}
+  }
+  saveGameState();
+ }
+ if(!pointers.size){gesture=null;ignoreUp=false;area.classList.remove('orbiting','twist-ready');saveGameState()}
+}
+area.addEventListener('pointerup',endPointer);
+area.addEventListener('pointercancel',endPointer);
+area.addEventListener('lostpointercapture',e=>{if(pointers.has(e.pointerId))endPointer(e)});
+area.addEventListener('wheel',e=>{e.preventDefault();adjustZoom(e.deltaY<0?1.07:1/1.07);saveGameState()},{passive:false});
+// Ranking: partidas completas e tentativas salvas manualmente. Apenas 10 registros.
+function records(){let r=safeRead(RECORD_KEY);return Array.isArray(r)?r.filter(v=>v&&Array.isArray(v.start)&&Array.isArray(v.moves)).slice(0,10):[]}
+function chooseHistoryView(view){if(view!=='local' && !window.GiraCloud?.user)return;historyView=view;for(const key of ['local','personal','global']){const btn=$('hist-'+key);btn.classList.toggle('primary',key===view);btn.setAttribute('aria-selected',String(key===view))}$('record-list').classList.toggle('hidden',view==='global');$('global-record-list').classList.toggle('hidden',view!=='global');$('global-rank-controls').classList.toggle('hidden',view!=='global');$('local-rank-controls').classList.toggle('hidden',view==='global');$('history-view-description').textContent=view==='global'?'Melhores resultados publicados por jogadores de diferentes localidades.':view==='personal'?'Histórico da conta conectada, salvo neste aparelho e sincronizável quando a nuvem estiver ativa.':'Partidas armazenadas neste aparelho, incluindo as jogadas sem login.';if(view==='global'){if($('global-rank-type').value!==puzzleType)$('global-rank-type').value=puzzleType;loadGlobalRanking()}else renderHistory()}
+function loadGlobalRanking(){window.GiraCloud?.loadRanking?.()}
+function refreshHistoryTabs(){const active=!!window.GiraCloud?.user;for(const id of ['hist-personal','hist-global'])$(id).classList.toggle('hidden',!active);if(!active)historyView='local';chooseHistoryView(historyView)}
+function openName(won=false){if(isReplaying)return;pendingSaveWon=won;resumeAfterName=!won&&running;if(resumeAfterName)pauseTimer();const modal=$('name-overlay');$('name-title').textContent=won?'Você conseguiu!':'Salvar tentativa';$('win-banner').classList.toggle('hidden',!won);$('name-description').textContent=won?'Digite seu nome para registrar sua conquista no ranking.':'Dê um nome a esta tentativa para guardar o tempo e todos os movimentos.';$('name-summary').textContent=`${formatTime(timeNow())} · ${moveCount} movimentos`;modal.classList.remove('hidden');$('share-win-label').classList.toggle('hidden',!won||!window.GiraCloud?.user||window.GiraCloud?.mode!=='both');$('share-win-global').checked=true;$('player-name').value=window.GiraCloud?.user?.displayName||'';setTimeout(()=>$('player-name').focus({preventScroll:true}),50)}
+function openSaveAttempt(){if(isReplaying||busy)return;if(!attemptEligible||!sessionStart||!sessionMoves.length){setStatus('Clique em Misturar e faça ao menos um movimento para salvar uma tentativa com pontuação.',true);return}openName(attemptFinished&&checkSolved()&&moveCount>0)}
+function closeName(){$('name-overlay').classList.add('hidden');pendingSaveWon=false;if(resumeAfterName&&!isReplaying&&sessionMoves.length&&!checkSolved())startTimer();resumeAfterName=false;saveGameState()}
+$('name-form').addEventListener('submit',e=>{e.preventDefault();const name=$('player-name').value.trim().slice(0,36);if(!name)return;const wasWon=pendingSaveWon;const record={id:Date.now()+'-'+Math.floor(Math.random()*1e5),name,when:new Date().toISOString(),duration:Math.round(timeNow()),count:moveCount,won:wasWon,puzzle:puzzleType,start:sessionStart||snapshotCube(),moves:sessionMoves.map(m=>({...m}))};let r=records();r.unshift(record);if(!safeStore(RECORD_KEY,r.slice(0,10)))return;const shareGlobal=wasWon && !$('share-win-label').classList.contains('hidden') && $('share-win-global').checked;closeName();setStatus(wasWon?`Parabéns, ${name}! Sua vitória foi registrada.`:`Tentativa de ${name} salva no histórico.`);saveGameState();if(shareGlobal)window.GiraCloud?.publishWin?.(record)});
+function setHistorySort(s){historySort=s;renderHistory()}
+function deviceRecords(){const anon=(()=>{try{return JSON.parse(localStorage.getItem(RECORD_KEY)||'[]')}catch(_){return []}})();const all=[...records(),...(Array.isArray(anon)?anon:[])];const seen=new Set();return all.filter(r=>{if(!r||!Array.isArray(r.moves)||!Array.isArray(r.start)||seen.has(r.id))return false;seen.add(r.id);return true}).slice(0,20)}
+function displayedHistoryRecords(){return historyView==='local'?deviceRecords():records()}
+function renderHistory(){const all=displayedHistoryRecords();const order=(a,b)=>historySort==='date'?Date.parse(b.when)-Date.parse(a.when):historySort==='moves'?((a.won?0:1)-(b.won?0:1)||a.count-b.count||a.duration-b.duration):((a.won?0:1)-(b.won?0:1)||a.duration-b.duration||a.count-b.count);all.sort(order);$('sort-time').classList.toggle('primary',historySort==='time');$('sort-moves').classList.toggle('primary',historySort==='moves');$('sort-date').classList.toggle('primary',historySort==='date');const list=$('record-list');list.replaceChildren();if(!all.length){const p=document.createElement('p');p.textContent='Nenhuma partida registrada. Misture o cubo, jogue e salve seu resultado.';list.appendChild(p);return}
+all.forEach((r,i)=>{let row=document.createElement('div');row.className='record';let left=document.createElement('div');let date=new Date(r.when);let when=Number.isNaN(date.getTime())?'Data não disponível':new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(date);let name=document.createElement('div');name.className='name';name.textContent=`${i+1}º · ${r.name}`;let info=document.createElement('small');info.textContent=`${puzzleLabel(r.puzzle||'3')} · ${r.won?'✓ Concluído':'◷ Tentativa'} · ${formatTime(r.duration)} · ${r.count} movimentos · ${when}`;left.append(name,info);let controls=document.createElement('div');controls.className='buttons';let play=document.createElement('button');play.title='Assistir aos movimentos';play.textContent='▶ Ver';play.onclick=()=>startReplay(r.id);let del=document.createElement('button');del.textContent='✕';del.title='Excluir registro';del.onclick=()=>deleteRecord(r.id);controls.append(play,del);row.append(left,controls);list.appendChild(row)})}
+function openHistory(){if(busy||isReplaying)return;resumeAfterHistory=running;pauseTimer();saveGameState();refreshHistoryTabs();$('history-overlay').classList.remove('hidden')}
+function closeHistory(){$('history-overlay').classList.add('hidden');if(!isReplaying&&resumeAfterHistory&&sessionMoves.length&&!checkSolved())startTimer();resumeAfterHistory=false;saveGameState()}
+function deleteRecord(id){if(!confirm('Excluir este registro do histórico?'))return;safeStore(RECORD_KEY,records().filter(r=>r.id!==id));if(historyView==='local'){try{const anon=JSON.parse(localStorage.getItem(RECORD_KEY)||'[]');if(Array.isArray(anon))localStorage.setItem(RECORD_KEY,JSON.stringify(anon.filter(r=>r.id!==id)))}catch(_){}}renderHistory()}
+function clearHistory(){if(!displayedHistoryRecords().length)return;const scope=historyView==='local'?'deste aparelho':'da conta';if(!confirm('Excluir todos os resultados '+scope+'? Esta ação não pode ser desfeita.'))return;safeStore(RECORD_KEY,[]);if(historyView==='local'){try{localStorage.removeItem(RECORD_KEY)}catch(_){}}renderHistory()}
+async function startReplay(id){if(busy||isReplaying)return;const r=displayedHistoryRecords().find(item=>item.id===id);if(!r)return;replayBackup={puzzle:puzzleType,pieces:snapshotCube(),selected:selectedPiece?.id,elapsed:timeNow(),running:resumeAfterHistory||running,readyToStart,attemptEligible,attemptFinished,moveCount,sessionMoves,sessionStart,moveStack,cam:[...desiredCam]};replayRecord=r;resumeAfterHistory=false;pauseTimer();isReplaying=true;replayCancel=false;replayPaused=false;replayIsRunning=true;$('history-overlay').classList.add('hidden');$('replay-overlay').classList.remove('hidden');$('replay-title').textContent=`▶ ${r.name}`;$('replay-description').textContent=`${r.won?'Vitória':'Tentativa'} · ${formatTime(r.duration)} · ${r.count} movimentos`;$('replay-pause').textContent='⏸ Pausar';puzzleType=r.puzzle||'3';gridSize=isPyramid()?3:Number(puzzleType);restoreCube(r.start);updateOptions();resizeScene();$('replay-progress').textContent=`0 / ${r.moves.length} movimentos`;
+try{for(let i=0;i<r.moves.length;i++){while(replayPaused&&!replayCancel)await new Promise(res=>setTimeout(res,70));if(replayCancel)break;await animateMove(r.moves[i],{auto:true,ms:290,silent:true});$('replay-progress').textContent=`${i+1} / ${r.moves.length} movimentos`}}finally{replayIsRunning=false;if(!replayCancel){$('replay-pause').textContent='↺ Repetir';setStatus('Reprodução concluída. Feche para voltar ao jogo.')}}}
+function toggleReplayPause(){if(!isReplaying)return;if(!replayIsRunning){if(replayRecord){const r=replayRecord;replayCancel=false;replayPaused=false;replayIsRunning=true;restoreCube(r.start);$('replay-progress').textContent=`0 / ${r.moves.length} movimentos`;$('replay-pause').textContent='⏸ Pausar';(async()=>{try{for(let i=0;i<r.moves.length;i++){while(replayPaused&&!replayCancel)await new Promise(res=>setTimeout(res,70));if(replayCancel)break;await animateMove(r.moves[i],{auto:true,ms:290,silent:true});$('replay-progress').textContent=`${i+1} / ${r.moves.length} movimentos`}}finally{replayIsRunning=false;if(!replayCancel)$('replay-pause').textContent='↺ Repetir'}})()}return}replayPaused=!replayPaused;$('replay-pause').textContent=replayPaused?'▶ Continuar':'⏸ Pausar'}
+function stopReplay(){if(!isReplaying)return;replayCancel=true;replayPaused=false;const restore=()=>{if(replayIsRunning){setTimeout(restore,45);return}const b=replayBackup;isReplaying=false;replayBackup=null;replayRecord=null;if(b){puzzleType=b.puzzle;gridSize=isPyramid()?3:Number(puzzleType);restoreCube(b.pieces);updateOptions();resizeScene();selectedPiece=pieceById.get(b.selected)||null;updateSelection();elapsed=b.elapsed;running=false;readyToStart=b.readyToStart;attemptEligible=b.attemptEligible;attemptFinished=b.attemptFinished;moveCount=b.moveCount;sessionMoves=b.sessionMoves;sessionStart=b.sessionStart;moveStack=b.moveStack;changeCamera(b.cam,false);showStats();if(b.running)startTimer()}$('replay-overlay').classList.add('hidden');setStatus('Partida restaurada.');saveGameState()};restore()}
+window.addEventListener('resize',()=>resizeScene());document.addEventListener('visibilitychange',()=>{if(document.hidden){stopMusic();saveGameState()}else if(currentMusic)startMusic()});window.addEventListener('pagehide',()=>{stopMusic();saveGameState()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.GiraNav?.stack?.length){e.preventDefault();window.GiraNav.closeTop();return}if(!$('quick-audio-overlay').classList.contains('hidden'))closeQuickAudio();else if(!$('replay-overlay').classList.contains('hidden'))stopReplay();else if(!$('login-overlay').classList.contains('hidden'))closeLogin();else if(!$('cloud-overlay').classList.contains('hidden'))closeCloudSettings();else if(!$('install-overlay').classList.contains('hidden'))closeInstallHelp();else if(!$('history-overlay').classList.contains('hidden'))closeHistory();else if(!$('name-overlay').classList.contains('hidden'))closeName();else if(!$('mobile-settings-overlay').classList.contains('hidden'))closeMobileSettings();return}if(['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)||isReplaying||busy)return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undoMove()}if(e.key==='Enter'&&document.activeElement===area)straighten()});
+const mobilePrefs={orientation:true,turns:true,match:false};
+const mobileQuery=window.matchMedia('(max-width:730px) and (orientation:portrait)');
+function isMobilePortrait(){return mobileQuery.matches}
+function bridgeGetProfile(){
+  if(!isReplaying&&!busy){cloudApplyInProgress=true;try{saveGameState()}finally{cloudApplyInProgress=false}}
+  const slots={};for(const t of ['2','3','4','pyramid']){const v=safeRead(PUZZLE_SLOT+t);if(v)slots[t]=v}
+  return {state:safeRead(DATA_KEY),slots,history:records(),mobilePrefs:safeRead(MOBILE_UI_KEY)};
+}
+function bridgeHasCache(uid){return !!localStorage.getItem('giraAI_user_'+uid+'_'+DATA_KEY)}
+function bridgeUseProfile(uid){
+  if(isReplaying||busy)return false;
+  pauseTimer();saveGameState();giraProfileUid=uid||null;
+  const saved=safeRead(DATA_KEY);loadProfileVisual(saved);
+  return true;
+}
+function loadProfileVisual(saved){
+  cloudApplyInProgress=true;
+  try{
+    pauseTimer();let loaded=saved?loadGameState(saved):null;
+    if(!saved){puzzleType='3';gridSize=3;imageMode=0;inputMode='manual';moveStack=[];sessionMoves=[];sessionStart=null;moveCount=0;elapsed=0;running=false;readyToStart=false;attemptEligible=false;attemptFinished=false;userZoom=1;currentSound=0;currentMusic=0;musicVolume=55;moveVolume=70;syncVolumeUI()}
+    buildCube(loaded);resizeScene();updateOptions();showStats();updateMap();
+    let ui=safeRead(MOBILE_UI_KEY);for(const k of Object.keys(mobilePrefs))mobilePrefs[k]=typeof ui?.[k]==='boolean'?ui[k]:k==='match'?false:true;applyMobilePrefs();
+  }finally{cloudApplyInProgress=false}
+}
+function bridgeApplyCloud(profile){
+ cloudApplyInProgress=true;
+ try{
+  if(profile?.state)safeStore(DATA_KEY,profile.state);
+  for(const t of ['2','3','4','pyramid'])if(profile?.slots?.[t])safeStore(PUZZLE_SLOT+t,profile.slots[t]);
+  if(Array.isArray(profile?.history))safeStore(RECORD_KEY,profile.history.slice(0,10));
+  if(profile?.mobilePrefs)safeStore(MOBILE_UI_KEY,profile.mobilePrefs);
+  loadProfileVisual(safeRead(DATA_KEY));
+ }finally{cloudApplyInProgress=false}
+}
+window.GiraAICloudBridge={getProfile:bridgeGetProfile,hasCache:bridgeHasCache,useProfile:bridgeUseProfile,applyCloud:bridgeApplyCloud,refreshHistory:()=>{if(!$('history-overlay').classList.contains('hidden'))refreshHistoryTabs()},saveHistory:()=>records()};
+
+function applyMobilePrefs(){document.body.classList.toggle('mobile-no-orientation',!mobilePrefs.orientation);document.body.classList.toggle('mobile-no-turns',!mobilePrefs.turns);document.body.classList.toggle('mobile-match-closed',mobilePrefs.match);$('pref-orientation').checked=mobilePrefs.orientation;$('pref-turns').checked=mobilePrefs.turns;$('pref-match').checked=mobilePrefs.match;$('mobile-match-toggle').setAttribute('aria-expanded',String(!mobilePrefs.match));$('mobile-match-toggle').querySelector('span').textContent=mobilePrefs.match?'▾':'▴';resizeScene()}
+function updateMobilePref(key,value){if(!(key in mobilePrefs))return;mobilePrefs[key]=!!value;safeStore(MOBILE_UI_KEY,mobilePrefs);applyMobilePrefs()}
+function toggleMobileMatch(){updateMobilePref('match',!mobilePrefs.match)}
+function openMobileSettings(){if(!isMobilePortrait())return;$('mobile-settings-overlay').classList.remove('hidden')}
+function closeMobileSettings(){$('mobile-settings-overlay').classList.add('hidden')}
+function openMobileHistory(){openHistory()}
+function openMobileSave(){openSaveAttempt()}
+mobileQuery.addEventListener?.('change',()=>{closeMobileSettings();resizeScene()});
+function init(){let prefs=safeRead(MOBILE_UI_KEY);if(prefs&&typeof prefs==='object')for(const k of Object.keys(mobilePrefs))if(typeof prefs[k]==='boolean')mobilePrefs[k]=prefs[k];makeCardinals();seedImages();let previous=loadGameState();buildCube(previous);resizeScene();updateOptions();updateCamera();updateMap();showStats();cameraLoop();if(!previous&&!sessionStart){readyToStart=false}if(previous&&attemptEligible&&checkSolved()&&sessionMoves.length){attemptFinished=true;pauseTimer()}if(currentMusic>0)setStatus('Música disponível após interação com a página.');applyMobilePrefs();}
+init();
+document.addEventListener('pointerdown',function unlockAudio(){if(currentMusic>0)tryAudio()},{passive:true,capture:true});
+</script>
+<div id="giraai-toast" role="status" aria-live="polite"></div>
+<script>
+/* Funções locais para que os modais funcionem mesmo sem carregar o Firebase. */
+function giraFallbackStatus(){document.getElementById('cloud-sync-state').textContent='Login e sincronização requerem internet e o Firebase configurado; a partida local continua disponível.'}
+window.openCloudSettings=()=>{document.getElementById('cloud-overlay').classList.remove('hidden')};
+window.closeCloudSettings=()=>document.getElementById('cloud-overlay').classList.add('hidden');
+window.openLogin=()=>{document.getElementById('login-feedback').textContent='';document.getElementById('login-overlay').classList.remove('hidden');if(window.GiraFirebaseSDK?.state==='error')document.getElementById('login-feedback').textContent=window.GiraFirebaseSDK.error;};
+window.closeLogin=()=>{document.getElementById('login-overlay').classList.add('hidden');document.getElementById('login-feedback').textContent=''};
+for(const name of ['loginWithGoogle','loginAnonymously','submitEmailLogin','createEmailAccount','sendResetEmail','logoutGiraAI','setCloudMode','syncCloudNow','pullCloudNow','saveCloudProfile','detectApproxLocation']){
+ if(!window[name])window[name]=(event)=>{event?.preventDefault?.();if(name==='syncCloudNow'||name==='pullCloudNow')window.openCloudSettings();giraFallbackStatus();const control=window.GiraFirebaseSDK;const msg=control?.state==='error'?'Firebase indisponível: '+control.error:'Conectando ao Firebase. Após carregar, toque novamente em Entrar com Google.';document.getElementById('login-feedback').textContent=msg;if(control?.state==='error')control.retry();};
+}
+</script>
+<script>
+/* GiraAI v3.4 — inicialização resiliente, baseada no carregamento modular do ProtegeAI.
+   SDKs são carregados explicitamente; erro de rede fica visível e pode ser repetido.
+   Nenhuma chamada ao Firestore é feita antes da autenticação. */
+const FIREBASE_SDK_VERSION='12.19.0';
+const firebaseConfig = {
+ apiKey:'AIzaSyD2UTu6u_oHc44dmr1AFhz6YjB-XPKiJdY',
+ authDomain:'cubo3d-rsp.firebaseapp.com',
+ projectId:'cubo3d-rsp',
+ storageBucket:'cubo3d-rsp.firebasestorage.app',
+ messagingSenderId:'1026382169408',
+ appId:'1:1026382169408:web:ffd046a6b8e19c32f7a6a5'
+};
+
+let giraSDKPromise=null;
+const giraSDKControl={state:'loading',error:'',retry:loadGiraFirebase};
+window.GiraFirebaseSDK=giraSDKControl;
+function giraCloudUi(text,failed=false){
+ const status=document.getElementById('firebase-sdk-status');
+ const retry=document.getElementById('firebase-sdk-retry');
+ if(status){status.textContent=text;status.dataset.state=failed?'error':giraSDKControl.state;}
+ if(retry)retry.hidden=!failed;
+ if(failed){
+  const feedback=document.getElementById('login-feedback');
+  if(feedback)feedback.textContent='Não foi possível iniciar o login: '+text;
+  const cloud=document.getElementById('cloud-sync-state');
+  if(cloud)cloud.textContent='Firebase desconectado: '+text;
+ }
+}
+function readableSDKError(error){
+ const msg=String(error?.message||error||'erro não identificado');
+ if(/Failed to fetch dynamically imported module|dynamically imported module|Importing a module script failed|Failed to load module script|NetworkError|ERR_/i.test(msg))
+  return 'Não foi possível baixar os módulos do Firebase. Confira a rede, bloqueadores e o domínio www.gstatic.com. Detalhes: '+msg.slice(0,180);
+ if(/CORS|cross.origin|policy/i.test(msg))return 'O navegador bloqueou um módulo Firebase por uma política de segurança. '+msg.slice(0,180);
+ return (error?.code?error.code+': ':'')+msg.slice(0,240);
+}
+async function loadGiraFirebase(){
+ if(giraSDKControl.state==='ready')return true;
+ if(giraSDKPromise)return giraSDKPromise;
+ giraSDKControl.state='loading';giraSDKControl.error='';
+ giraCloudUi('Conectando ao Firebase…');
+ giraSDKPromise=(async()=>{
+  try{
+   const base='https://www.gstatic.com/firebasejs/'+FIREBASE_SDK_VERSION+'/';
+   const [appMod,authMod,dbMod]=await Promise.all([
+    import(base+'firebase-app.js'),
+    import(base+'firebase-auth.js'),
+    import(base+'firebase-firestore.js')
+   ]);
+   const app=appMod.initializeApp(firebaseConfig,'GiraAI');
+   const auth=authMod.getAuth(app);
+   await authMod.setPersistence(auth,authMod.browserLocalPersistence);
+   // Só disponibilizar os botões funcionais depois de obter o SDK, como no ProtegeAI.
+   installGiraCloud({
+    app,auth,
+    initializeApp:appMod.initializeApp,
+    getAuth:authMod.getAuth,
+    GoogleAuthProvider:authMod.GoogleAuthProvider,
+    signInWithPopup:authMod.signInWithPopup,
+    signInAnonymously:authMod.signInAnonymously,
+    linkWithPopup:authMod.linkWithPopup,
+    linkWithCredential:authMod.linkWithCredential,
+    EmailAuthProvider:authMod.EmailAuthProvider,
+    signInWithEmailAndPassword:authMod.signInWithEmailAndPassword,
+    createUserWithEmailAndPassword:authMod.createUserWithEmailAndPassword,
+    sendPasswordResetEmail:authMod.sendPasswordResetEmail,
+    onAuthStateChanged:authMod.onAuthStateChanged,
+    signOut:authMod.signOut,
+    setPersistence:authMod.setPersistence,
+    browserLocalPersistence:authMod.browserLocalPersistence,
+    getFirestore:dbMod.getFirestore,
+    doc:dbMod.doc,getDoc:dbMod.getDoc,setDoc:dbMod.setDoc,
+    collection:dbMod.collection,query:dbMod.query,where:dbMod.where,
+    orderBy:dbMod.orderBy,limit:dbMod.limit,getDocs:dbMod.getDocs,
+    serverTimestamp:dbMod.serverTimestamp
+   });
+   giraSDKControl.state='ready';giraSDKControl.error='';
+   giraCloudUi('✓ Firebase conectado. Login Google e e-mail disponíveis.');
+   return true;
+  }catch(err){
+   giraSDKControl.state='error';giraSDKControl.error=readableSDKError(err);
+   giraCloudUi(giraSDKControl.error,true);
+   console.error('GiraAI: falha ao preparar Firebase',err);
+   return false;
+  }finally{giraSDKPromise=null;}
+ })();
+ return giraSDKPromise;
+}
+function installGiraCloud(sdk){
+ const {app,auth,initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,
+ signInAnonymously,linkWithPopup,linkWithCredential,EmailAuthProvider,
+ signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,
+ onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,getFirestore,
+ doc,getDoc,setDoc,collection,query,where,orderBy,limit,getDocs,serverTimestamp}=sdk;
+const db=getFirestore(app),provider=new GoogleAuthProvider();
+const $=id=>document.getElementById(id), bridge=window.GiraAICloudBridge;
+let user=null, mode='both', ready=false, loading=false, syncTimer=null, syncing=false, dirty=false;
+let lastHistoryString='', token=0, revision=0, currentLocation={country:'',state:'',city:''};
+// A publicação é criada abaixo em window.publishWin. Expor uma função ponte
+// evita ReferenceError na inicialização do SDK e preserva o acesso do jogo.
+const activeCloud={
+ get user(){return user},get ready(){return ready},get mode(){return mode},
+ queueSave,
+ publishWin:(record)=>window.publishWin?.(record),
+ loadRanking
+};
+window.GiraCloud=activeCloud;
+function localModeKey(uid){return 'giraai_cloud_mode_'+uid}
+function localDirtyKey(uid){return 'giraai_cloud_dirty_'+uid}
+function localLocKey(uid){return 'giraai_public_location_'+uid}
+function setText(id,value){let el=$(id);if(el)el.textContent=value}
+function status(msg){setText('cloud-sync-state',msg)}
+function feedback(msg){setText('login-feedback',msg)}
+function showAccount(){
+ let connected=!!user, anonymous=!!user?.isAnonymous, display=anonymous?'Visitante anônimo · UID '+user.uid.slice(0,8):user?.email||user?.displayName||'Conta conectada';
+ for(const id of ['mobile-auth-status','desktop-auth-status','cloud-account-status']){
+  let el=$(id);if(!el)continue;el.classList.toggle('online',connected&&!anonymous);el.classList.toggle('anonymous',anonymous);el.querySelector('span:last-child').textContent=connected?display:'Login não efetuado';
+ }
+ $('open-login-btn').classList.toggle('hidden',connected);$('upgrade-anonymous-btn').classList.toggle('hidden',!anonymous);$('logout-btn').classList.toggle('hidden',!connected);
+ document.querySelectorAll('input[name="cloud-storage-mode"]').forEach(e=>e.checked=e.value===mode);
+ bridge?.refreshHistory?.();
+}
+function explainError(err){
+ const code=err?.code||'';
+ const pt={
+  'auth/invalid-email':'E-mail inválido.','auth/invalid-credential':'E-mail ou senha incorretos.','auth/wrong-password':'Senha incorreta.',
+  'auth/email-already-in-use':'Este e-mail já está cadastrado. Entre na conta.','auth/weak-password':'Use uma senha mais forte (pelo menos 6 caracteres).',
+  'auth/popup-closed-by-user':'A janela do Google foi fechada.','auth/popup-blocked':'O navegador bloqueou a janela do Google. Permita pop-ups neste site e tente novamente.',
+  'auth/operation-not-allowed':'Ative o provedor correspondente (inclusive Anônimo) em Firebase Authentication → Sign-in method.',
+  'auth/network-request-failed':'Não foi possível acessar o Firebase. Confira sua conexão e tente novamente.',
+  'auth/cancelled-popup-request':'Outra janela de login está sendo aberta. Tente novamente.',
+  'auth/credential-already-in-use':'Esta conta Google já existe. Para entrar nela, saia do visitante primeiro. A conta anônima e seus dados não serão mesclados automaticamente.',
+  'auth/email-already-in-use':'Este e-mail já possui uma conta. Use Entrar, em vez de Criar conta. O histórico anônimo não será mesclado automaticamente.',
+  'auth/provider-already-linked':'Este método de login já está vinculado.',
+  'auth/internal-error':'O Firebase não conseguiu completar o login. Tente novamente ou verifique o console do navegador.',
+  'auth/unauthorized-domain':'Domínio não autorizado. Adicione o domínio do GitHub Pages em Firebase Authentication → Configurações → Domínios autorizados.',
+  'permission-denied':'Acesso bloqueado pelo Firestore. Publique firestore.rules no console do Firebase.',
+  'unavailable':'Sem conexão com Firebase. O jogo continua salvo localmente.'
+ };
+ return pt[code]||`Operação não concluída (${code||err?.message||'erro de rede'}).`;
+}
+function authInputs(){return {email:$('auth-email').value.trim(),password:$('auth-password').value}}
+window.openCloudSettings=()=>{$('cloud-overlay').classList.remove('hidden');showAccount()};
+window.closeCloudSettings=()=>{$('cloud-overlay').classList.add('hidden')};
+window.openLogin=()=>{$('login-overlay').classList.remove('hidden');feedback('');};
+window.closeLogin=()=>{$('login-overlay').classList.add('hidden');feedback('')};
+window.loginAnonymously=async()=>{
+ if(auth.currentUser?.isAnonymous){feedback('Você já está como visitante. Pode vincular Google ou e-mail mantendo o seu histórico.');return}
+ if(auth.currentUser&&!auth.currentUser.isAnonymous){feedback('Você já está conectado com uma conta. Saia da conta antes de iniciar um visitante.');return}
+ const button=$('anonymous-login-btn');if(button)button.disabled=true;feedback('Criando sua identidade anônima no Firebase...');
+ try{await signInAnonymously(auth);feedback('Visitante conectado. Seus dados ficam vinculados a este navegador até associar uma conta.')}
+ catch(e){feedback(explainError(e))}finally{if(button)button.disabled=false}
+};
+window.loginWithGoogle=()=>{
+ // Abre o Google diretamente a partir do clique, antes de qualquer await:
+ // senão o Android/PWA pode bloquear o pop-up como abertura não solicitada.
+ feedback('Abrindo a janela de acesso do Google...');
+ const button=document.querySelector('#login-overlay .google-button');
+ if(button)button.disabled=true;
+ let attempt;
+ try{attempt=auth.currentUser?.isAnonymous?linkWithPopup(auth.currentUser,provider):signInWithPopup(auth,provider)}
+ catch(e){feedback(explainError(e));if(button)button.disabled=false;return}
+ Promise.resolve(attempt)
+  .then(()=>{feedback('Autenticação confirmada. Carregando sua conta...');user=auth.currentUser;showAccount();window.closeLogin();})
+  .catch(e=>feedback(explainError(e)))
+  .finally(()=>{if(button)button.disabled=false});
+};
+window.submitEmailLogin=async(e)=>{e.preventDefault();const {email,password}=authInputs();if(auth.currentUser?.isAnonymous&&!confirm('Esta opção entra em uma conta já existente e deixa de usar o UID do visitante. Os dados do visitante não serão migrados automaticamente. Continuar?'))return;feedback('Entrando...');try{await setPersistence(auth,browserLocalPersistence);await signInWithEmailAndPassword(auth,email,password)}catch(err){feedback(explainError(err))}};
+window.createEmailAccount=async()=>{const {email,password}=authInputs();if(!email||password.length<6){feedback('Informe um e-mail e senha com pelo menos 6 caracteres.');return}feedback(auth.currentUser?.isAnonymous?'Vinculando o visitante ao e-mail...':'Criando conta...');try{if(auth.currentUser?.isAnonymous){const cred=EmailAuthProvider.credential(email,password);await linkWithCredential(auth.currentUser,cred);user=auth.currentUser;showAccount();window.closeLogin();status('Conta de e-mail vinculada. UID e dados do visitante preservados.');}else{await setPersistence(auth,browserLocalPersistence);await createUserWithEmailAndPassword(auth,email,password)}}catch(err){feedback(explainError(err))}};
+window.sendResetEmail=async()=>{let email=$('auth-email').value.trim();if(!email){feedback('Digite o e-mail para recuperar a senha.');return}try{await sendPasswordResetEmail(auth,email);feedback('Se houver uma conta correspondente, você receberá instruções por e-mail.')}catch(err){feedback(explainError(err))}};
+window.logoutGiraAI=async()=>{try{if(syncTimer)clearTimeout(syncTimer);if(user&&mode==='both'&&dirty)await pushCloud();await signOut(auth);status('Você saiu da conta. Os dados locais da conta continuam neste navegador.')}catch(e){status(explainError(e))}};
+window.setCloudMode=(value)=>{if(!['local','both'].includes(value))return;mode=value;if(user)localStorage.setItem(localModeKey(user.uid),value);showAccount();if(value==='both'){status('Nuvem habilitada. Sincronizando alterações deste aparelho...');queueSave()}else{if(syncTimer)clearTimeout(syncTimer);status('Somente local: seus dados não serão enviados à nuvem.')}};
+function cloudDocs(uid){return {state:doc(db,'usuarios',uid,'dados','estado'),history:doc(db,'usuarios',uid,'dados','historico'),profile:doc(db,'usuarios',uid,'dados','perfil')}}
+function prepareData(){const data=bridge.getProfile();return {state:{state:data.state||null,slots:data.slots||{},mobilePrefs:data.mobilePrefs||null},history:data.history||[]}}
+function queueSave(){if(!user||!ready||mode!=='both'||loading)return;revision++;dirty=true;localStorage.setItem(localDirtyKey(user.uid),'1');if(syncTimer)clearTimeout(syncTimer);syncTimer=setTimeout(()=>{pushCloud().catch(e=>status(explainError(e)))},2700)}
+async function pushCloud(){
+ if(!user||!ready||mode!=='both'||loading||syncing)return;
+ const uid=user.uid,cycle=token,sentRevision=revision;syncing=true;if(syncTimer)clearTimeout(syncTimer);
+ try{
+  const all=prepareData(),refs=cloudDocs(uid),histStr=JSON.stringify(all.history);
+  status('Enviando dados à nuvem...');
+  // A partida atual e os quatro modelos ficam no documento privado estado.
+  await setDoc(refs.state,{schema:1,payload:all.state,savedAt:serverTimestamp()});
+  if(histStr!==lastHistoryString){await setDoc(refs.history,{schema:1,registros:all.history,savedAt:serverTimestamp()});lastHistoryString=histStr}
+  if(cycle===token&&user?.uid===uid){if(sentRevision===revision){dirty=false;localStorage.removeItem(localDirtyKey(uid));status('✓ Seus jogos e configurações foram sincronizados com a nuvem.')}else status('Alterações novas aguardam a próxima sincronização.');}
+ }catch(err){dirty=true;if(user?.uid===uid)localStorage.setItem(localDirtyKey(uid),'1');status(explainError(err));throw err}
+ finally{syncing=false}
+}
+async function fetchCloud(){if(!user||mode!=='both')return null;const uid=user.uid, refs=cloudDocs(uid),[state,history,profile]=await Promise.all([getDoc(refs.state),getDoc(refs.history),getDoc(refs.profile)]);return {state:state.exists()?state.data().payload:null,history:history.exists()?(history.data().registros||[]):null,profile:profile.exists()?profile.data():null}}
+function setLocation(loc){currentLocation={country:String(loc?.country||'').slice(0,48),state:String(loc?.state||'').slice(0,56),city:String(loc?.city||'').slice(0,64)};for(const k of ['country','state','city'])$('profile-'+k).value=currentLocation[k];if(user)localStorage.setItem(localLocKey(user.uid),JSON.stringify(currentLocation))}
+window.saveCloudProfile=async()=>{
+ let loc={country:$('profile-country').value.trim(),state:$('profile-state').value.trim(),city:$('profile-city').value.trim()};setLocation(loc);
+ if(!user){setText('cloud-profile-feedback','Faça login para vincular a localização ao seu perfil.');return}
+ if(mode==='local'){setText('cloud-profile-feedback','Local salvo neste aparelho. Para enviar para a nuvem, escolha Local + nuvem.');return}
+ try{await setDoc(cloudDocs(user.uid).profile,{...currentLocation,savedAt:serverTimestamp()});setText('cloud-profile-feedback','Localização opcional salva. Ela aparecerá nos seus novos resultados publicados.')}catch(e){setText('cloud-profile-feedback',explainError(e))}
+};
+window.detectApproxLocation=async()=>{
+ if(!confirm('Consultar país, estado e cidade aproximados por endereço IP usando o serviço externo ipwho.is? O endereço IP será enviado a esse serviço. Nenhum GPS será utilizado.'))return;
+ setText('cloud-profile-feedback','Buscando localização aproximada...');
+ try{let response=await fetch('https://ipwho.is/',{cache:'no-store'});if(!response.ok)throw Error('Serviço indisponível');let p=await response.json();if(!p.success)throw Error('Localização não disponível');setLocation({country:p.country||'',state:p.region||'',city:p.city||''});setText('cloud-profile-feedback','Preenchido aproximadamente. Confira os dados e toque em Salvar perfil.')}catch(_){setText('cloud-profile-feedback','Não foi possível detectar. Você pode preencher manualmente.')}
+};
+window.syncCloudNow=async()=>{if(!user){window.openCloudSettings();status('Faça login primeiro.');return}if(mode!=='both'){window.openCloudSettings();status('Ative Local + nuvem para sincronizar.');return}if(loading||!ready){status('Carregando conta...');return}dirty=true;await pushCloud().catch(()=>{})};
+// Buscar explicitamente as cópias remotas, sem sobrescrever silenciosamente uma partida local.
+window.pullCloudNow=async()=>{
+ if(!user||mode!=='both')return;try{const remote=await fetchCloud();if(!remote?.state)return status('Não há jogo salvo na nuvem.');if(!confirm('Substituir o progresso deste aparelho pelos dados da nuvem?'))return;loading=true;bridge.applyCloud({...remote.state,history:remote.history||[]});lastHistoryString=JSON.stringify(remote.history||[]);localStorage.removeItem(localDirtyKey(user.uid));status('✓ Dados da nuvem recuperados.')}catch(e){status(explainError(e))}finally{loading=false}
+};
+window.publishWin=async(record)=>{
+ if(!user||mode!=='both'||!record?.won||!record?.id)return;
+ const uid=user.uid,ptype=record.puzzle; if(!['2','3','4','pyramid'].includes(ptype))return;
+ let durationMs=Math.round(Number(record.duration)),count=Math.round(Number(record.count));
+ if(!Number.isFinite(durationMs)||durationMs<1000||durationMs>86400000||!Number.isInteger(count)||count<1||count>100000)return;
+ try{
+  const ref=doc(db,'ranking',uid+'_'+ptype),prior=await getDoc(ref);
+  if(prior.exists()){
+   const past=prior.data();if(past.durationMs<durationMs||(past.durationMs===durationMs&&past.count<=count)){status('Seu resultado ficou salvo no histórico. O melhor tempo global anterior foi mantido.');return}
+  }
+  await setDoc(ref,{uid,puzzle:ptype,name:record.name.slice(0,36),durationMs,count,when:record.when,
+   country:currentLocation.country,state:currentLocation.state,city:currentLocation.city,savedAt:serverTimestamp()});
+  status('🏆 Seu melhor tempo foi publicado no ranking global!');
+ }catch(e){status('Partida salva pessoalmente, mas não publicada no global: '+explainError(e))}
+};
+async function loadRanking(){
+ const list=$('global-record-list');if(!list)return;
+ const puzzle=$('global-rank-type').value,sort=$('global-rank-sort').value;
+ list.replaceChildren();const p=document.createElement('p');p.textContent='Carregando ranking global...';list.append(p);
+ try{
+  // Firestore requer indice composto (puzzle ASC, durationMs/count ASC). Arquivo firestore.indexes.json incluido.
+  const q=query(collection(db,'ranking'),where('puzzle','==',puzzle),orderBy(sort,'asc'),limit(50));
+  const docs=await getDocs(q);list.replaceChildren();if(docs.empty){let none=document.createElement('p');none.textContent='Nenhum recorde publicado neste modelo.';list.append(none);return}
+  docs.forEach((d,i)=>{
+   const r=d.data(),row=document.createElement('div'),left=document.createElement('div'),name=document.createElement('div'),sub=document.createElement('small');row.className='record';name.className='name';
+   name.textContent=(i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':`${i+1}º · `)+(r.name||'Jogador');
+   let loc=[r.city,r.state,r.country].filter(Boolean).join(' · ');let s=Math.floor(r.durationMs/1000),mins=Math.floor(s/60);let dt=Date.parse(r.when||'');let date=Number.isFinite(dt)?new Intl.DateTimeFormat('pt-BR',{dateStyle:'short'}).format(new Date(dt)):'';
+   sub.textContent=`${String(mins).padStart(2,'0')}:${String(s%60).padStart(2,'0')} · ${r.count} mov.${loc?' · '+loc:''}${date?' · '+date:''}`;
+   left.append(name,sub);row.append(left);list.append(row);
+  });
+ }catch(e){list.replaceChildren();let err=document.createElement('p');err.textContent='Não foi possível carregar o ranking: '+explainError(e)+' Verifique também os índices do Firestore.';list.append(err)}
+}
+async function handleAuth(next){
+ const newToken=++token;
+ if(syncTimer)clearTimeout(syncTimer);
+ // Salva primeiro o perfil anterior; cada conta tem chaves locais isoladas.
+ if(user?.uid===next?.uid&&ready){user=next;showAccount();return}
+ ready=false;loading=true;dirty=false;revision=0;lastHistoryString='';user=next||null;
+ mode=user?localStorage.getItem(localModeKey(user.uid))||'both':'both';
+ // Manter cópia do convidado apenas para importação consciente na primeira entrada.
+ let guestData=null;try{if(user&&!bridge.hasCache(user.uid)){
+   const current=bridge.getProfile();if(!window.giraAIHadAccount)guestData=current;
+ }}catch(_){ }
+ const switched=bridge.useProfile(user?.uid||null);
+ try{if(user)localStorage.setItem('giraai_last_uid',user.uid);else localStorage.removeItem('giraai_last_uid')}catch(_){ }
+ window.giraAIHadAccount=!!user;
+ if(!switched){loading=false;showAccount();return}
+ setLocation(user?JSON.parse(localStorage.getItem(localLocKey(user.uid))||'null'):null);
+ showAccount();
+ if(!user){status('Login não efetuado. Jogo local disponível.');loading=false;ready=true;return}
+ if(mode==='local'){loading=false;ready=true;status('Conta conectada. Os dados estão configurados para permanecer somente neste aparelho.');window.closeLogin();window.closeCloudSettings();window.showGiraAIWelcome?.('Bem-vindo ao GiraAI! Modo local ativado.');return}
+ status('Conectado. Buscando configurações pessoais e jogos na nuvem...');
+ try{
+  const remote=await fetchCloud();if(newToken!==token)return;
+  if(remote?.profile)setLocation(remote.profile);
+  const hasRemote=!!remote?.state;
+  const hasCache=bridge.hasCache(user.uid);
+  const unsynced=localStorage.getItem(localDirtyKey(user.uid))==='1';
+  if(hasRemote&&!unsynced){
+   bridge.applyCloud({...remote.state,history:remote.history||[]});
+   lastHistoryString=JSON.stringify(remote.history||[]);
+   status('Bem-vindo! Seus jogos e configurações foram recuperados da nuvem.');
+  }else if(hasRemote&&unsynced){status('Bem-vindo! Há alterações locais ainda não enviadas. Sincronize para enviá-las.');dirty=true}
+  else if(!hasCache && guestData?.state && confirm('Você tem progresso neste dispositivo. Deseja importá-lo para esta nova conta?')){
+   bridge.applyCloud(guestData);dirty=true;status('Bem-vindo! Progresso local importado para sua conta.');
+  }else status('Bem-vindo! Sua conta está pronta. Misture um cubo para começar.');
+  loading=false;ready=true;
+  window.closeLogin();window.closeCloudSettings();window.showGiraAIWelcome?.('Bem-vindo ao GiraAI! Conta conectada.');
+  if(dirty||!hasRemote)queueSave();
+ }catch(e){if(newToken!==token)return;loading=false;ready=true;status('Conta conectada, mas a nuvem não foi carregada: '+explainError(e));window.closeLogin();window.showGiraAIWelcome?.('Conta conectada. Os dados locais continuam disponíveis.')}
+ showAccount();
+}
+onAuthStateChanged(auth,handleAuth,e=>{status('Falha na autenticação: '+explainError(e));showAccount()});
+
+
+}
+// Conectar tão logo a página carrega, sem esperar que a pessoa pressione Google.
+loadGiraFirebase();
+</script>
+<script>
+let giraInstallPrompt=null, giraInstalledThisSession=false;
+function installedGiraAI(){return giraInstalledThisSession||window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}
+function refreshInstallButtons(){const installed=installedGiraAI();document.querySelectorAll('[data-install-app]').forEach(button=>{button.textContent=installed?'✓ App instalado':'⬇ Instalar App';button.disabled=installed;button.setAttribute('aria-label',installed?'App instalado':'Instalar App')})}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();giraInstallPrompt=e;refreshInstallButtons()});
+window.addEventListener('appinstalled',()=>{giraInstalledThisSession=true;giraInstallPrompt=null;refreshInstallButtons();showGiraAIWelcome('GiraAI instalado com sucesso!')});
+window.matchMedia('(display-mode: standalone)').addEventListener?.('change',refreshInstallButtons);
+function showGiraAIWelcome(text){if(/^Bem-vindo ao GiraAI/.test(text)){window.closeCloudSettings?.()}const toast=document.getElementById('giraai-toast');toast.textContent=text;toast.classList.add('visible');clearTimeout(window.__giraToastTimer);window.__giraToastTimer=setTimeout(()=>toast.classList.remove('visible'),3200)}
+async function installGiraAI(){if(installedGiraAI())return refreshInstallButtons();if(giraInstallPrompt){const event=giraInstallPrompt;giraInstallPrompt=null;try{await event.prompt();const result=await event.userChoice;if(result?.outcome!=='accepted')refreshInstallButtons()}catch(e){document.getElementById('install-overlay').classList.remove('hidden')}return}document.getElementById('install-overlay').classList.remove('hidden')}
+function closeInstallHelp(){document.getElementById('install-overlay').classList.add('hidden')}
+refreshInstallButtons();
+if('serviceWorker' in navigator && location.protocol==='https:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('GiraAI PWA:',err)));
+/* Navegação Android: cada janela é uma etapa do histórico do navegador.
+   Voltar fecha a última janela; na tela principal exige dois Voltar rápidos. */
+(function navigationGiraAI(){
+ const overlays=['mobile-settings-overlay','history-overlay','quick-audio-overlay','name-overlay','replay-overlay','cloud-overlay','login-overlay','install-overlay'];
+ const visible=id=>!document.getElementById(id).classList.contains('hidden');
+ let stack=[],ignoreNextPop=false,lastExitBack=0,ready=false;
+ try{
+  const initial=history.state&&typeof history.state==='object'?history.state:{};
+  history.replaceState({...initial,giraBase:true},'');history.pushState({giraGuard:true},'');ready=true;
+ }catch(e){console.warn('Histórico Android indisponível:',e)}
+ if(!ready)return;
+ function reconcile(){
+  const open=overlays.filter(visible);
+  const closed=stack.filter(id=>!open.includes(id));
+  if(closed.length){stack=stack.filter(id=>open.includes(id));ignoreNextPop=true;history.go(-closed.length)}
+  for(const id of open)if(!stack.includes(id)){stack.push(id);history.pushState({giraOverlay:id},'')}
+ }
+ const observer=new MutationObserver(reconcile);
+ for(const id of overlays)observer.observe(document.getElementById(id),{attributes:true,attributeFilter:['class']});
+ function dismissTop(){if(!stack.length)return false;const id=stack.pop();
+  if(id==='replay-overlay'&&typeof stopReplay==='function')stopReplay();
+  else if(id==='history-overlay'&&typeof closeHistory==='function')closeHistory();
+  else if(id==='quick-audio-overlay')closeQuickAudio();
+  else if(id==='name-overlay'&&typeof closeName==='function')closeName();
+  else if(id==='login-overlay')window.closeLogin();
+  else if(id==='cloud-overlay')window.closeCloudSettings();
+  else if(id==='mobile-settings-overlay'&&typeof closeMobileSettings==='function')closeMobileSettings();
+  else if(id==='install-overlay'&&typeof closeInstallHelp==='function')closeInstallHelp();
+  else document.getElementById(id).classList.add('hidden');return true;
+ }
+ window.addEventListener('popstate',()=>{
+  if(ignoreNextPop){ignoreNextPop=false;return}
+  if(dismissTop())return;
+  // Voltar também recolhe a apresentação de foco/tela cheia antes de sair do jogo.
+  if(typeof focusStage==='number'&&focusStage>0){
+   focusStage=0;applyFocusStage();
+   if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});
+   resizeScene();history.pushState({giraGuard:true},'');return;
+  }
+  const now=Date.now();
+  if(now-lastExitBack<2200){lastExitBack=0;try{window.close()}catch(_){};history.back();return}
+  lastExitBack=now;showGiraAIWelcome('Pressione Voltar novamente para sair do GiraAI');
+  history.pushState({giraGuard:true},'');
+ });
+ // Usa também a tecla Escape e o botão Voltar em desktops para fechar o painel no topo.
+ window.GiraNav={get stack(){return [...stack]},closeTop(){if(stack.length){history.back();return true}return false}};
+})();
+</script>
+</body>
+</html>
