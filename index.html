@@ -277,12 +277,42 @@ body.focus-mode{background:#090e17}
 @media(max-width:350px) and (orientation:portrait){.mobile-header-actions{gap:3px!important}.brand-mark{width:22px;height:22px}.titleblock h1{font-size:15px}}
 @media(max-width:400px){.quick-rank-actions{grid-template-columns:1fr}}
 .firebase-sdk-status{font-size:11px;color:#8daeb5;margin:10px 0 4px;line-height:1.4;overflow-wrap:anywhere}.firebase-sdk-status[data-state="error"]{color:#ffb59b}#firebase-sdk-retry{font-size:12px;padding:8px 12px;border:1px solid #b87642;background:#302016;color:#ffd9aa;border-radius:7px}#firebase-sdk-retry[hidden]{display:none}
+
+/* GiraAI v3.4 — ajustes APENAS na visualização desktop (>=731px). */
+.visitor-button{width:100%;min-height:46px;background:#214b43;border-color:#49a88c;color:#e0fff0;font-weight:750;margin-top:10px}
+.visitor-button:hover{background:#2d6757}
+.guest-explanation{margin:8px 0!important}
+.cloud-status.anonymous{color:#ffdc9d}
+.cloud-status.anonymous .cloud-dot{background:#efb55a;box-shadow:0 0 0 2px #eeb65a22}
+.rank-shortcut.anonymous{background:#695128!important;border-color:#cb9956!important}
+.desktop-cloud-label{display:none}
+@media(min-width:731px){
+ .desktop-account-block{display:none!important}
+ .camera-fold-button{display:none!important}
+ .camera-fold .camera-actions{display:flex!important;gap:6px}
+ #gesture-toggle{display:none!important}
+ .desktop-puzzle-mode{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:5px 12px;border:1px solid #4a7a69;border-radius:8px;background:#254338;color:#d8f7e7;font-weight:650;white-space:nowrap;font-size:12px;margin-left:8px}
+ .desktop-puzzle-mode:hover{background:#2e5a48}
+ .desktop-cloud-label{display:inline}.mobile-cloud-label{display:none}
+ .top-actions{justify-content:flex-end}
+}
+@media(max-width:730px){.desktop-puzzle-mode{display:none!important}}
+@media(max-width:730px) and (orientation:landscape){.top-actions>.small-btn:first-child{display:inline-flex}}
+
+/* GiraAI v3.5 — indicadores exatamente no centro horizontal do topo no desktop.
+   Colunas laterais flexíveis conservam a posição central mesmo quando as ações quebram linha. */
+@media(min-width:731px){
+ .topbar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:14px;row-gap:7px}
+ .topbar>.titleblock{grid-column:1;min-width:0}
+ .topbar>.kpis{grid-column:2;justify-self:center}
+ .topbar>.top-actions{grid-column:3;justify-self:stretch;justify-content:flex-end;min-width:0}
+}
 </style>
 </head>
 <body class="mode-manual">
 <main class="app">
 <header class="topbar">
-  <div class="titleblock"><h1><img src="./icons/icon-192.png" alt="" class="brand-mark"> GiraAI</h1><p>v3.3 · Cubo mágico interativo · Rofran &amp; Laís</p></div>
+  <div class="titleblock"><h1><img src="./icons/icon-192.png" alt="" class="brand-mark"> GiraAI</h1><p>v3.5 · Cubo mágico interativo · Rofran &amp; Laís</p></div>
   <div class="kpis" aria-live="polite"><div class="kpi"><span>Movimentos</span><strong id="count-mov">0</strong></div><div class="kpi"><span>Tempo</span><strong id="timer">00:00</strong></div></div>
   <div class="mobile-header-actions" aria-label="Ações rápidas">
     <button class="mobile-icon-btn rank-shortcut" id="mobile-rank-shortcut" aria-label="Abrir ranking e login" title="Ranking e login" onclick="openQuickRanking()">🏆</button>
@@ -291,7 +321,7 @@ body.focus-mode{background:#090e17}
     <button class="mobile-icon-btn" id="mobile-fullscreen" title="Ênfase no cubo / Tela cheia" aria-label="Ênfase no cubo / Tela cheia" onclick="toggleFullScreen()">⛶</button>
     <button class="mobile-icon-btn" aria-label="Abrir configurações" title="Configurações" onclick="openMobileSettings()">⚙</button>
   </div>
-  <nav class="top-actions" aria-label="Modos e histórico"><button class="small-btn" onclick="openHistory()">🏆 Histórico</button><button class="small-btn" onclick="openSaveAttempt()">💾 Salvar</button><button class="mode-switch" id="gesture-toggle" onclick="toggleInputMode()">◉ Modo: controles</button><button class="small-btn" onclick="openLogin()">♙ Login</button><button class="small-btn" onclick="openCloudSettings()">☁ Conta e nuvem</button><button class="small-btn top-quick rank-shortcut" id="desktop-rank-shortcut" title="Ranking e login" aria-label="Abrir ranking e login" onclick="openQuickRanking()">🏆</button><button class="small-btn top-quick" title="Aparência, sons e volume" aria-label="Abrir aparência e áudio" onclick="openQuickAudio()">♫</button><button class="small-btn top-quick puzzle-shortcut" id="desktop-puzzle-shortcut" title="Trocar quebra-cabeça" aria-label="Trocar quebra-cabeça" onclick="cyclePuzzleQuick()">3</button><button class="small-btn" id="btn-fullscreen" title="Tela cheia" onclick="toggleFullScreen()">⛶</button></nav>
+  <nav class="top-actions" aria-label="Modos e histórico"><button class="small-btn" onclick="openSaveAttempt()">💾 Salvar</button><button class="mode-switch" id="gesture-toggle" onclick="toggleInputMode()">◉ Modo: controles</button><button class="small-btn" onclick="openLogin()">♙ Login</button><button class="small-btn" onclick="openCloudSettings()">☁ Conta</button><button class="small-btn top-quick rank-shortcut" id="desktop-rank-shortcut" title="Ranking e login" aria-label="Abrir ranking e login" onclick="openQuickRanking()">🏆</button><button class="small-btn top-quick" title="Aparência, sons e volume" aria-label="Abrir aparência e áudio" onclick="openQuickAudio()">♫</button><button class="small-btn top-quick puzzle-shortcut" id="desktop-puzzle-shortcut" title="Trocar quebra-cabeça" aria-label="Trocar quebra-cabeça" onclick="cyclePuzzleQuick()">3</button><button class="small-btn" id="btn-fullscreen" title="Tela cheia" onclick="toggleFullScreen()">⛶</button></nav>
 </header>
 <div class="puzzle-selector" role="group" aria-label="Escolha o quebra-cabeça">
   <span>Quebra-cabeça</span>
@@ -299,6 +329,7 @@ body.focus-mode{background:#090e17}
   <button class="puzzle-choice" data-puzzle="3" onclick="switchPuzzle('3')">3×3×3</button>
   <button class="puzzle-choice" data-puzzle="4" onclick="switchPuzzle('4')">4×4×4</button>
   <button class="puzzle-choice" data-puzzle="pyramid" onclick="switchPuzzle('pyramid')">△ Pirâmide</button>
+  <button class="desktop-puzzle-mode" id="desktop-mode-badge" onclick="toggleInputMode()" title="Alternar entre controles e gestos">Modo com controles</button>
 </div>
 <div class="workspace" id="workspace">
   <aside class="panel left" id="left-panel" aria-label="Orientação e aparência">
@@ -313,7 +344,7 @@ body.focus-mode{background:#090e17}
       <button class="mini-face" style="grid-column:2;grid-row:4" id="m-back" onclick="snapTo('back')">Verso</button>
     </div></div>
     <div><h2>Aparência e áudio</h2><div class="setting-grid" style="margin-top:8px"><button id="mode-toggle" onclick="cycleMode()">🎨 <b>Cores</b></button><button id="sound-toggle" onclick="cycleSound()">🔊 <b>Movimento: mudo</b></button><button id="music-toggle" onclick="cycleMusic()">♫ <b>Música: mudo</b></button><button class="volume-toggle" id="volume-toggle" onclick="toggleVolumePanel(false)">◖ Volumes</button></div><div class="volume-panel hidden" id="volume-panel"><label class="volume-control"><div><span>♫ Volume da música</span><output id="volume-music-label">55%</output></div><input id="volume-music" type="range" min="0" max="100" value="55" oninput="setAudioVolume('music',this.value)"></label><label class="volume-control"><div><span>🔊 Volume dos movimentos</span><output id="volume-move-label">70%</output></div><input id="volume-move" type="range" min="0" max="100" value="70" oninput="setAudioVolume('move',this.value)"></label></div></div>
-    <div><h2>Conta, nuvem e instalação</h2><div class="setting-grid" style="margin-top:7px"><button onclick="openLogin()">♙ Entrar / Criar conta</button><button onclick="openCloudSettings()">☁ Conta e nuvem</button><button data-install-app onclick="installGiraAI()">⬇ Instalar App</button></div><p id="desktop-auth-status" class="cloud-status"><span class="cloud-dot"></span><span>Login não efetuado</span></p></div>
+    <div class="desktop-account-block"><h2>Conta, nuvem e instalação</h2><div class="setting-grid" style="margin-top:7px"><button onclick="openLogin()">♙ Entrar / Criar conta</button><button onclick="openCloudSettings()">☁ Conta e nuvem</button><button data-install-app onclick="installGiraAI()">⬇ Instalar App</button></div><p id="desktop-auth-status" class="cloud-status"><span class="cloud-dot"></span><span>Login não efetuado</span></p></div>
     <div class="pyramid-guide hidden" id="pyramid-guide"><h2>Pirâmide</h2><p class="helper">Os giros são de 120°: ponta, camada intermediária e base podem girar separadamente. No modo inteligente, arraste um triângulo inferior lateralmente para girar a base.</p></div>
     <p class="helper"><b>Dica:</b> arraste o fundo para mover o cubo. No modo inteligente, arraste uma peça para girar sua camada. Dois dedos, botão direito do mouse ou <span class="key-list">Shift + arrastar</span> movem a câmera em qualquer ponto.</p>
   </div></aside>
@@ -386,7 +417,7 @@ body.focus-mode{background:#090e17}
   </div>
   <p id="mobile-status-text" class="mobile-status" role="status">Pronto para jogar.</p>
 </section>
-<footer class="footer">GiraAI v3.3 · Desenvolvido por Rofran · 2026 · Offline e nuvem opcional</footer>
+<footer class="footer">GiraAI v3.5 · Desenvolvido por Rofran · 2026 · Offline e nuvem opcional</footer>
 </main>
 <div class="overlay hidden" id="mobile-settings-overlay" role="dialog" aria-modal="true" aria-labelledby="mobile-settings-title">
  <section class="modal mobile-settings-modal">
@@ -406,7 +437,7 @@ body.focus-mode{background:#090e17}
    <h3>Conta e dados na nuvem</h3>
    <button class="cloud-entry" onclick="openLogin()"><span>♙ Entrar / Criar conta</span><span id="mobile-auth-status" class="cloud-status"><span class="cloud-dot"></span><span>Login não efetuado</span></span></button><button class="cloud-entry" onclick="openCloudSettings()"><span>☁ Conta e configurações de nuvem</span><span class="account-chevron">›</span></button>
    <div class="mobile-settings-grid"><button data-install-app onclick="installGiraAI()">⬇ Instalar App</button><button onclick="syncCloudNow()">↻ Sincronizar agora</button></div>
-   <p class="helper">O botão ⛶ alterna entre visual em destaque, tela cheia e modo normal.</p>
+   <p class="helper">O botão ⛶ percorre quatro modos: Normal → Normal com entorno escuro → Tela cheia com entorno escuro → Tela cheia normal.</p>
   </div>
  </section>
 </div>
@@ -435,9 +466,9 @@ body.focus-mode{background:#090e17}
  <section class="modal"><div class="modal-header"><h2 id="history-title">🏆 Histórico e ranking</h2><button class="close" onclick="closeHistory()" aria-label="Fechar">×</button></div>
  <p class="helper" style="margin-top:8px">Seu histórico mantém até 10 registros e reproduz movimentos. Os recordes globais são públicos apenas se você permitir a publicação.</p>
  <div id="quick-ranking-login" class="quick-ranking-login hidden">
-  <div class="quick-ranking-head"><span class="cloud-dot"></span><b>Entre para acessar o ranking global e seus recordes na nuvem.</b></div>
-  <p class="helper">É possível jogar sem conta. Ao entrar, você pode consultar o ranking mundial e sincronizar seu histórico.</p>
-  <div class="quick-rank-actions"><button onclick="openQuickGoogleLogin()">G Entrar com Google</button><button onclick="openQuickEmailLogin()">✉ E-mail / Criar conta</button></div>
+  <div class="quick-ranking-head"><span class="cloud-dot"></span><b id="quick-ranking-title">Entre para acessar o ranking global e seus recordes na nuvem.</b></div>
+  <p class="helper" id="quick-ranking-explanation">É possível jogar sem conta. Você também pode criar uma identidade anônima e vinculá-la a Google ou e-mail depois.</p>
+  <div class="quick-rank-actions"><button id="quick-visitor-login" onclick="openQuickAnonymousLogin()">♙ Visitante</button><button onclick="openQuickGoogleLogin()">G Entrar com Google</button><button onclick="openQuickEmailLogin()">✉ E-mail / Criar conta</button></div>
  </div>
  <div id="history-cloud-tabs" class="history-tabs" role="tablist" aria-label="Tipos de histórico e ranking"><button id="hist-local" class="primary" role="tab" aria-selected="true" onclick="chooseHistoryView('local')">📱 Neste aparelho</button><button id="hist-personal" class="hidden" role="tab" aria-selected="false" onclick="chooseHistoryView('personal')">☁ Minha conta</button><button id="hist-global" class="hidden" role="tab" aria-selected="false" onclick="chooseHistoryView('global')">🌍 Ranking global</button></div>
  <p class="helper" id="history-view-description" style="margin-top:8px">Registros deste aparelho, inclusive os disponíveis sem internet.</p>
@@ -462,10 +493,10 @@ body.focus-mode{background:#090e17}
 
 <div class="overlay hidden" id="cloud-overlay" role="dialog" aria-modal="true" aria-labelledby="cloud-title">
  <section class="modal cloud-modal">
-  <div class="modal-header"><h2 id="cloud-title">☁ Conta e nuvem</h2><button class="close" onclick="closeCloudSettings()" aria-label="Fechar conta e nuvem">×</button></div>
+  <div class="modal-header"><h2 id="cloud-title"><span class="desktop-cloud-label">☁ Conta</span><span class="mobile-cloud-label">☁ Conta e nuvem</span></h2><button class="close" onclick="closeCloudSettings()" aria-label="Fechar conta e nuvem">×</button></div>
   <p id="cloud-account-status" class="cloud-status large"><span class="cloud-dot"></span><span>Login não efetuado</span></p>
   <p class="cloud-intro">Com sua conta conectada e a nuvem ativada, partidas e preferências acompanham você em outros aparelhos. O jogo continua disponível offline.</p>
-  <div class="cloud-actions"><button id="open-login-btn" class="primary" onclick="openLogin()">Entrar / Criar conta</button><button id="logout-btn" class="hidden" onclick="logoutGiraAI()">Sair da conta</button><button onclick="closeCloudSettings()">Voltar ao jogo</button></div>
+  <div class="cloud-actions"><button id="open-login-btn" class="primary" onclick="openLogin()">Entrar / Criar conta</button><button id="upgrade-anonymous-btn" class="hidden" onclick="openLogin()">Vincular Google / E-mail</button><button id="logout-btn" class="hidden" onclick="logoutGiraAI()">Sair da conta</button><button onclick="closeCloudSettings()">Voltar ao jogo</button></div>
   <div class="cloud-section">
    <h3>Onde salvar</h3>
    <label class="cloud-choice"><input type="radio" name="cloud-storage-mode" value="both" checked onchange="setCloudMode(this.value)"><span><b>Neste aparelho e na nuvem</b><small>Recomendado: sincroniza ao conectar e mantém cópia para jogar offline.</small></span></label>
@@ -477,7 +508,9 @@ body.focus-mode{background:#090e17}
 <div class="overlay hidden" id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
  <section class="modal cloud-modal login-modal">
   <div class="modal-header"><h2 id="login-title">Entrar no GiraAI</h2><button class="close" onclick="closeLogin()" aria-label="Fechar login">×</button></div>
-  <p class="helper">Escolha Google ou e-mail e senha. Se ainda não tiver conta, use <b>Criar conta</b>. Seus resultados, histórico e preferências podem acompanhar você em outros aparelhos quando ativar Local + nuvem em Conta e nuvem.</p>
+  <p class="helper">Entre com Google, e-mail ou como visitante anônimo. Depois, você poderá vincular o visitante a uma conta para conservar o mesmo UID e acessar seus dados em outros aparelhos. A sincronização é opcional e depende de ativar a nuvem em Conta.</p>
+  <button class="visitor-button" id="anonymous-login-btn" type="button" onclick="loginAnonymously()">♙ Jogar como visitante (anônimo)</button>
+  <p class="helper guest-explanation">O Firebase cria um identificador temporário sem e-mail. Se limpar os dados deste navegador antes de vincular a conta, você poderá perder o acesso aos dados do visitante.</p>
   <button class="google-button" onclick="loginWithGoogle()"><span class="google-G">G</span> Entrar com o Google</button>
   <div class="login-divider">ou com e-mail</div>
   <form id="email-login-form" onsubmit="submitEmailLogin(event)">
@@ -495,7 +528,7 @@ body.focus-mode{background:#090e17}
 <div class="overlay hidden" id="install-overlay" role="dialog" aria-modal="true" aria-labelledby="install-title"><section class="modal" style="max-width:440px"><div class="modal-header"><h2 id="install-title">Instalar GiraAI</h2><button class="close" onclick="closeInstallHelp()">×</button></div><p id="install-guide">No Chrome Android, abra o menu ⋮ e escolha “Instalar app” ou “Adicionar à tela inicial”. No Safari iOS, toque em Compartilhar → Adicionar à Tela de Início.</p><div class="modal-actions"><button onclick="closeInstallHelp()">Fechar</button></div></section></div>
 <script>
 'use strict';
-// GiraAI v3.3, derivado da base Cubo 3D v2.4. Eixos lógicos invariantes, giros de 90° por matrizes inteiras,
+// GiraAI v3.5, derivado da base Cubo 3D v2.4. Eixos lógicos invariantes, giros de 90° por matrizes inteiras,
 // câmera independente via quaternion, replay sem sobrescrever a partida.
 const $ = id => document.getElementById(id);
 const cube = $('cube'), scene = $('scene'), area = $('area-cena'), pyrCanvas = $('pyramid-canvas'), pyrCtx = pyrCanvas.getContext('2d',{alpha:true});
@@ -763,7 +796,7 @@ function cycleMode(){imageMode=(imageMode+1)%IMAGE_MODES.length;
  if(imageMode===4){timedColorSince=Date.now();timedColorActive=true}
  updateImages();appearanceSettingsChanged()}
 
-function updateOptions(){syncVolumeUI();$('mode-toggle').innerHTML=`🎨 <b>${IMAGE_MODES[imageMode]}</b>`;$('sound-toggle').innerHTML=`🔊 <b>Mov.: ${soundModes[currentSound]}</b>`;$('music-toggle').innerHTML=`♫ <b>Música: ${musicModes[currentMusic]}</b>`;$('multi-mistura').textContent=multiplicadorMistura+'×';$('mobile-multi').textContent=multiplicadorMistura+'×';$('mobile-gesture-toggle').textContent=inputMode==='manual'?'◉ Modo: controles':'✦ Modo: gestos';$('mobile-mode-toggle').textContent='🎨 '+IMAGE_MODES[imageMode];$('mobile-sound-toggle').textContent='🔊 Movimento: '+soundModes[currentSound];$('mobile-music-toggle').textContent='♫ Música: '+musicModes[currentMusic];$('quick-mode-toggle').textContent='🎨 '+IMAGE_MODES[imageMode];$('quick-sound-toggle').textContent='🔊 Mov.: '+soundModes[currentSound];$('quick-music-toggle').textContent='♫ Música: '+musicModes[currentMusic];$('quick-shared-appearance').checked=sharedAppearanceAcrossPuzzles;for(const b of document.querySelectorAll('.puzzle-shortcut')){b.textContent=puzzleType==='pyramid'?'∆':puzzleType;b.title='Modelo '+puzzleLabel()+' · toque para trocar';b.setAttribute('aria-label','Modelo '+puzzleLabel()+'. Trocar quebra-cabeça')} $('gesture-toggle').textContent=inputMode==='manual'?'◉ Modo: controles':'✦ Modo: gestos';$('mode-badge').textContent=inputMode==='manual'?'Modo com controles':'Modo inteligente · gestos';document.body.classList.toggle('pyramid-mode',isPyramid());syncTimedColors();document.querySelectorAll('.puzzle-choice').forEach(b=>{b.classList.toggle('active',b.dataset.puzzle===puzzleType);b.setAttribute('aria-pressed',String(b.dataset.puzzle===puzzleType))});$('pyramid-controls').classList.toggle('hidden',!isPyramid());$('pyramid-guide').classList.toggle('hidden',!isPyramid());updateSelection();document.body.classList.toggle('mode-auto',inputMode==='smart');document.body.classList.toggle('mode-manual',inputMode==='manual');$('stage-hint').textContent=isPyramid()?(inputMode==='manual'?'Escolha um vértice e gire ponta, camada ou base por 120°. Arraste para observar.':'Deslize sobre a base para girar a parte inferior. Pontas e camadas também giram em 120°. Botão direito, Shift e dois dedos movem a câmera.') :inputMode==='manual'?'Toque numa peça para selecioná-la. Arraste em qualquer direção para mover a câmera.':'Deslize uma peça em linha reta para girar. Ao segurar ou sacudir o mouse, o cubo acompanha o deslocamento sem girar sozinho. Um deslize curto e direto sobre a peça gira a camada; botão direito, Shift e dois dedos movem a câmera.'}
+function updateOptions(){syncVolumeUI();$('mode-toggle').innerHTML=`🎨 <b>${IMAGE_MODES[imageMode]}</b>`;$('sound-toggle').innerHTML=`🔊 <b>Mov.: ${soundModes[currentSound]}</b>`;$('music-toggle').innerHTML=`♫ <b>Música: ${musicModes[currentMusic]}</b>`;$('multi-mistura').textContent=multiplicadorMistura+'×';$('mobile-multi').textContent=multiplicadorMistura+'×';$('mobile-gesture-toggle').textContent=inputMode==='manual'?'◉ Modo: controles':'✦ Modo: gestos';$('mobile-mode-toggle').textContent='🎨 '+IMAGE_MODES[imageMode];$('mobile-sound-toggle').textContent='🔊 Movimento: '+soundModes[currentSound];$('mobile-music-toggle').textContent='♫ Música: '+musicModes[currentMusic];$('quick-mode-toggle').textContent='🎨 '+IMAGE_MODES[imageMode];$('quick-sound-toggle').textContent='🔊 Mov.: '+soundModes[currentSound];$('quick-music-toggle').textContent='♫ Música: '+musicModes[currentMusic];$('quick-shared-appearance').checked=sharedAppearanceAcrossPuzzles;for(const b of document.querySelectorAll('.puzzle-shortcut')){b.textContent=puzzleType==='pyramid'?'∆':puzzleType;b.title='Modelo '+puzzleLabel()+' · toque para trocar';b.setAttribute('aria-label','Modelo '+puzzleLabel()+'. Trocar quebra-cabeça')} $('gesture-toggle').textContent=inputMode==='manual'?'◉ Modo: controles':'✦ Modo: gestos';$('mode-badge').textContent=inputMode==='manual'?'Modo com controles':'Modo inteligente · gestos';$('desktop-mode-badge').textContent=$('mode-badge').textContent;document.body.classList.toggle('pyramid-mode',isPyramid());syncTimedColors();document.querySelectorAll('.puzzle-choice').forEach(b=>{b.classList.toggle('active',b.dataset.puzzle===puzzleType);b.setAttribute('aria-pressed',String(b.dataset.puzzle===puzzleType))});$('pyramid-controls').classList.toggle('hidden',!isPyramid());$('pyramid-guide').classList.toggle('hidden',!isPyramid());updateSelection();document.body.classList.toggle('mode-auto',inputMode==='smart');document.body.classList.toggle('mode-manual',inputMode==='manual');$('stage-hint').textContent=isPyramid()?(inputMode==='manual'?'Escolha um vértice e gire ponta, camada ou base por 120°. Arraste para observar.':'Deslize sobre a base para girar a parte inferior. Pontas e camadas também giram em 120°. Botão direito, Shift e dois dedos movem a câmera.') :inputMode==='manual'?'Toque numa peça para selecioná-la. Arraste em qualquer direção para mover a câmera.':'Deslize uma peça em linha reta para girar. Ao segurar ou sacudir o mouse, o cubo acompanha o deslocamento sem girar sozinho. Um deslize curto e direto sobre a peça gira a camada; botão direito, Shift e dois dedos movem a câmera.'}
 function appearancePack(){return {imageMode,currentSound,currentMusic,musicVolume,moveVolume}}
 function applyAppearancePack(pack){imageMode=clamp(pack.imageMode|0,0,4);currentSound=clamp(pack.currentSound|0,0,soundModes.length-1);currentMusic=clamp(pack.currentMusic|0,0,musicModes.length-1);musicVolume=clamp(Math.round(+pack.musicVolume||0),0,100);moveVolume=clamp(Math.round(+pack.moveVolume||0),0,100);syncVolumeUI()}
 function syncOtherPuzzleAppearances(includeValues){const pack=appearancePack();for(const type of ['2','3','4','pyramid']){if(type===puzzleType)continue;const slot=safeRead(PUZZLE_SLOT+type);if(!slot||typeof slot!=='object')continue;const updated={...slot,sharedAppearanceAcrossPuzzles};if(includeValues)Object.assign(updated,pack);safeStore(PUZZLE_SLOT+type,updated)}}
@@ -862,18 +895,49 @@ function cyclePuzzleQuick(){if(busy||isReplaying)return;const order=['2','3','4'
 function openQuickAudio(){if(busy||isReplaying)return;syncVolumeUI();$('quick-audio-overlay').classList.remove('hidden')}
 function closeQuickAudio(){$('quick-audio-overlay').classList.add('hidden')}
 function toggleQuickVolume(){const el=$('quick-volume-panel'),hidden=el.classList.toggle('hidden');$('quick-volume-toggle').setAttribute('aria-expanded',String(!hidden));$('quick-volume-toggle').textContent=hidden?'◖ Volume ▾':'◖ Volume ▴';syncVolumeUI()}
-function isGiraLoggedIn(){return !!window.GiraCloud?.user||$('cloud-account-status').classList.contains('online')}
-function updateQuickRankingAuth(){const logged=isGiraLoggedIn();document.querySelectorAll('.rank-shortcut').forEach(b=>{b.classList.toggle('connected',logged);b.title=logged?'Ranking · conta conectada':'Ranking e login';b.setAttribute('aria-label',b.title)});$('quick-ranking-login').classList.toggle('hidden',logged)}
+function isGiraLoggedIn(){return !!window.GiraCloud?.user&&!window.GiraCloud.user.isAnonymous}
+function updateQuickRankingAuth(){const logged=isGiraLoggedIn(),anonymous=!!window.GiraCloud?.user?.isAnonymous;document.querySelectorAll('.rank-shortcut').forEach(b=>{b.classList.toggle('connected',logged);b.classList.toggle('anonymous',anonymous);b.title=logged?'Ranking · conta conectada':anonymous?'Ranking · visitante anônimo':'Ranking e login';b.setAttribute('aria-label',b.title)});$('quick-ranking-login').classList.toggle('hidden',logged);$('quick-visitor-login').classList.toggle('hidden',anonymous);$('quick-ranking-title').textContent=anonymous?'Visitante ativo · vincule uma conta para acessar de outros aparelhos.':'Entre para acessar o ranking global e seus recordes na nuvem.';$('quick-ranking-explanation').textContent=anonymous?'Você está jogando anonimamente. Vincule sua conta ao Google ou crie uma conta com e-mail sem perder o UID e o histórico.':'É possível jogar sem conta. Você também pode criar uma identidade anônima e vinculá-la a Google ou e-mail depois.'}
 function openQuickRanking(){openHistory();if($('history-overlay').classList.contains('hidden'))return;updateQuickRankingAuth();if(isGiraLoggedIn())chooseHistoryView('global')}
+function openQuickAnonymousLogin(){openLogin();if(typeof window.loginAnonymously==='function')window.loginAnonymously()}
 function openQuickGoogleLogin(){openLogin();if(typeof window.loginWithGoogle==='function')window.loginWithGoogle()}
 function openQuickEmailLogin(){openLogin();setTimeout(()=>$('auth-email')?.focus({preventScroll:true}),80)}
 const statusForQuickRanking=$('cloud-account-status');
 new MutationObserver(updateQuickRankingAuth).observe(statusForQuickRanking,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
 updateQuickRankingAuth();
+// Os quatro estágios são idênticos em computadores e smartphones.
+// Não aplicamos filtros no contêiner 3D: o efeito escuro é apenas do entorno.
 let focusStage=0;
-function applyFocusStage(){document.body.classList.toggle('focus-mode',focusStage>0);document.body.classList.toggle('app-pseudo-fullscreen',focusStage===2&&!document.fullscreenElement);for(const id of ['btn-fullscreen','mobile-fullscreen']){const b=$(id);if(b){b.title=focusStage===0?'Destacar o cubo':focusStage===1?'Ativar tela cheia':'Voltar ao normal';b.setAttribute('aria-label',b.title)}}}
-async function toggleFullScreen(){if(focusStage===0){focusStage=1;applyFocusStage();return}if(focusStage===1){focusStage=2;applyFocusStage();if(!document.fullscreenElement&&document.documentElement.requestFullscreen){try{await document.documentElement.requestFullscreen()}catch(e){setStatus('Modo imersivo ativado. Tela cheia nativa indisponível neste navegador.')}}applyFocusStage();resizeScene();return}focusStage=0;applyFocusStage();if(document.fullscreenElement){try{await document.exitFullscreen()}catch(e){}}applyFocusStage();resizeScene()}
-document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&focusStage===2&&!document.body.classList.contains('app-pseudo-fullscreen'))focusStage=0;applyFocusStage();resizeScene()});
+const FOCUS_DESCRIPTIONS=['Normal','Normal com entorno escuro','Tela cheia com entorno escuro','Tela cheia normal'];
+function applyFocusStage(){
+ const dark=focusStage===1||focusStage===2;
+ document.body.classList.toggle('focus-mode',dark);
+ document.body.classList.toggle('app-pseudo-fullscreen',focusStage>=2&&!document.fullscreenElement);
+ for(const id of ['btn-fullscreen','mobile-fullscreen']){
+  const b=$(id);if(!b)continue;
+  const title='Visualização: '+FOCUS_DESCRIPTIONS[focusStage]+' · próximo modo: '+FOCUS_DESCRIPTIONS[(focusStage+1)%FOCUS_DESCRIPTIONS.length];
+  b.title=title;b.setAttribute('aria-label',title);b.setAttribute('aria-pressed',String(focusStage!==0));
+ }
+}
+async function toggleFullScreen(){
+ if(focusStage===0){focusStage=1;applyFocusStage();return}
+ if(focusStage===1){
+  focusStage=2;applyFocusStage();
+  if(!document.fullscreenElement&&document.documentElement.requestFullscreen){
+   try{await document.documentElement.requestFullscreen()}
+   catch(e){setStatus('Tela cheia nativa indisponível; modo de tela ampliada mantido.')}
+  }
+  applyFocusStage();resizeScene();return;
+ }
+ if(focusStage===2){focusStage=3;applyFocusStage();resizeScene();return}
+ focusStage=0;applyFocusStage();
+ if(document.fullscreenElement){try{await document.exitFullscreen()}catch(e){}}
+ applyFocusStage();resizeScene();
+}
+document.addEventListener('fullscreenchange',()=>{
+ // Quando o navegador sai de tela cheia por ESC ou gesto, volta ao modo normal.
+ if(!document.fullscreenElement&&focusStage>=2&&!document.body.classList.contains('app-pseudo-fullscreen'))focusStage=0;
+ applyFocusStage();resizeScene();
+});
 // Reconhecimento de gesto pelo quadradinho tocado e projeção do eixo no plano da tela.
 function gestureMove(gesture){if(isPyramid()){
  const slot=gesture.pyrSlot;if(!slot)return null;
@@ -1075,12 +1139,12 @@ window.openCloudSettings=()=>{document.getElementById('cloud-overlay').classList
 window.closeCloudSettings=()=>document.getElementById('cloud-overlay').classList.add('hidden');
 window.openLogin=()=>{document.getElementById('login-feedback').textContent='';document.getElementById('login-overlay').classList.remove('hidden');if(window.GiraFirebaseSDK?.state==='error')document.getElementById('login-feedback').textContent=window.GiraFirebaseSDK.error;};
 window.closeLogin=()=>{document.getElementById('login-overlay').classList.add('hidden');document.getElementById('login-feedback').textContent=''};
-for(const name of ['loginWithGoogle','submitEmailLogin','createEmailAccount','sendResetEmail','logoutGiraAI','setCloudMode','syncCloudNow','pullCloudNow','saveCloudProfile','detectApproxLocation']){
+for(const name of ['loginWithGoogle','loginAnonymously','submitEmailLogin','createEmailAccount','sendResetEmail','logoutGiraAI','setCloudMode','syncCloudNow','pullCloudNow','saveCloudProfile','detectApproxLocation']){
  if(!window[name])window[name]=(event)=>{event?.preventDefault?.();if(name==='syncCloudNow'||name==='pullCloudNow')window.openCloudSettings();giraFallbackStatus();const control=window.GiraFirebaseSDK;const msg=control?.state==='error'?'Firebase indisponível: '+control.error:'Conectando ao Firebase. Após carregar, toque novamente em Entrar com Google.';document.getElementById('login-feedback').textContent=msg;if(control?.state==='error')control.retry();};
 }
 </script>
 <script>
-/* GiraAI v3.3 — inicialização resiliente, baseada no carregamento modular do ProtegeAI.
+/* GiraAI v3.4 — inicialização resiliente, baseada no carregamento modular do ProtegeAI.
    SDKs são carregados explicitamente; erro de rede fica visível e pode ser repetido.
    Nenhuma chamada ao Firestore é feita antes da autenticação. */
 const FIREBASE_SDK_VERSION='12.19.0';
@@ -1138,6 +1202,10 @@ async function loadGiraFirebase(){
     getAuth:authMod.getAuth,
     GoogleAuthProvider:authMod.GoogleAuthProvider,
     signInWithPopup:authMod.signInWithPopup,
+    signInAnonymously:authMod.signInAnonymously,
+    linkWithPopup:authMod.linkWithPopup,
+    linkWithCredential:authMod.linkWithCredential,
+    EmailAuthProvider:authMod.EmailAuthProvider,
     signInWithEmailAndPassword:authMod.signInWithEmailAndPassword,
     createUserWithEmailAndPassword:authMod.createUserWithEmailAndPassword,
     sendPasswordResetEmail:authMod.sendPasswordResetEmail,
@@ -1165,6 +1233,7 @@ async function loadGiraFirebase(){
 }
 function installGiraCloud(sdk){
  const {app,auth,initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,
+ signInAnonymously,linkWithPopup,linkWithCredential,EmailAuthProvider,
  signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,
  onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,getFirestore,
  doc,getDoc,setDoc,collection,query,where,orderBy,limit,getDocs,serverTimestamp}=sdk;
@@ -1188,11 +1257,11 @@ function setText(id,value){let el=$(id);if(el)el.textContent=value}
 function status(msg){setText('cloud-sync-state',msg)}
 function feedback(msg){setText('login-feedback',msg)}
 function showAccount(){
- let connected=!!user, display=user?.email||user?.displayName||'Conta Google conectada';
+ let connected=!!user, anonymous=!!user?.isAnonymous, display=anonymous?'Visitante anônimo · UID '+user.uid.slice(0,8):user?.email||user?.displayName||'Conta conectada';
  for(const id of ['mobile-auth-status','desktop-auth-status','cloud-account-status']){
-  let el=$(id);if(!el)continue;el.classList.toggle('online',connected);el.querySelector('span:last-child').textContent=connected?display:'Login não efetuado';
+  let el=$(id);if(!el)continue;el.classList.toggle('online',connected&&!anonymous);el.classList.toggle('anonymous',anonymous);el.querySelector('span:last-child').textContent=connected?display:'Login não efetuado';
  }
- $('open-login-btn').classList.toggle('hidden',connected);$('logout-btn').classList.toggle('hidden',!connected);
+ $('open-login-btn').classList.toggle('hidden',connected);$('upgrade-anonymous-btn').classList.toggle('hidden',!anonymous);$('logout-btn').classList.toggle('hidden',!connected);
  document.querySelectorAll('input[name="cloud-storage-mode"]').forEach(e=>e.checked=e.value===mode);
  bridge?.refreshHistory?.();
 }
@@ -1202,9 +1271,12 @@ function explainError(err){
   'auth/invalid-email':'E-mail inválido.','auth/invalid-credential':'E-mail ou senha incorretos.','auth/wrong-password':'Senha incorreta.',
   'auth/email-already-in-use':'Este e-mail já está cadastrado. Entre na conta.','auth/weak-password':'Use uma senha mais forte (pelo menos 6 caracteres).',
   'auth/popup-closed-by-user':'A janela do Google foi fechada.','auth/popup-blocked':'O navegador bloqueou a janela do Google. Permita pop-ups neste site e tente novamente.',
-  'auth/operation-not-allowed':'O Google não está habilitado em Firebase Authentication → Sign-in method.',
+  'auth/operation-not-allowed':'Ative o provedor correspondente (inclusive Anônimo) em Firebase Authentication → Sign-in method.',
   'auth/network-request-failed':'Não foi possível acessar o Firebase. Confira sua conexão e tente novamente.',
   'auth/cancelled-popup-request':'Outra janela de login está sendo aberta. Tente novamente.',
+  'auth/credential-already-in-use':'Esta conta Google já existe. Para entrar nela, saia do visitante primeiro. A conta anônima e seus dados não serão mesclados automaticamente.',
+  'auth/email-already-in-use':'Este e-mail já possui uma conta. Use Entrar, em vez de Criar conta. O histórico anônimo não será mesclado automaticamente.',
+  'auth/provider-already-linked':'Este método de login já está vinculado.',
   'auth/internal-error':'O Firebase não conseguiu completar o login. Tente novamente ou verifique o console do navegador.',
   'auth/unauthorized-domain':'Domínio não autorizado. Adicione o domínio do GitHub Pages em Firebase Authentication → Configurações → Domínios autorizados.',
   'permission-denied':'Acesso bloqueado pelo Firestore. Publique firestore.rules no console do Firebase.',
@@ -1215,8 +1287,15 @@ function explainError(err){
 function authInputs(){return {email:$('auth-email').value.trim(),password:$('auth-password').value}}
 window.openCloudSettings=()=>{$('cloud-overlay').classList.remove('hidden');showAccount()};
 window.closeCloudSettings=()=>{$('cloud-overlay').classList.add('hidden')};
-window.openLogin=()=>{$('cloud-overlay').classList.remove('hidden');$('login-overlay').classList.remove('hidden');feedback('');};
+window.openLogin=()=>{$('login-overlay').classList.remove('hidden');feedback('');};
 window.closeLogin=()=>{$('login-overlay').classList.add('hidden');feedback('')};
+window.loginAnonymously=async()=>{
+ if(auth.currentUser?.isAnonymous){feedback('Você já está como visitante. Pode vincular Google ou e-mail mantendo o seu histórico.');return}
+ if(auth.currentUser&&!auth.currentUser.isAnonymous){feedback('Você já está conectado com uma conta. Saia da conta antes de iniciar um visitante.');return}
+ const button=$('anonymous-login-btn');if(button)button.disabled=true;feedback('Criando sua identidade anônima no Firebase...');
+ try{await signInAnonymously(auth);feedback('Visitante conectado. Seus dados ficam vinculados a este navegador até associar uma conta.')}
+ catch(e){feedback(explainError(e))}finally{if(button)button.disabled=false}
+};
 window.loginWithGoogle=()=>{
  // Abre o Google diretamente a partir do clique, antes de qualquer await:
  // senão o Android/PWA pode bloquear o pop-up como abertura não solicitada.
@@ -1224,15 +1303,15 @@ window.loginWithGoogle=()=>{
  const button=document.querySelector('#login-overlay .google-button');
  if(button)button.disabled=true;
  let attempt;
- try{attempt=signInWithPopup(auth,provider)}
+ try{attempt=auth.currentUser?.isAnonymous?linkWithPopup(auth.currentUser,provider):signInWithPopup(auth,provider)}
  catch(e){feedback(explainError(e));if(button)button.disabled=false;return}
  Promise.resolve(attempt)
-  .then(()=>feedback('Autenticação confirmada. Carregando sua conta...'))
+  .then(()=>{feedback('Autenticação confirmada. Carregando sua conta...');user=auth.currentUser;showAccount();window.closeLogin();})
   .catch(e=>feedback(explainError(e)))
   .finally(()=>{if(button)button.disabled=false});
 };
-window.submitEmailLogin=async(e)=>{e.preventDefault();const {email,password}=authInputs();feedback('Entrando...');try{await setPersistence(auth,browserLocalPersistence);await signInWithEmailAndPassword(auth,email,password)}catch(err){feedback(explainError(err))}};
-window.createEmailAccount=async()=>{const {email,password}=authInputs();if(!email||password.length<6){feedback('Informe um e-mail e senha com pelo menos 6 caracteres.');return}feedback('Criando conta...');try{await setPersistence(auth,browserLocalPersistence);await createUserWithEmailAndPassword(auth,email,password)}catch(err){feedback(explainError(err))}};
+window.submitEmailLogin=async(e)=>{e.preventDefault();const {email,password}=authInputs();if(auth.currentUser?.isAnonymous&&!confirm('Esta opção entra em uma conta já existente e deixa de usar o UID do visitante. Os dados do visitante não serão migrados automaticamente. Continuar?'))return;feedback('Entrando...');try{await setPersistence(auth,browserLocalPersistence);await signInWithEmailAndPassword(auth,email,password)}catch(err){feedback(explainError(err))}};
+window.createEmailAccount=async()=>{const {email,password}=authInputs();if(!email||password.length<6){feedback('Informe um e-mail e senha com pelo menos 6 caracteres.');return}feedback(auth.currentUser?.isAnonymous?'Vinculando o visitante ao e-mail...':'Criando conta...');try{if(auth.currentUser?.isAnonymous){const cred=EmailAuthProvider.credential(email,password);await linkWithCredential(auth.currentUser,cred);user=auth.currentUser;showAccount();window.closeLogin();status('Conta de e-mail vinculada. UID e dados do visitante preservados.');}else{await setPersistence(auth,browserLocalPersistence);await createUserWithEmailAndPassword(auth,email,password)}}catch(err){feedback(explainError(err))}};
 window.sendResetEmail=async()=>{let email=$('auth-email').value.trim();if(!email){feedback('Digite o e-mail para recuperar a senha.');return}try{await sendPasswordResetEmail(auth,email);feedback('Se houver uma conta correspondente, você receberá instruções por e-mail.')}catch(err){feedback(explainError(err))}};
 window.logoutGiraAI=async()=>{try{if(syncTimer)clearTimeout(syncTimer);if(user&&mode==='both'&&dirty)await pushCloud();await signOut(auth);status('Você saiu da conta. Os dados locais da conta continuam neste navegador.')}catch(e){status(explainError(e))}};
 window.setCloudMode=(value)=>{if(!['local','both'].includes(value))return;mode=value;if(user)localStorage.setItem(localModeKey(user.uid),value);showAccount();if(value==='both'){status('Nuvem habilitada. Sincronizando alterações deste aparelho...');queueSave()}else{if(syncTimer)clearTimeout(syncTimer);status('Somente local: seus dados não serão enviados à nuvem.')}};
@@ -1306,7 +1385,7 @@ async function handleAuth(next){
  const newToken=++token;
  if(syncTimer)clearTimeout(syncTimer);
  // Salva primeiro o perfil anterior; cada conta tem chaves locais isoladas.
- if(user?.uid===next?.uid&&ready){showAccount();return}
+ if(user?.uid===next?.uid&&ready){user=next;showAccount();return}
  ready=false;loading=true;dirty=false;revision=0;lastHistoryString='';user=next||null;
  mode=user?localStorage.getItem(localModeKey(user.uid))||'both':'both';
  // Manter cópia do convidado apenas para importação consciente na primeira entrada.
